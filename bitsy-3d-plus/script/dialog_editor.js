@@ -341,6 +341,8 @@ function DialogTool() {
 
 		function RefreshEditorUI() {
 			var dialogStr = !DoesDialogExist() ? "" : dialog[dialogId].src;
+			var dialogBgColor = !DoesDialogExist() ? [0, 0, 0] : dialog[dialogId].bgColor;
+			console.log("BG COLOR:", dialogBgColor);
 
 			div.innerHTML = "";
 			scriptRootNode = scriptInterpreter.Parse(dialogStr, dialogId);
@@ -490,6 +492,19 @@ function DialogTool() {
 			}
 
 			dialog[dialogId].src = dialogStr;
+
+			function getRgbArrayFromHex (hexString) {
+				const rgbArray = [];
+				for (let i = 0; i < 3; i++) {
+					rgbArray.push(
+						parseInt(hexString.substring(i * 2 + 1, i * 2 + 3), 16)
+					);
+				}
+				return rgbArray;
+			}
+			dialog[dialogId].bgColor = getRgbArrayFromHex(
+				document.querySelector('#dlg-color').value
+			);
 
 			refreshGameData();
 
@@ -1184,13 +1199,67 @@ function DialogTool() {
 		textEffectsDiv.style.marginTop = "10px"; // hacky
 		div.appendChild(textEffectsDiv);
 
+		/*** Elana's workspace ***/
+
+		// add dialog settings
+		const dlgSettingsDiv = document.createElement("div");
+		dlgSettingsDiv.classList.add("controlBox");
+		dlgSettingsDiv.style.display = "none";
+		div.appendChild(dlgSettingsDiv);
+
+		// add title to dialog settings
+		const dlgSettingsTitleDiv = document.createElement("div");
+		dlgSettingsTitleDiv.style.marginBottom = "5px";
+		dlgSettingsTitleDiv.innerHTML = iconUtils.CreateIcon("settings").outerHTML + " " + localization.GetStringOrFallback("dialog_settings", "dialog settings");
+		dlgSettingsDiv.appendChild(dlgSettingsTitleDiv);
+
+		// add wrapper for buttons
+		const dlgSettingsControlsDiv = document.createElement("div");
+		dlgSettingsControlsDiv.style.marginBottom = "5px";
+		dlgSettingsDiv.appendChild(dlgSettingsControlsDiv);
+
+		// add color picker
+		const dlgColorDiv = document.createElement("button");
+
+		const dlgColorPicker = document.createElement("input");
+		Object.assign(dlgColorPicker, {
+			type: "color",
+			id: "dlg-color",
+			value: "black", // TODO: set from save data
+			onchange: () => {
+				parentEditor.NotifyUpdate();
+			},
+		});
+		dlgColorDiv.appendChild(dlgColorPicker);
+
+		const dlgColorLabel = document.createElement("label");
+		Object.assign(dlgColorLabel, {
+			for: "dlg-color",
+			innerHTML: "background color",
+		});
+		dlgColorDiv.appendChild(dlgColorLabel);
+
+		dlgSettingsControlsDiv.appendChild(dlgColorDiv);
+
+		// show & hide both text effects & dialog settings
+		function toggleTextEffects(doDisplay) {
+			if (doDisplay === undefined) {
+				doDisplay = globalShowTextEffectsControls;
+			}
+			const displayStyle = doDisplay ? "block" : "none";
+			[textEffectsDiv, dlgSettingsDiv].forEach((div) => div.style.display = displayStyle);
+		}
+
+		/*** End of Elana's workspace ***/
+
 		var toggleTextEffectsButton = document.createElement("button");
 		toggleTextEffectsButton.appendChild(iconUtils.CreateIcon("text_effects"));
 		toggleTextEffectsButton.title = "show/hide text effects controls";
-		toggleTextEffectsButton.onclick = function() {
+		toggleTextEffectsButton.onclick = () => {
 			globalShowTextEffectsControls = !globalShowTextEffectsControls;
-			textEffectsDiv.style.display = globalShowTextEffectsControls ? "block" : "none";
-		}
+			toggleTextEffects();
+		};
+
 		orderControls.GetCustomControlsContainer().appendChild(toggleTextEffectsButton);
 
 		var textEffectsTitleDiv = document.createElement("div");
@@ -1309,8 +1378,8 @@ function DialogTool() {
 
 		AddSelectionBehavior(
 			this,
-			function() { textEffectsDiv.style.display = globalShowTextEffectsControls ? "block" : "none"; },
-			function() { textEffectsDiv.style.display = "none"; });
+			function() { toggleTextEffects(globalShowTextEffectsControls) },
+			function() { toggleTextEffects(false); });
 
 		this.GetNodes = function() {
 			return dialogNodeList;
