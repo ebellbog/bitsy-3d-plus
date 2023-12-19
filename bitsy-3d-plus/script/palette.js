@@ -70,19 +70,9 @@ function PaletteTool(colorPicker,colorCallback,nameFieldId) { //,colorCallback
         }
 
         if (index < 3) {
-
-            switch (index) {
-                case (0):
-                    label.appendChild(iconUtils.CreateIcon("room"));
-                    break;
-                case (1):
-                    label.appendChild(iconUtils.CreateIcon("tile"));
-                    break;
-                case (2):
-                    label.appendChild(iconUtils.CreateIcon("sprite"));
-                    break;
-            }
-
+			const newIcon = iconUtils.CreateIcon(["room", "tile", "sprite"][index])
+			newIcon.classList.add("icon_space_right");
+			label.appendChild(newIcon);
 
             var text = document.createElement("span");
             text.classList.add("localize")

@@ -100,7 +100,7 @@
 }
 
 .dialogEditor textarea {
-	background: black;
+	background: transparent;
 	color: white;
 	/*width: 96%;*/
 	border: none;
@@ -301,7 +301,7 @@
 .dialogBoxContainer textarea {
 	height: calc(100% - 10px);
 	width: auto;
-	background: black;
+	background: transparent;
 	color: white;
 	resize: none;
 	border: none;

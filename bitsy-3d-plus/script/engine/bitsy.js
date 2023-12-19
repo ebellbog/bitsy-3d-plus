@@ -873,6 +873,7 @@ function movePlayerThroughExit(ext) {
 		// TODO : I need to simplify dialog code,
 		// so I don't have to get the ID and the source str
 		// every time!
+		ext.bgColor = dialog[ext.dlg].bgColor;
 		startDialog(
 			dialog[ext.dlg].src,
 			ext.dlg,
@@ -1356,6 +1357,9 @@ function serializeWorld(skipFonts) {
 			worldStr += dialog[id].src + "\n";
 			if (dialog[id].name != null) {
 				worldStr += "NAME " + dialog[id].name + "\n";
+			}
+			if (dialog[id].bgColor != null) {
+				worldStr += `BG_COLOR ${JSON.stringify(dialog[id].bgColor)}\n`;
 			}
 			worldStr += "\n";
 		}
@@ -1934,6 +1938,10 @@ function parseDialog(lines, i, compatibilityFlags) {
 		names.dialog.set(dialog[id].name, id);
 		i++;
 	}
+	if (lines[i].length > 0 && getType(lines[i]) === "BG_COLOR") {
+		dialog[id].bgColor = JSON.parse(lines[i].split(' ')[1]);
+		i++;
+	}
 
 	return i;
 }
@@ -2163,6 +2171,7 @@ function startNarrating(dialogStr,end) {
 function startEndingDialog(ending) {
 	isNarrating = true;
 	isEnding = true;
+	ending.bgColor = dialog[ending.id].bgColor;
 
 	startDialog(
 		dialog[ending.id].src,
@@ -2180,8 +2189,8 @@ function startItemDialog(itemId, dialogCallback) {
 	var dialogId = item[itemId].dlg;
 	// console.log("START ITEM DIALOG " + dialogId);
 	if (dialog[dialogId]) {
-		var dialogStr = dialog[dialogId].src;
-		startDialog(dialogStr, dialogId, dialogCallback);
+		const {src: dialogStr, bgColor} = dialog[dialogId];
+		startDialog(dialogStr, dialogId, dialogCallback, {bgColor});
 	}
 	else {
 		dialogCallback();
@@ -2193,8 +2202,8 @@ function startSpriteDialog(spriteId) {
 	var dialogId = spr.dlg;
 	// console.log("START SPRITE DIALOG " + dialogId);
 	if (dialog[dialogId]){
-		var dialogStr = dialog[dialogId].src;
-		startDialog(dialogStr,dialogId);
+		const {src: dialogStr, bgColor} = dialog[dialogId];
+		startDialog(dialogStr, dialogId, null, {bgColor});
 	}
 }
 
@@ -2210,6 +2219,8 @@ function startDialog(dialogStr, scriptId, dialogCallback, objectContext) {
 
 	dialogRenderer.Reset();
 	dialogRenderer.SetCentered(isNarrating /*centered*/);
+	dialogRenderer.SetBgColor(objectContext?.bgColor);
+
 	dialogBuffer.Reset();
 	scriptInterpreter.SetDialogBuffer(dialogBuffer);
 

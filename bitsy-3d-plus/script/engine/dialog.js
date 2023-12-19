@@ -32,6 +32,10 @@ var DialogRenderer = function() {
 		textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
 	}
 
+	this.SetBgColor = function(rgbArray) {
+		textboxInfo.bgColor = rgbArray || [0, 0, 0];
+	}
+
 	function textScale() {
 		return scale * textboxInfo.font_scale;
 	}
@@ -56,8 +60,7 @@ var DialogRenderer = function() {
 		if(textboxInfo.img == null)
 			textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
 
-		// fill text box with black
-		// TODO: support background colors
+		// fill text box with background color
 		for (let i=0; i<textboxInfo.img.data.length; i+=4)
 		{
 			for (let j = 0; j < 3; j++) {
@@ -228,6 +231,7 @@ var DialogRenderer = function() {
 
 	this.Reset = function() {
 		effectTime = 0;
+		textboxInfo.bgColor = [0, 0, 0];
 		// TODO - anything else?
 	}
 

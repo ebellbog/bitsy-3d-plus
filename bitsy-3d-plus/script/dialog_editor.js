@@ -1,4 +1,3 @@
-// TODO : name?
 function DialogTool() {
 	this.CreateEditor = function(dialogId) {
 		return new DialogScriptEditor(dialogId);
@@ -340,9 +339,7 @@ function DialogTool() {
 		var self = this;
 
 		function RefreshEditorUI() {
-			var dialogStr = !DoesDialogExist() ? "" : dialog[dialogId].src;
-			var dialogBgColor = !DoesDialogExist() ? [0, 0, 0] : dialog[dialogId].bgColor;
-			console.log("BG COLOR:", dialogBgColor);
+			const dialogStr = DoesDialogExist() ? dialog[dialogId].src : "";
 
 			div.innerHTML = "";
 			scriptRootNode = scriptInterpreter.Parse(dialogStr, dialogId);
@@ -492,18 +489,8 @@ function DialogTool() {
 			}
 
 			dialog[dialogId].src = dialogStr;
-
-			function getRgbArrayFromHex (hexString) {
-				const rgbArray = [];
-				for (let i = 0; i < 3; i++) {
-					rgbArray.push(
-						parseInt(hexString.substring(i * 2 + 1, i * 2 + 3), 16)
-					);
-				}
-				return rgbArray;
-			}
 			dialog[dialogId].bgColor = getRgbArrayFromHex(
-				document.querySelector('#dlg-color').value
+				document.querySelector('.dlg-color').value
 			);
 
 			refreshGameData();
@@ -1061,13 +1048,21 @@ function DialogTool() {
 			parentEditor.NotifyUpdate(true);
 		}
 
+		function UpdateDialogColor(dlg) {
+			let {bgColor} =  dialog[curDialogEditorId];
+			bgColor = bgColor && getHexFromRgb(bgColor) || "black";
+			(dlg ? [dlg] : document.querySelectorAll('.dialogBoxContainer'))
+				.forEach((el) => el.style.background = bgColor);
+		}
+
 		var textSelectionChangeHandler = createOnTextSelectionChange(OnDialogTextChange);
 
 		if (!useExperimentalTextEditor) {
 			var dialogText = scriptUtils.SerializeDialogNodeList(dialogNodeList);
 
-			var textHolderDiv = document.createElement("div");
+			const textHolderDiv = document.createElement("div");
 			textHolderDiv.classList.add("dialogBoxContainer");
+			UpdateDialogColor(textHolderDiv);
 
 			var textArea = document.createElement("textarea");
 			textArea.value = dialogText;
@@ -1210,7 +1205,7 @@ function DialogTool() {
 		// add title to dialog settings
 		const dlgSettingsTitleDiv = document.createElement("div");
 		dlgSettingsTitleDiv.style.marginBottom = "5px";
-		dlgSettingsTitleDiv.innerHTML = iconUtils.CreateIcon("settings").outerHTML + " " + localization.GetStringOrFallback("dialog_settings", "dialog settings");
+		dlgSettingsTitleDiv.innerHTML = iconUtils.CreateIcon("dialog").outerHTML + " " + localization.GetStringOrFallback("dialog_settings", "dialog settings");
 		dlgSettingsDiv.appendChild(dlgSettingsTitleDiv);
 
 		// add wrapper for buttons
@@ -1219,17 +1214,23 @@ function DialogTool() {
 		dlgSettingsDiv.appendChild(dlgSettingsControlsDiv);
 
 		// add color picker
-		const dlgColorDiv = document.createElement("button");
+		const {bgColor} = dialog[curDialogEditorId];
+		const bgString = bgColor && getHexFromRgb(bgColor) || 'black';
 
 		const dlgColorPicker = document.createElement("input");
 		Object.assign(dlgColorPicker, {
 			type: "color",
-			id: "dlg-color",
-			value: "black", // TODO: set from save data
-			onchange: () => {
+			className: "dlg-color",
+			value: bgString,
+			onchange: (e) => {
+				const newColor = e.target.value;
+				document.querySelectorAll('.dlg-color').forEach((el) => el.value = newColor);
 				parentEditor.NotifyUpdate();
+				UpdateDialogColor();
 			},
 		});
+
+		const dlgColorDiv = document.createElement("button");
 		dlgColorDiv.appendChild(dlgColorPicker);
 
 		const dlgColorLabel = document.createElement("label");
@@ -1253,7 +1254,7 @@ function DialogTool() {
 		/*** End of Elana's workspace ***/
 
 		var toggleTextEffectsButton = document.createElement("button");
-		toggleTextEffectsButton.appendChild(iconUtils.CreateIcon("text_effects"));
+		toggleTextEffectsButton.appendChild(iconUtils.CreateIcon("settings"));
 		toggleTextEffectsButton.title = "show/hide text effects controls";
 		toggleTextEffectsButton.onclick = () => {
 			globalShowTextEffectsControls = !globalShowTextEffectsControls;
@@ -1378,7 +1379,10 @@ function DialogTool() {
 
 		AddSelectionBehavior(
 			this,
-			function() { toggleTextEffects(globalShowTextEffectsControls) },
+			() => {
+				toggleTextEffects(globalShowTextEffectsControls);
+				// TODO: load color?
+			},
 			function() { toggleTextEffects(false); });
 
 		this.GetNodes = function() {
@@ -3828,4 +3832,20 @@ function wrapTextSelection(effect) {
 				dialogSel.onchange( dialogSel ); // dialogSel needs to mimic the event the onchange would usually receive
 		}
 	}
+}
+
+function getHexFromRgb(rgbArray) {
+	return rgbArray.reduce((acc, val) => {
+		acc += val.toString(16);
+		return acc;
+	}, '#');
+}
+function getRgbArrayFromHex (hexString) {
+	const rgbArray = [];
+	for (let i = 0; i < 3; i++) {
+		rgbArray.push(
+			parseInt(hexString.substring(i * 2 + 1, i * 2 + 3), 16)
+		);
+	}
+	return rgbArray;
 }
