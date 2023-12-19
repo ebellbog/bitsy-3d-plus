@@ -699,7 +699,7 @@ function DialogTool() {
 					childEditorRootDiv.appendChild(arrowHolder);
 
 					var svgArrow = document.createElement("img");
-					svgArrow.src = "image/down_arrow.svg";
+					svgArrow.src = "editor/image/down_arrow.svg";
 					svgArrow.style.margin = "5px";
 					svgArrow.style.width = "20px";
 					arrowHolder.appendChild(svgArrow);
@@ -2529,7 +2529,7 @@ function DialogTool() {
 			helpTextImgHolder.classList.add("helpTextImg");
 			helpTextDiv.appendChild(helpTextImgHolder);
 			var catImg = document.createElement("img");
-			catImg.src = "image/cat.svg";
+			catImg.src = "editor/image/cat.svg";
 			helpTextImgHolder.appendChild(catImg);
 			helpTextContent = document.createElement("div");
 			helpTextContent.classList.add("helpTextContent");

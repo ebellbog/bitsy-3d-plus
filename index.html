@@ -3,64 +3,64 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Bitsy 3D</title>
-		<link rel="icon" type="image/png" href="image/cat5.png" />
+		<link rel="icon" type="image/png" href="editor/image/cat5.png" />
 
 		<!-- STYLES -->
-		<link rel="stylesheet" type="text/css" href="style/editorStyle.css">
-		<link rel="stylesheet" type="text/css" href="style/editorButtons.css">
-		<link rel="stylesheet" type="text/css" href="style/editorColors.css">
-		<link rel="stylesheet" type="text/css" href="style/editorLanguageStyles.css">
-		<link rel="stylesheet" type="text/css" href="style/editorAnimations.css">
-		<link rel="stylesheet" type="text/css" href="style/colorPickerStyle.css">
-		<link rel="stylesheet" type="text/css" href="style/markerToolStyle.css">
-		<link rel="stylesheet" type="text/css" href="style/dialogToolStyle.css">
-		<link rel="stylesheet" type="text/css" href="style/responsiveStyle.css">
-		<link rel="stylesheet" type="text/css" href="style/navControlStyle.css">
-		<link rel="stylesheet" type="text/css" href="style/iconStyle.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/editorStyle.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/editorButtons.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/editorColors.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/editorLanguageStyles.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/editorAnimations.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/colorPickerStyle.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/markerToolStyle.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/dialogToolStyle.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/responsiveStyle.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/navControlStyle.css">
+		<link rel="stylesheet" type="text/css" href="editor/style/iconStyle.css">
 
 		<!-- GENERATED -->
-		<script src="script/generated/resources.js"></script>
+		<script src="editor/script/generated/resources.js"></script>
 
 		<!-- ENGINE SCRIPTS -->
-		<script src="script/engine/color_util.js"></script>
-		<script src="script/engine/font.js"></script>
-		<script src="script/engine/transition.js"></script>
-		<script src="script/engine/script.js"></script>
-		<script src="script/engine/dialog.js"></script>
-		<script src="script/engine/renderer.js"></script>
-		<script src="script/engine/bitsy.js"></script>
+		<script src="editor/script/engine/color_util.js"></script>
+		<script src="editor/script/engine/font.js"></script>
+		<script src="editor/script/engine/transition.js"></script>
+		<script src="editor/script/engine/script.js"></script>
+		<script src="editor/script/engine/dialog.js"></script>
+		<script src="editor/script/engine/renderer.js"></script>
+		<script src="editor/script/engine/bitsy.js"></script>
 
 		<!-- EDITOR SCRIPTS -->
-		<script src="script/util.js"></script>
-		<script src="script/icons.js"></script>
-		<script src="script/paint.js"></script>
-		<script src="script/room.js"></script>
-		<script src="script/room_markers.js"></script>
-		<script src="script/explorer.js"></script>
-		<script src="script/localization.js"></script>
-		<script src="script/event_manager.js"></script>
-		<script src="script/palette.js"></script>
-		<script src="script/color_picker.js"></script>
-		<script src="script/gif.js"></script>
-		<script src="script/exporter.js"></script>
-		<script src="script/dialog_editor.js"></script>
-		<script src="script/editor.js"></script>
-		<script src="script/inventory.js"></script>
+		<script src="editor/script/util.js"></script>
+		<script src="editor/script/icons.js"></script>
+		<script src="editor/script/paint.js"></script>
+		<script src="editor/script/room.js"></script>
+		<script src="editor/script/room_markers.js"></script>
+		<script src="editor/script/explorer.js"></script>
+		<script src="editor/script/localization.js"></script>
+		<script src="editor/script/event_manager.js"></script>
+		<script src="editor/script/palette.js"></script>
+		<script src="editor/script/color_picker.js"></script>
+		<script src="editor/script/gif.js"></script>
+		<script src="editor/script/exporter.js"></script>
+		<script src="editor/script/dialog_editor.js"></script>
+		<script src="editor/script/editor.js"></script>
+		<script src="editor/script/inventory.js"></script>
 	
 		<!-- 3D EDITOR DEPENDENCIES -->
-		<script src="libs/babylon.js"></script>
+		<script src="editor/libs/babylon.js"></script>
 
 		<!-- 3D EDITOR -->
-		<script src="script/3d/bitsy3d.js"></script>
-		<script src="script/3d/name-tags-compatibility.js"></script>
-		<script src="script/3d/editor3d.js"></script>
+		<script src="editor/script/3d/bitsy3d.js"></script>
+		<script src="editor/script/3d/name-tags-compatibility.js"></script>
+		<script src="editor/script/3d/editor3d.js"></script>
 
 		<!-- FONTS -->
-		<link href="style/googleNunito.css" rel="stylesheet">
-		<link href="style/googleMaterialIcons.css" rel="stylesheet">
+		<link href="editor/style/googleNunito.css" rel="stylesheet">
+		<link href="editor/style/googleMaterialIcons.css" rel="stylesheet">
 
 	</head>
- 
+
 	<body onload="start()">
 
 		<div id="appRoot">
@@ -73,7 +73,7 @@
 
 					<div id="logoFlexItem">
 						<span title="Bitsy ~ make little worlds ~" id="bitsyLogoTitle">
-							<img src="image/cat.svg" height="24px" width="24px" id="bitsyLogo"/>
+							<img src="editor/image/cat.svg" height="24px" width="24px" id="bitsyLogo"/>
 							<span class="localize bitsy_title">Bitsy</span>
 						</span>	
 					</div>
@@ -729,7 +729,7 @@
 						<div id="noMarkerMessage" class="controlBox">
 							<div style="display: flex; flex-direction: row; margin-bottom: 10px;">
 								<span id="spacer" style="flex-grow: 1;"></span>
-								<img src="image/cat.svg" height="64px" width="64px" />
+								<img src="editor/image/cat.svg" height="64px" width="64px" />
 								<span id="spacer" style="flex-grow: 1;"></span>
 							</div>
 							<span class="localize marker_tool_empty">There are no exits or endings in this room yet! You can add one with this tool. :)</span>
