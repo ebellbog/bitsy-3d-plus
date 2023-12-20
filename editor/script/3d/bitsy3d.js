@@ -266,6 +266,7 @@ b3d.cameraDataModel = {
                 this.rotationState.movePlayerOriginal = bitsy.movePlayer;
                 var thisCamera = this;
                 b3d.patch(bitsy, 'movePlayer', function () {
+                    if (curRoomRenderMode() === '2D') return;
                     if (thisCamera.rotationState.isTweening) {
                         // prevent any movement by resetting bitsy direction when camera is rotating
                         bitsy.curPlayerDirection = bitsy.Direction.None;
@@ -439,14 +440,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // adjust movement direction relative to the camera
     smartPatch('movePlayer',
         function () {
+            b3d.rawDirection = bitsy.curPlayerDirection;
+            if (curRoomRenderMode() === '2D') return;
+
             var rotationTable = {};
             rotationTable[bitsy.Direction.Up] = bitsy.Direction.Left;
             rotationTable[bitsy.Direction.Left] = bitsy.Direction.Down;
             rotationTable[bitsy.Direction.Down] = bitsy.Direction.Right;
             rotationTable[bitsy.Direction.Right] = bitsy.Direction.Up;
             rotationTable[bitsy.Direction.None] = bitsy.Direction.None;
-
-            b3d.rawDirection = bitsy.curPlayerDirection;
 
             var rotatedDirection = bitsy.curPlayerDirection;
             var ray = b3d.curActiveCamera.ref.getForwardRay().direction;
@@ -510,9 +512,6 @@ b3d.init = function () {
         b3d.textCanvas = document.getElementById('textCanvas');
     } else {
         // if not in the editor, do the setup specific for exported game
-        // hide the original canvas and add a stylesheet
-        // to make the 3D render in its place
-        bitsy.canvas.parentElement.removeChild(bitsy.canvas);
         var style = `
         canvas {
             -ms-interpolation-mode: nearest-neighbor;
@@ -522,7 +521,7 @@ b3d.init = function () {
         canvas:focus {
             outline: none;
         }
-        #gameContainer {
+        #game, #gameContainer {
             position: absolute;
             display: inline-grid; /*to prevent it from growing a few pixels taller than sceneCanvas*/
             top: 50%;

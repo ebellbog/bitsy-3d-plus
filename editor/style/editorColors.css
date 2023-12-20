@@ -17,6 +17,15 @@ body {
 	color: #6767b2;
 	/*border-bottom: solid 1px #6767b2;*/
 }
+.render-3d #room3dPanel .bar,
+.render-2d #roomPanel .bar {
+	background: #6767b2;
+	color: white;
+}
+.render-3d #room3dPanel .bitsy_icon,
+.render-2d #roomPanel .bitsy_icon {
+	fill: white;
+}
 
 .panelShadow {
 	background: #6767b2;

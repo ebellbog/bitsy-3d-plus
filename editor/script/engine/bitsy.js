@@ -660,8 +660,6 @@ var InputManager = function() {
 	this.onkeydown = function(event) {
 		// console.log("KEYDOWN -- " + event.keyCode);
 
-		stopWindowScrolling(event);
-
 		tryRestartGame(event);
 
 		// Special keys being held down can interfere with keyup events and lock movement
@@ -675,6 +673,9 @@ var InputManager = function() {
 				resetAll();
 			}
 		}
+
+		// Call after testing for modifier keys to avoid blocking browser shortcuts
+		stopWindowScrolling(event);
 
 		if (ignored[event.keyCode]) {
 			return;
@@ -898,6 +899,21 @@ function initRoom(roomId) {
 	// init ending properties
 	for (var i = 0; i < room[roomId].endings.length; i++) {
 		room[roomId].endings[i].property = { locked:false };
+	}
+
+	const renderMode = getRoomRenderMode(roomId);
+	if (bitsy.isPlayerEmbeddedInEditor) {
+		const editorWindow = document.getElementById('editorContent');
+		editorWindow.classList.remove("render-2d", "render-3d");
+
+		if (isPlayMode) {
+			editorWindow.classList.add(`render-${renderMode.toLowerCase()}`);
+		}
+	} else {
+		const canvas3d = document.getElementById('sceneCanvas');
+		if (canvas3d) {
+			canvas3d.style.opacity = (renderMode === '3D') ? 1 : 0;
+		}
 	}
 }
 
@@ -1287,6 +1303,10 @@ function serializeWorld(skipFonts) {
 			/* PALETTE */
 			worldStr += "PAL " + room[id].pal + "\n";
 		}
+		if (room[id].renderMode) {
+			// RENDER MODE (2D vs 3D)
+			worldStr += `RENDER ${room[id].renderMode}\n`;
+		}
 		worldStr += "\n";
 	}
 	/* TILES */
@@ -1589,6 +1609,9 @@ function parseRoom(lines, i, compatibilityFlags) {
 		else if (getType(lines[i]) === "PAL") {
 			/* CHOOSE PALETTE (that's not default) */
 			room[id].pal = getId(lines[i]);
+		}
+		else if (getType(lines[i]) === "RENDER") {
+			room[id].renderMode = lines[i].split(' ')[1];
 		}
 		else if (getType(lines[i]) === "NAME") {
 			var name = lines[i].split(/\s(.+)/)[1];
@@ -2115,6 +2138,13 @@ function getRoomPal(roomId) {
 		}
 	}
 	return defaultId;
+}
+
+function getRoomRenderMode(roomId) {
+	return roomId && room[roomId]?.renderMode || '3D';
+}
+function curRoomRenderMode() {
+	return getRoomRenderMode(curRoom);
 }
 
 var isDialogMode = false;

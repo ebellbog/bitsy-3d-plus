@@ -1236,7 +1236,7 @@ var room3dPanel = {
 
             bitsy.roomTool.drawEditMap();
             bitsy.paintTool.updateCanvas();
-            bitsy.updateRoomPaletteSelect();
+            bitsy.updateRoomSettings();
             bitsy.markerTool.Refresh();
         } else {
             bitsy.deleteRoom();

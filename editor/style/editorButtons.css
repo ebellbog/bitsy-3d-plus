@@ -69,6 +69,7 @@ input[type=radio] + label {
 	margin-bottom: 2px;
 	vertical-align: middle;
 	line-height: 100%;
+	cursor: pointer;
 }
 input[type=radio] + label .material-icons {
 	font-size: 110%;
@@ -83,6 +84,12 @@ input[type=radio] + label.left {
 }
 input[type=radio] + label.right {
 	border-radius: 0px 2px 2px 0px;
+}
+
+#roomPanel .controlBox input[type=radio] + label {
+	/* this is janky; need to find a better way to align inputs in room footer */
+	padding: 3.6px 4px;
+	vertical-align: unset;
 }
 
 #paintExplorerContent input[type=radio] + label {

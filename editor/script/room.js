@@ -325,3 +325,8 @@ function togglePlayMode(e) {
 	- on_play_mode
 	- on_edit_mode
 */
+
+function setRoomRenderMode(mode) { // valid values: '2D', '3D'
+	room[curRoom].renderMode = mode;
+	refreshGameData();
+}

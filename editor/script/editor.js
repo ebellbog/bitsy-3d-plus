@@ -1046,7 +1046,7 @@ function start() {
 	markerTool.Refresh();
 	roomTool.drawEditMap();
 
-	updateRoomPaletteSelect(); //dumb to have to specify this here --- wrap up room UI method?
+	updateRoomSettings(); //dumb to have to specify this here --- wrap up room UI method?
 	updateRoomName(); // init the room UI
 
 	document.getElementById("inventoryOptionItem").checked = true; // a bit hacky
@@ -1309,7 +1309,7 @@ function selectRoom(roomId) {
 		markerTool.SetRoom(curRoom);
 		roomTool.drawEditMap();
 		paintTool.updateCanvas();
-		updateRoomPaletteSelect();
+		updateRoomSettings();
 
 		// 3d editor fix: refresh paint explorer according to its own drawing type
 		// which can be different from the paint tool to allow for convenient drag & drop
@@ -1331,7 +1331,7 @@ function nextRoom() {
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
-	updateRoomPaletteSelect();
+	updateRoomSettings();
 	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
 
 	if (drawing.type === TileType.Tile) {
@@ -1349,7 +1349,7 @@ function prevRoom() {
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
-	updateRoomPaletteSelect();
+	updateRoomSettings();
 	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
 
 	if (drawing.type === TileType.Tile) {
@@ -1397,7 +1397,7 @@ function duplicateRoom() {
 	markerTool.SetRoom(curRoom); // hack to re-find all the markers
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
-	updateRoomPaletteSelect();
+	updateRoomSettings();
 
 	updateRoomName();
 
@@ -1467,7 +1467,7 @@ function newRoom() {
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
-	updateRoomPaletteSelect();
+	updateRoomSettings();
 
 	updateRoomName();
 
@@ -1509,7 +1509,7 @@ function deleteRoom() {
 		nextRoom();
 		roomTool.drawEditMap();
 		paintTool.updateCanvas();
-		updateRoomPaletteSelect();
+		updateRoomSettings();
 		markerTool.Refresh();
 		// updateExitOptionsFromGameData();
 		//recreate exit options
@@ -1900,15 +1900,19 @@ var colorPicker = null;
 var paletteTool = null;
 var paintExplorer = null;
 
-function updateRoomPaletteSelect() {
-	var palOptions = document.getElementById("roomPaletteSelect").options;
+function updateRoomSettings() {
+	const palOptions = document.getElementById("roomPaletteSelect").options;
 	for (i in palOptions) {
-		var o = palOptions[i];
+		const o = palOptions[i];
 		// console.log(o);
 		if (o.value === curPal()) {
 			o.selected = true;
 		}
 	}
+
+	const roomRenderMode = curRoomRenderMode();
+	const radioBtn = document.getElementById(`render-${roomRenderMode.toLowerCase()}`);
+	radioBtn.checked = true;
 }
 
 function changeColorPickerIndex(index) {

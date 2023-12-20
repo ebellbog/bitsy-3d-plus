@@ -630,7 +630,18 @@
 							</span>
 
 							<span style="float: right;">
-								<button title="add exits and endings" class="color0" onclick="showPanel('exitsPanel', 'roomPanel');" style="margin-top:2px;">
+								<form style="display: inline-block;">
+									<input type="radio" name="render-mode" id="render-2d">
+									<label class="left" for="render-2d" title="render room in 2D" onclick="setRoomRenderMode('2D')">
+										<span>2D</span>
+									</label>
+									<input type="radio" name="render-mode" id="render-3d">
+									<label class="right" for="render-3d" title="render room in 3D" onclick="setRoomRenderMode('3D')">
+										<span>3D</span>
+									</label>
+								</form>
+
+								<button title="add exits and endings" class="color0" onclick="showPanel('exitsPanel', 'roomPanel');">
 									<span class="localize marker_tool_name">exits & endings</span>
 									<span class="bitsy_icon">open_tool</span>
 								</button>
