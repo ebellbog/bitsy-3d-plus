@@ -21,8 +21,13 @@ var titleDialogId = "title";
 function getTitle() {
 	return dialog[titleDialogId].src;
 }
-function setTitle(titleSrc) {
-	dialog[titleDialogId] = { src:titleSrc, name:null };
+function getTitleSettings() {
+	return dialog[titleDialogId].bgColor;
+}
+function setTitle(titleSrc, bgColor) {
+	if (!dialog[titleDialogId]) dialog[titleDialogId] = {name: null};
+	dialog[titleDialogId].src = titleSrc;
+	if (bgColor) dialog[titleDialogId].bgColor = bgColor;
 }
 
 var defaultFontName = "ascii_small";
@@ -252,7 +257,7 @@ function onready(startWithTitle) {
 	update_interval = setInterval(update,16);
 
 	if(startWithTitle) { // used by editor 
-		startNarrating(getTitle());
+		startNarrating(getTitle(), null, {bgColor: getTitleSettings()});
 	}
 }
 
@@ -908,6 +913,11 @@ function initRoom(roomId) {
 
 		if (isPlayMode) {
 			editorWindow.classList.add(`render-${renderMode.toLowerCase()}`);
+
+			const textCanvas = document.getElementById('textCanvas');
+			textCanvas.parentNode.removeChild(textCanvas);
+			document.getElementById(renderMode === '3D' ? 'gameContainer' : 'roomCanvasContainer')
+				.appendChild(textCanvas);
 		}
 	} else {
 		const canvas3d = document.getElementById('sceneCanvas');
@@ -1192,7 +1202,12 @@ function serializeWorld(skipFonts) {
 	var worldStr = "";
 	/* TITLE */
 	worldStr += getTitle() + "\n";
+	const titleBgColor = getTitleSettings();
+	if (titleBgColor) {
+		worldStr += `BG_COLOR ${JSON.stringify(getTitleSettings())}\n`
+	}
 	worldStr += "\n";
+
 	/* VERSION */
 	worldStr += "# BITSY VERSION " + getEngineVersion() + "\n"; // add version as a comment for debugging purposes
 	if (version.devBuildPhase != "RELEASE") {
@@ -1454,12 +1469,12 @@ function getCoord(line,arg) {
 
 function parseTitle(lines, i) {
 	var results = scriptUtils.ReadDialogScript(lines,i);
-	setTitle(results.script);
 	i = results.index;
 
-	i++;
+	const bgColor = parseBgColor(lines, i);
+	setTitle(results.script, bgColor);
 
-	return i;
+	return i + 1;
 }
 
 function parseRoom(lines, i, compatibilityFlags) {
@@ -1950,6 +1965,14 @@ function parseScript(lines, i, backCompatPrefix, compatibilityFlags) {
 	return i;
 }
 
+function parseBgColor(lines, i) {
+	if (lines[i].length > 0 && getType(lines[i]) === "BG_COLOR") {
+		const bgColor = JSON.parse(lines[i].split(' ')[1]);
+		i++;
+		return bgColor;
+	}
+}
+
 function parseDialog(lines, i, compatibilityFlags) {
 	// hacky but I need to store this so I can set the name below
 	var id = getId(lines[i]);
@@ -1961,10 +1984,9 @@ function parseDialog(lines, i, compatibilityFlags) {
 		names.dialog.set(dialog[id].name, id);
 		i++;
 	}
-	if (lines[i].length > 0 && getType(lines[i]) === "BG_COLOR") {
-		dialog[id].bgColor = JSON.parse(lines[i].split(' ')[1]);
-		i++;
-	}
+
+	const bgColor = parseBgColor(lines, i);
+	if (bgColor) dialog[id].bgColor = bgColor;
 
 	return i;
 }
@@ -2185,7 +2207,7 @@ TODO
 - what about dialog NAMEs vs IDs?
 - what about a special script block separate from DLG?
 */
-function startNarrating(dialogStr,end) {
+function startNarrating(dialogStr,end,settings) {
 	console.log("NARRATE " + dialogStr);
 
 	if(end === undefined) {
@@ -2195,7 +2217,7 @@ function startNarrating(dialogStr,end) {
 	isNarrating = true;
 	isEnding = end;
 
-	startDialog(dialogStr);
+	startDialog(dialogStr, null, null, settings);
 }
 
 function startEndingDialog(ending) {

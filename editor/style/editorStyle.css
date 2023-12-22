@@ -566,3 +566,7 @@ span.controlBox {
 	border: solid 1px #ccc;
 	text-decoration: none;
 }
+
+#roomCanvasContainer {
+	position: relative;
+}

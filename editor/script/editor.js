@@ -694,7 +694,7 @@ function resetGameData() {
 	setDefaultGameState();
 
 	// TODO : localize default_title
-	setTitle(localization.GetStringOrFallback("default_title", "Write your game's title here"));
+	setTitle(localization.GetStringOrFallback("default_title", "Write your game's title here"), [0, 0, 0]);
 	dialog["0"] = {
 		src: localization.GetStringOrFallback("default_sprite_dlg", "I'm a cat"), // hacky to do this in two places :(
 		name: "cat dialog", // todo : localize
