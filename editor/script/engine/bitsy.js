@@ -1966,7 +1966,7 @@ function parseScript(lines, i, backCompatPrefix, compatibilityFlags) {
 }
 
 function parseBgColor(lines, i) {
-	if (lines[i].length > 0 && getType(lines[i]) === "BG_COLOR") {
+	if (lines[i]?.length > 0 && getType(lines[i]) === "BG_COLOR") {
 		const bgColor = JSON.parse(lines[i].split(' ')[1]);
 		i++;
 		return bgColor;
