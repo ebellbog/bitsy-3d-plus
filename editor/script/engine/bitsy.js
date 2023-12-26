@@ -920,10 +920,14 @@ function initRoom(roomId) {
 				.appendChild(textCanvas);
 		}
 	} else {
-		const canvas3d = document.getElementById('sceneCanvas');
-		if (canvas3d) {
-			canvas3d.style.opacity = (renderMode === '3D') ? 1 : 0;
-		}
+		// at start of game, 3D canvas will not have been added to DOM before
+		// this code runs, so we wrap it in setTimeout to defer its execution
+		setTimeout(() => {
+			const canvas3d = document.getElementById('sceneCanvas');
+			if (canvas3d) {
+				canvas3d.style.opacity = (renderMode === '3D') ? 1 : 0;
+			}
+		}, 0);
 	}
 }
 
