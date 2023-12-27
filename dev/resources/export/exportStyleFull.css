@@ -17,3 +17,18 @@ body {
 	margin:auto;
 	display:block;
 }
+
+#transitionMatte {
+	pointer-events: none;
+
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+
+	height: 100%;
+	aspect-ratio: 1 / 1;
+
+	opacity: 0;
+	transition: opacity .3s;
+}

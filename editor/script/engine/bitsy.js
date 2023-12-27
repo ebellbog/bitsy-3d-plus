@@ -862,17 +862,36 @@ var transition = new TransitionManager();
 
 function movePlayerThroughExit(ext) {
 	var GoToDest = function() {
-		if (ext.transition_effect != null) {
-			transition.BeginTransition(player().room, player().x, player().y, ext.dest.room, ext.dest.x, ext.dest.y, ext.transition_effect);
-			transition.UpdateTransition(0);
+		function updatePosition() {
+			player().room = ext.dest.room;
+			player().x = ext.dest.x;
+			player().y = ext.dest.y;
+			curRoom = ext.dest.room;
+
+			initRoom(curRoom);
 		}
 
-		player().room = ext.dest.room;
-		player().x = ext.dest.x;
-		player().y = ext.dest.y;
-		curRoom = ext.dest.room;
+		if (ext.transition_effect != null) {
+			const renderMode = curRoomRenderMode();
+			if (renderMode === '2D' || isPlayerEmbeddedInEditor) {
+				transition.BeginTransition(player().room, player().x, player().y, ext.dest.room, ext.dest.x, ext.dest.y, ext.transition_effect);
+				transition.UpdateTransition(0);
+			}
+			if (renderMode === '3D' || isPlayerEmbeddedInEditor) {
+				const effect = ext.transition_effect;
+				if (effect.includes('fade')) {
+					const fadeColor = effect.split('_')[1];
+					b3d.transitionMatte.style.backgroundColor = (fadeColor === 'b') ? 'black' : 'white';
+					b3d.transitionMatte.style.opacity = 1;
+					return setTimeout(() => {
+						b3d.transitionMatte.style.opacity = 0;
+						updatePosition();
+					}, 300);
+				}
+			}
+		}
 
-		initRoom(curRoom);
+		updatePosition();
 	};
 
 	if (ext.dlg != undefined && ext.dlg != null) {

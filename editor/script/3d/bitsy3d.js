@@ -55,6 +55,7 @@ var b3d = {
     sceneCanvas: null,
     textCanvas: null,
     textContext: null,
+    transitionMatte: null,
 
     spriteLastPos: {},
     tweens: {},
@@ -510,6 +511,7 @@ b3d.init = function () {
     if (bitsy.isPlayerEmbeddedInEditor) {
         b3d.sceneCanvas = document.getElementById('sceneCanvas');
         b3d.textCanvas = document.getElementById('textCanvas');
+        b3d.transitionMatte = document.getElementById('transitionMatte');
     } else {
         // if not in the editor, do the setup specific for exported game
         var style = `
@@ -560,6 +562,10 @@ b3d.init = function () {
         b3d.textCanvas.id = 'textCanvas';
         gameContainer.appendChild(b3d.textCanvas);
         b3d.textContext = b3d.textCanvas.getContext('2d');
+
+        b3d.transitionMatte = document.createElement('div');
+        b3d.transitionMatte.id = 'transitionMatte';
+        gameContainer.appendChild(b3d.transitionMatte);
     }
 
     b3d.engine = new BABYLON.Engine(b3d.sceneCanvas, false);
