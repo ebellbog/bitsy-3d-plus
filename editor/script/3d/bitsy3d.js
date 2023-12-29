@@ -736,8 +736,10 @@ b3d.applySettings = function () {
     b3d.applyEngineAndCanvasSize();
 
     // apply fog settings
-    b3d.scene.fogStart = b3d.settings.fogStart;
-    b3d.scene.fogEnd = b3d.settings.fogEnd;
+    const roomData = room[curRoom];
+    ['fogStart', 'fogEnd'].forEach((prop) => {
+        b3d.scene[prop] = isNumber(roomData[prop]) ? roomData[prop] : b3d.settings[prop];
+    });
     b3d.scene.fogMode = b3d.settings.enableFog ? BABYLON.Scene.FOGMODE_LINEAR : BABYLON.Scene.FOGMODE_NONE;
 };
 

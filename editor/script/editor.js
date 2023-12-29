@@ -1913,6 +1913,21 @@ function updateRoomSettings() {
 	const roomRenderMode = curRoomRenderMode();
 	const radioBtn = document.getElementById(`render-${roomRenderMode.toLowerCase()}`);
 	radioBtn.checked = true;
+
+	const roomData = room[curRoom];
+	let usingCustomFog = false;
+	if (isNumber(roomData.fogStart)) {
+		usingCustomFog = true;
+		document.getElementById('room-fog-start').value = roomData.fogStart;
+	}
+	if (isNumber(roomData.fogEnd)) {
+		usingCustomFog = true;
+		document.getElementById('room-fog-end').value = roomData.fogEnd;
+	}
+	document.getElementById(usingCustomFog ? 'custom-fog' : 'default-fog').checked = true;
+	document.getElementById('custom-fog-inputs').style.display = (usingCustomFog) ? 'inline-block' : 'none';
+
+	setTimeout(b3d.applySettings, 0);
 }
 
 function changeColorPickerIndex(index) {

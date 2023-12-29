@@ -916,13 +916,15 @@ function movePlayerThroughExit(ext) {
 }
 
 function initRoom(roomId) {
+	const roomData = room[roomId];
+
 	// init exit properties
 	for (var i = 0; i < room[roomId].exits.length; i++) {
-		room[roomId].exits[i].property = { locked:false };
+		roomData.exits[i].property = { locked:false };
 	}
 	// init ending properties
 	for (var i = 0; i < room[roomId].endings.length; i++) {
-		room[roomId].endings[i].property = { locked:false };
+		roomData.endings[i].property = { locked:false };
 	}
 
 	const renderMode = getRoomRenderMode(roomId);
@@ -948,6 +950,13 @@ function initRoom(roomId) {
 			}
 		}, 0);
 	}
+
+	setTimeout(() => {
+		['fogStart', 'fogEnd'].forEach((prop) => {
+			const val = roomData[prop];
+			b3d.scene[prop] = (typeof val === 'number') ? val : b3d.settings[prop];
+		});
+	}, 0);
 }
 
 function getItemIndex( roomId, x, y ) {
@@ -1066,6 +1075,8 @@ function getRoom() {
 function isSpriteOffstage(id) {
 	return sprite[id].room == null;
 }
+
+const isNumber = (val) => typeof val === 'number';
 
 function parseWorld(file) {
 	spriteStartLocations = {};
@@ -1342,8 +1353,15 @@ function serializeWorld(skipFonts) {
 			worldStr += "PAL " + room[id].pal + "\n";
 		}
 		if (room[id].renderMode) {
-			// RENDER MODE (2D vs 3D)
+			/* RENDER MODE (2D vs 3D) */
 			worldStr += `RENDER ${room[id].renderMode}\n`;
+		}
+		/* CUSTOM FOG */
+		if (isNumber(room[id].fogStart)) {
+			worldStr += `FOG_START ${room[id].fogStart}\n`;
+		}
+		if (isNumber(room[id].fogEnd)) {
+			worldStr += `FOG_END ${room[id].fogEnd}\n`;
 		}
 		worldStr += "\n";
 	}
@@ -1649,7 +1667,13 @@ function parseRoom(lines, i, compatibilityFlags) {
 			room[id].pal = getId(lines[i]);
 		}
 		else if (getType(lines[i]) === "RENDER") {
-			room[id].renderMode = lines[i].split(' ')[1];
+			room[id].renderMode = getId(lines[i]);
+		}
+		else if (getType(lines[i]) === "FOG_START") {
+			room[id].fogStart = parseInt(getId(lines[i])) || null;
+		}
+		else if (getType(lines[i]) === "FOG_END") {
+			room[id].fogEnd = parseInt(getId(lines[i])) || null;
 		}
 		else if (getType(lines[i]) === "NAME") {
 			var name = lines[i].split(/\s(.+)/)[1];

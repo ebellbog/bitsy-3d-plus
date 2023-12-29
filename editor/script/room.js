@@ -330,3 +330,33 @@ function setRoomRenderMode(mode) { // valid values: '2D', '3D'
 	room[curRoom].renderMode = mode;
 	refreshGameData();
 }
+
+function setCustomFog(useCustom) {
+	const fogControls = document.getElementById('custom-fog-inputs');
+	const roomData = room[curRoom];
+	if (useCustom) {
+		fogControls.style.display = 'inline-block';
+		document.getElementById('room-fog-start').value = roomData.fogStart || b3d.settings.fogStart;
+		document.getElementById('room-fog-end').value = roomData.fogEnd || b3d.settings.fogEnd;
+	} else {
+		fogControls.style.display = 'none';
+		roomData.fogStart = null;
+		roomData.fogEnd = null;
+		refreshGameData();
+	}
+}
+
+function updateRoomFog() {
+	function getValueWithDefault(id, defaultValue) {
+		const value = parseFloat(document.getElementById(id)?.value);
+		if (Number.isNaN(value) || value === defaultValue) return null;
+		return value;
+	}
+
+	const roomData = room[curRoom];
+	roomData.fogStart = getValueWithDefault('room-fog-start', b3d.settings.fogStart);
+	roomData.fogEnd = getValueWithDefault('room-fog-end', b3d.settings.fogEnd);
+
+	b3d.applySettings();
+	refreshGameData();
+}

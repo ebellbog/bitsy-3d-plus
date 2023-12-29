@@ -633,26 +633,16 @@
 							</span>
 
 							<span style="float: right;">
-								<form style="display: inline-block;">
-									<input type="radio" name="render-mode" id="render-2d">
-									<label class="left" for="render-2d" title="render room in 2D" onclick="setRoomRenderMode('2D')">
-										<span>2D</span>
-									</label>
-									<input type="radio" name="render-mode" id="render-3d">
-									<label class="right" for="render-3d" title="render room in 3D" onclick="setRoomRenderMode('3D')">
-										<span>3D</span>
-									</label>
-								</form>
-
-								<button title="add exits and endings" class="color0" onclick="showPanel('exitsPanel', 'roomPanel');">
-									<span class="localize marker_tool_name">exits & endings</span>
-									<span class="bitsy_icon">open_tool</span>
-								</button>
-
 								<input type="checkbox" id="roomVisibilityControlsCheck" onclick="document.getElementById('roomVisibilityControls').style.display = event.target.checked ? 'flex' : 'none';" />
 								<label title="show visibility controls" for="roomVisibilityControlsCheck">
 									<span class="bitsy_icon">visibility</span>
 									<span>visibility</span> <!-- TODO : localize -->
+								</label>
+
+								<input type="checkbox" id="roomSettingsCheck" onclick="document.getElementById('roomSettingsContainer').style.display = event.target.checked ? 'flex' : 'none';" />
+								<label title="show room settings" for="roomSettingsCheck">
+									<span class="bitsy_icon">settings</span>
+									<span>settings</span>
 								</label>
 							</span>
 						</div>
@@ -678,6 +668,42 @@
 									<span id="roomMarkersIcon" class="bitsy_icon icon_space_right">visibility</span>
 									<span class="localize marker_tool_name">exits & endings</span>
 								</label>
+							</div>
+						</div>
+
+						<div id="roomSettingsContainer" class="buttonGroup" style="display: none; flex-grow: 1;">
+							<div style="margin-top: 5px;" id="roomSettings">
+								<span>settings:</span>
+
+								&nbsp;&nbsp;
+
+								<form style="display: inline-block;">
+									<input type="radio" name="render-mode" id="render-2d">
+									<label class="left" for="render-2d" title="render room in 2d" onclick="setRoomRenderMode('2D')">
+										<span>2D</span>
+									</label>
+									<input type="radio" name="render-mode" id="render-3d">
+									<label class="right" for="render-3d" title="render room in 3d" onclick="setRoomRenderMode('3D')">
+										<span>3D</span>
+									</label>
+								</form>
+
+								&nbsp;&nbsp;
+
+								<form style="display: inline-block;">
+									<input type="radio" name="fog-mode" id="default-fog" checked>
+									<label class="left" for="default-fog" title="use default fog settings" onclick="setCustomFog(false)">
+										<span>default fog</span>
+									</label>
+									<input type="radio" name="fog-mode" id="custom-fog">
+									<label class="right" for="custom-fog" title="customize room fog" onclick="setCustomFog(true)">
+										<span>custom fog</span>
+									</label>
+									<span id="custom-fog-inputs" style="margin-left: 4px; display: none;">
+										<input size="6" id="room-fog-start" placeholder="start" onchange="updateRoomFog()">
+										<input size="6" id="room-fog-end" placeholder="end" onchange="updateRoomFog()">
+									</span>
+								</form>
 							</div>
 						</div>
 					</div>
