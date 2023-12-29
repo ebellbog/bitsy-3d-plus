@@ -1121,13 +1121,13 @@ function parseWorld(file) {
 			//skip blank lines & comments
             i++;
         }
-        else if (getType(curLine) == "PAL") {
+		else if (getType(curLine) == "PAL") {
 			i = parsePalette(lines, i);
 		}
-       else if (getType(curLine) === "ROOM" || getType(curLine) === "SET") { //SET for back compat
+		else if (getType(curLine) === "ROOM" || getType(curLine) === "SET") { //SET for back compat
 			i = parseRoom(lines, i, compatibilityFlags);
 		}
-       else if (getType(curLine) === "TIL") {
+		else if (getType(curLine) === "TIL") {
 			i = parseTile(lines, i);
 		}
 		else if (getType(curLine) === "SPR") {
@@ -1670,10 +1670,10 @@ function parseRoom(lines, i, compatibilityFlags) {
 			room[id].renderMode = getId(lines[i]);
 		}
 		else if (getType(lines[i]) === "FOG_START") {
-			room[id].fogStart = parseInt(getId(lines[i])) || null;
+			room[id].fogStart = parseFloat(getId(lines[i])) || null;
 		}
 		else if (getType(lines[i]) === "FOG_END") {
-			room[id].fogEnd = parseInt(getId(lines[i])) || null;
+			room[id].fogEnd = parseFloat(getId(lines[i])) || null;
 		}
 		else if (getType(lines[i]) === "NAME") {
 			var name = lines[i].split(/\s(.+)/)[1];
