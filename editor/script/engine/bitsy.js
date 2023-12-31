@@ -39,6 +39,8 @@ var TextDirection = {
 var textDirection = TextDirection.LeftToRight;
 
 var baseAudioUrl = null;
+var doMuteAudio = false;
+var doSkipTitle = false;
 
 var names = {
 	room : new Map(),
@@ -258,7 +260,7 @@ function onready(startWithTitle) {
 
 	update_interval = setInterval(update,16);
 
-	if(startWithTitle) { // used by editor 
+	if(startWithTitle && !doSkipTitle) { // used by editor
 		startNarrating(getTitle(), null, {bgColor: getTitleSettings()});
 	}
 }
@@ -1168,7 +1170,14 @@ function parseWorld(file) {
 		}
 		else if (getType(curLine) === "AUDIO_URL") {
 			i = parseAudioUrl(lines, i);
-		} else {
+		}
+		else if (getType(curLine) === "MUTE_AUDIO") {
+			i = parseMuteAudio(lines, i);
+		}
+		else if (getType(curLine) === "SKIP_TITLE") {
+			i = parseSkipTitle(lines, i);
+		}
+		else {
 			i++;
 		}
 	}
@@ -1272,6 +1281,17 @@ function serializeWorld(skipFonts) {
 	/* BASE AUDIO URL */
 	if (baseAudioUrl?.length) {
 		worldStr += `AUDIO_URL ${baseAudioUrl}\n\n`;
+	}
+	/* MUTE AUDIO IN EDITOR */
+	if (doMuteAudio === true) {
+		worldStr += 'MUTE_AUDIO true\n';
+	}
+	/* SKIP TITLE IN EDITOR */
+	if (doSkipTitle === true) {
+		worldStr += 'SKIP_TITLE true\n';
+	}
+	if (doMuteAudio || doSkipTitle) {
+		worldStr += '\n';
 	}
 	/* PALETTE */
 	for (id in palette) {
@@ -2108,8 +2128,23 @@ function parseAudioUrl(lines, i) {
 	if (isPlayerEmbeddedInEditor) {
 		document.getElementById('baseAudioUrl').value = baseAudioUrl;
 	}
-	i++;
-	return i;
+	return i + 1;
+}
+
+function parseMuteAudio(lines, i) {
+	if (isPlayerEmbeddedInEditor) {
+		doMuteAudio = (getId(lines[i]) === 'true');
+		document.getElementById('muteAudioInEditor').checked = doMuteAudio;
+	}
+	return i + 1;
+}
+
+function parseSkipTitle(lines, i) {
+	if (isPlayerEmbeddedInEditor) {
+		doSkipTitle = (getId(lines[i]) === 'true');
+		document.getElementById('skipTitleInEditor').checked = doSkipTitle;
+	}
+	return i + 1;
 }
 
 function drawTile(img,x,y,context) {

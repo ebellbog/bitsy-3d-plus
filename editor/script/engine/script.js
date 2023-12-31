@@ -594,6 +594,8 @@ function getMusicSrc(parameters) {
 }
 
 function musicFunc(environment,parameters,onReturn) {
+	if (isPlayerEmbeddedInEditor && doMuteAudio) return onReturn(null);
+
 	const player1 = getMusicPlayer('music-player-1', true);
 	const player2 = getMusicPlayer('music-player-2', true);
 
@@ -641,6 +643,8 @@ function musicFunc(environment,parameters,onReturn) {
 }
 
 function sfxFunc(environment,parameters,onReturn) {
+	if (isPlayerEmbeddedInEditor && doMuteAudio) return onReturn(null);
+
 	const sfxPlayer = getMusicPlayer('sfx-player');
 	const src = getMusicSrc(parameters);
 

@@ -353,6 +353,9 @@
 						<button title="take a screenshot" class="color0" onclick="editor3d.takeScreenshot = true">
 							<span class="bitsy_icon">record_snapshot</span>
 						</button>
+						<button title="refresh 3D scene" class="color0" onclick="editor3d.fixFog();">
+							<span class="bitsy_icon">rotate_right</span>
+						</button>
 						<span id="room3dControlsTip"><b>shift</b>: grid, <b>alt</b>: select, <b>[controlKeyDisplayName]</b>: remove</span>
 					</div>
 				</div>
@@ -1528,6 +1531,18 @@
 							<input size="20" id="baseAudioUrl" onchange="on_change_audio_url(event);">
 							<br/>
 							<span style="font-size: 80%;">(optional) Web host for audio playback in editor</span>
+						</div>
+						<div class="controlBox">
+							<input type="checkbox" id="muteAudioInEditor" onchange="on_toggle_audio_mute(event);">
+							<label for="muteAudioInEditor" title="Mute audio while playing game in editor">
+								<span class="bitsy_icon">visibility_off</span>
+								Mute audio
+							</label>
+							<input type="checkbox" id="skipTitleInEditor" onchange="on_toggle_title_skip(event);">
+							<label for="skipTitleInEditor" title="Skip title when playing game in editor">
+								<span class="bitsy_icon">rotate_right</span>
+								Skip title
+							</label>
 						</div>
 						<div>
 							<span class="localize game_settings">game settings</span>

@@ -3721,6 +3721,16 @@ function on_change_audio_url(e) {
 	refreshGameData();
 }
 
+function on_toggle_audio_mute(e) {
+	doMuteAudio = e.target.checked;
+	refreshGameData();
+}
+
+function on_toggle_title_skip(e) {
+	doSkipTitle = e.target.checked;
+	refreshGameData();
+}
+
 /* UTILS (todo : move into utils.js after merge) */
 function CreateDefaultName(defaultNamePrefix, objectStore, ignoreNumberIfFirstName) {
 	if (ignoreNumberIfFirstName === undefined || ignoreNumberIfFirstName === null) {

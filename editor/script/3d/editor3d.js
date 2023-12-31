@@ -737,6 +737,14 @@ editor3d.updateTextureOneTimeListener = function(e) {
     document.removeEventListener('mouseup', editor3d.updateTextureOneTimeListener);
 };
 
+editor3d.fixFog = function(e) {
+    const tileIds = sortedTileIdList();
+    tileIds.forEach((id) => {
+        const curTile = tile[id];
+        b3d.clearCachesTexture(curTile.drw);
+    });
+}
+
 editor3d.onReload3dData = function () {
     b3d.reInit3dData();
 

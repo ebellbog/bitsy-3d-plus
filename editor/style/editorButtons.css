@@ -13,6 +13,7 @@ button {
 	vertical-align: middle;
 	/*line-height: 100%;*/
 	border-radius: 2px;
+	cursor: pointer;
 }
 button:focus { outline:none; }
 button .material-icons {
@@ -47,6 +48,7 @@ input[type=checkbox] + label {
 	line-height: 100%;
 	border:none;
 	border-radius: 2px;
+	cursor: pointer;
 }
 input[type=checkbox] + label .material-icons {
 	font-size: 110%;
