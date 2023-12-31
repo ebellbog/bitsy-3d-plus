@@ -38,6 +38,8 @@ var TextDirection = {
 };
 var textDirection = TextDirection.LeftToRight;
 
+var baseAudioUrl = null;
+
 var names = {
 	room : new Map(),
 	tile : new Map(), // Note: Not currently enabled in the UI
@@ -298,6 +300,9 @@ function stopGame() {
 
 	document.removeEventListener('keydown', input.onkeydown);
 	document.removeEventListener('keyup', input.onkeyup);
+
+	document.getElementById('music-player-1')?.pause();
+	document.getElementById('music-player-2')?.pause();
 
 	if (isPlayerEmbeddedInEditor) {
 		canvas.removeEventListener('touchstart', input.ontouchstart);
@@ -1161,7 +1166,9 @@ function parseWorld(file) {
 		else if (getType(curLine) === "!") {
 			i = parseFlag(lines, i);
 		}
-        else {
+		else if (getType(curLine) === "AUDIO_URL") {
+			i = parseAudioUrl(lines, i);
+		} else {
 			i++;
 		}
 	}
@@ -1261,6 +1268,10 @@ function serializeWorld(skipFonts) {
 	if (textDirection != TextDirection.LeftToRight) {
 		worldStr += "TEXT_DIRECTION " + textDirection + "\n";
 		worldStr += "\n"
+	}
+	/* BASE AUDIO URL */
+	if (baseAudioUrl?.length) {
+		worldStr += `AUDIO_URL ${baseAudioUrl}\n\n`;
 	}
 	/* PALETTE */
 	for (id in palette) {
@@ -2088,6 +2099,15 @@ function parseFlag(lines, i) {
 	var id = getId(lines[i]);
 	var valStr = lines[i].split(" ")[2];
 	flags[id] = parseInt( valStr );
+	i++;
+	return i;
+}
+
+function parseAudioUrl(lines, i) {
+	baseAudioUrl = getId(lines[i]);
+	if (isPlayerEmbeddedInEditor) {
+		document.getElementById('baseAudioUrl').value = baseAudioUrl;
+	}
 	i++;
 	return i;
 }

@@ -1194,8 +1194,6 @@ function DialogTool() {
 		textEffectsDiv.style.marginTop = "10px"; // hacky
 		div.appendChild(textEffectsDiv);
 
-		/*** Elana's workspace ***/
-
 		// add dialog settings
 		const dlgSettingsDiv = document.createElement("div");
 		dlgSettingsDiv.classList.add("controlBox");
@@ -1250,8 +1248,6 @@ function DialogTool() {
 			const displayStyle = doDisplay ? "block" : "none";
 			[textEffectsDiv, dlgSettingsDiv].forEach((div) => div.style.display = displayStyle);
 		}
-
-		/*** End of Elana's workspace ***/
 
 		var toggleTextEffectsButton = document.createElement("button");
 		toggleTextEffectsButton.appendChild(iconUtils.CreateIcon("settings"));
@@ -1372,6 +1368,38 @@ function DialogTool() {
 
 			OnDialogTextChange();
 		}
+
+		// Add music
+		var textEffectsAddMusicDiv = document.createElement("span");
+		textEffectsDiv.appendChild(textEffectsAddMusicDiv);
+
+		var textEffectsAddMusicButton = document.createElement("button");
+		textEffectsAddMusicButton.innerHTML = iconUtils.CreateIcon("add").outerHTML + " "
+			+ localization.GetStringOrFallback("dialog_effect_music", "insert music");
+		textEffectsAddMusicButton.title = "start a music file, or leave empty to stop music";
+		textEffectsAddMusicButton.onclick = function() {
+			textArea.value += '{music "file name"}';
+			OnDialogTextChange();
+		}
+
+		textEffectsAddMusicDiv.appendChild(textEffectsAddMusicButton);
+		textEffectsDiv.innerHtml += '&nbsp';
+
+		// Add SFX
+
+		var textEffectsAddSfxDiv = document.createElement("span");
+		textEffectsDiv.appendChild(textEffectsAddSfxDiv);
+
+		var textEffectsAddSfxButton = document.createElement("button");
+		textEffectsAddSfxButton.innerHTML = iconUtils.CreateIcon("add").outerHTML + " "
+			+ localization.GetStringOrFallback("dialog_effect_sfx", "insert sound effects");
+			textEffectsAddSfxButton.title = "play a sound effect";
+			textEffectsAddSfxButton.onclick = function() {
+			textArea.value += '{sfx "file name"}';
+			OnDialogTextChange();
+		}
+
+		textEffectsAddSfxDiv.appendChild(textEffectsAddSfxButton);
 
 		this.GetElement = function() {
 			return div;

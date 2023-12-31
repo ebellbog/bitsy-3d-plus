@@ -1319,6 +1319,13 @@
 								<!-- todo : localize -->
 								<!-- <span id="dialogToggleCodeShowText"></span> --> <!-- TODO ?? --> 
 							</label>
+
+							<span style="float: right;">
+								<label>
+									<span>quick select:</span>
+									<select id="dlg-quick-select" onchange="selectDialog(event);"></select>
+								</label>
+							</span>
 						</div>
 					</div>
 
@@ -1515,6 +1522,12 @@
 							<select id="languageSelect" onchange="on_change_language(event);"></select>
 							<br/>
 							<span class="localize language_translator_credit" style="font-size: 80%;">English text by Adam Le Doux</span>
+						</div>
+						<div class="controlBox">
+							base audio URL:
+							<input size="20" id="baseAudioUrl" onchange="on_change_audio_url(event);">
+							<br/>
+							<span style="font-size: 80%;">(optional) Web host for audio playback in editor</span>
 						</div>
 						<div>
 							<span class="localize game_settings">game settings</span>

@@ -483,6 +483,8 @@ function openDialogTool(dialogId, insertNextToId, showIfHidden) { // todo : rena
 		console.log("insert next to : " + insertNextToId);
 		showPanel("dialogPanel", insertNextToId);
 	}
+
+	updateDlgSelect(dialogId);
 }
 
 // TODO : probably this should be incorporated into the dialog editor main code somehow
@@ -552,6 +554,14 @@ function prevDialog() {
 	openDialogTool(id);
 
 	alwaysShowDrawingDialog = document.getElementById("dialogAlwaysShowDrawingCheck").checked = false;
+}
+
+function selectDialog(e) {
+	openDialogTool(e.target.value);
+	alwaysShowDrawingDialog = document.getElementById("dialogAlwaysShowDrawingCheck").checked = false;
+}
+function updateDlgSelect(id) {
+	document.getElementById('dlg-quick-select').value = id;
 }
 
 function addNewDialog() {
@@ -748,6 +758,23 @@ function refreshGameData() {
 	// localStorage.setItem("bitsy_3d_game_data", gameData); //auto-save
 
     localStorage.setItem("bitsy_color_3d_game_data", gameDataNoFonts);
+
+	const dlgSelect = document.getElementById('dlg-quick-select');
+	dlgSelect.innerHtml = '';
+
+	Object.entries(dialog)
+		.sort((a, b) => (a[1].name || 'title') > (b[1].name || 'title') ? 1 : -1)
+		.forEach(([id, dlg]) => {
+			if (['DATA3D', 'DRAWINGSIZE'].includes(id)) return;
+
+			const newOption = document.createElement('option');
+			newOption.value = id;
+			newOption.text = (id === 'title') ? 'title' : dlg.name;
+
+			dlgSelect.append(newOption);
+		});
+	
+	dlgSelect.value = getCurDialogId() || 'title';
 }
 
 /* TIMER */
@@ -3687,6 +3714,11 @@ function updateTextDirectionSelectUI() {
 		var option = textDirSelect.options[i];
 		option.selected = (option.value === textDirection);
 	}
+}
+
+function on_change_audio_url(e) {
+	baseAudioUrl = e.target.value;
+	refreshGameData();
 }
 
 /* UTILS (todo : move into utils.js after merge) */

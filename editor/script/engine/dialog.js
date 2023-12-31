@@ -431,6 +431,14 @@ var DialogBuffer = function() {
 			onDialogEndCallbacks.push(callback);
 		}
 	}
+	this.OnceOnEnd = function(callback) {
+		let called = false;
+		onDialogEndCallbacks.push(() => {
+			if (called) return;
+			callback();
+			called = true;
+		});
+	}
 
 	this.CanContinue = function() { return isDialogReadyToContinue; };
 

@@ -565,6 +565,93 @@ function exitFunc(environment,parameters,onReturn) {
 	}
 }
 
+function getMusicPlayer(playerId, doLoop) {
+	let player = document.getElementById(playerId);
+	if (!player) {
+		player = document.createElement('audio');
+		player.id = playerId;
+		player.loop = doLoop;
+		player.style.display = 'none';
+		document.querySelector('body').append(player);
+
+		player.addEventListener('pause', (e) => {
+			console.log('MUSIC PAUSED', e);
+		});
+	}
+	return player;
+}
+function getMusicSrc(parameters) {
+	// support optional local path for exported games
+	const fileName = parameters[0];
+	if (!fileName || fileName === 'stop') return false;
+	if (!isPlayerEmbeddedInEditor) {
+		return `audio/${fileName}`; // depends on game file being stored next to a local audio directory
+	} else if (!baseAudioUrl || ['http', 'www', '//'].some((str) => fileName.includes(str))) {
+		return fileName;
+	} else {
+		return `${baseAudioUrl}${baseAudioUrl.endsWith('/') ? '' : '/'}${fileName}`;
+	}
+}
+
+function musicFunc(environment,parameters,onReturn) {
+	const player1 = getMusicPlayer('music-player-1', true);
+	const player2 = getMusicPlayer('music-player-2', true);
+
+	const src = getMusicSrc(parameters);
+	if (!src) {
+		console.log('STOPPING MUSIC');
+		player1.pause();
+		player2.pause();
+		return;
+	}
+
+	const crossfadeAudio = () => {
+		if (player1.volume === 0) {
+			player1.pause();
+			player1.id = 'music-player-2';
+			player2.id = 'music-player-1';
+			return;
+		}
+		player1.volume = Math.max(player1.volume - .03, 0);
+		player2.volume = Math.min(player2.volume + .03, 1);
+		setTimeout(crossfadeAudio, 20);
+	}
+	const playMusic = () => {
+		player2.pause();
+
+		if (player1.paused || !player1.currentTime) {
+			player1.src = src;
+			player1.currentTime = 0;
+			player1.volume = 1;
+			player1.play();
+			console.log('PLAYING MUSIC:', src);
+		} else {
+			player2.src = src;
+			player2.currentTime = 0;
+			player2.volume = 0;
+			player2.play();
+
+			console.log('CROSSFADING INTO:', src);
+			crossfadeAudio();
+		}
+	}
+	dialogBuffer.OnceOnEnd(playMusic);
+
+	onReturn(null);
+}
+
+function sfxFunc(environment,parameters,onReturn) {
+	const sfxPlayer = getMusicPlayer('sfx-player');
+	const src = getMusicSrc(parameters);
+
+	sfxPlayer.pause();
+	sfxPlayer.currentTime = 0;
+	sfxPlayer.src = src;
+	sfxPlayer.play();
+
+	onReturn(null);
+}
+
 /* BUILT-IN OPERATORS */
 function setExp(environment,left,right,onReturn) {
 	// console.log("SET " + left.name);
@@ -676,6 +763,8 @@ var Environment = function() {
 	functionMap.set("exit", exitFunc);
 	functionMap.set("pg", pagebreakFunc);
 	functionMap.set("property", propertyFunc);
+	functionMap.set("music", musicFunc);
+	functionMap.set("sfx", sfxFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
