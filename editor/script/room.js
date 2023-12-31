@@ -342,6 +342,7 @@ function setCustomFog(useCustom) {
 		fogControls.style.display = 'none';
 		roomData.fogStart = null;
 		roomData.fogEnd = null;
+		b3d.applySettings();
 		refreshGameData();
 	}
 }
