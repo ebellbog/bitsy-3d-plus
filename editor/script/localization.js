@@ -23,26 +23,26 @@ var localizationStrings = null;
 
 var initialize = function() { // why does this happen multiple times?
 	var csv = Resources["localization.tsv"];
-	// console.log(csv);
+	// console.debug(csv);
 
 	localizationStrings = {};
 
 	csv = csv.replace(/\r/g,""); // weird sanitization bug required
-	// console.log(csv);
+	// console.debug(csv);
 	var lines = csv.split("\n");
-	// console.log(lines);
+	// console.debug(lines);
 
 	var columnHeaders = lines[0].split("\t");
-	// console.log(columnHeaders);
+	// console.debug(columnHeaders);
 	for(var i = 1; i < columnHeaders.length; i++) {
-		// console.log(columnHeaders[i]);
+		// console.debug(columnHeaders[i]);
 		localizationStrings[columnHeaders[i]] = {};
 	}
 
 	for(var i = 1; i < lines.length; i++) {
-		// console.log(lines[i]);
+		// console.debug(lines[i]);
 		var lineSplit = lines[i].split("\t");
-		// console.log(lineSplit);
+		// console.debug(lineSplit);
 		var lineId = lineSplit[0];
 		for(var j = 1; j < lineSplit.length; j++) {
 			var languageId = columnHeaders[j];
@@ -50,7 +50,7 @@ var initialize = function() { // why does this happen multiple times?
 		}
 	}
 
-	// console.log(localizationStrings);
+	// console.debug(localizationStrings);
 	// localize( getEditorLanguage() );
 };
 
@@ -72,7 +72,7 @@ function localize(language) {
 	if(localizationStrings == null)
 		return;
 
-	console.log("LANG " + language);
+	console.debug("LANG " + language);
 
 	var elements = document.getElementsByClassName(localizationClass);
 	for(var i = 0; i < elements.length; i++) {
@@ -178,7 +178,7 @@ function exportEnglishStringsDictionary(englishStrings) {
 		englishStringTsv += stringId + "\t" + englishStrings[stringId] + "\n";
 	}
 
-	// console.log(englishStringTsv);
+	// console.debug(englishStringTsv);
 	ExporterUtils.DownloadFile("englishStrings.tsv",englishStringTsv);
 }
 

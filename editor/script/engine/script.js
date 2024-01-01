@@ -16,7 +16,7 @@ var Interpreter = function() {
 
 	// TODO -- maybe this should return a string instead othe actual script??
 	this.Compile = function(scriptName, scriptStr) {
-		// console.log("COMPILE");
+		// console.debug("COMPILE");
 		var script = parser.Parse(scriptStr, scriptName);
 		env.SetScript(scriptName, script);
 	}
@@ -32,7 +32,7 @@ var Interpreter = function() {
 		script.Eval( localEnv, function(result) { OnScriptReturn(localEnv, exitHandler); } );
 	}
 	this.Interpret = function(scriptStr, exitHandler, objectContext) { // Compiles and runs code immediately
-		// console.log("INTERPRET");
+		// console.debug("INTERPRET");
 		var localEnv = new LocalEnvironment(env);
 
 		if (objectContext) {
@@ -107,7 +107,7 @@ var Interpreter = function() {
 	function DebugVisualizeScriptTree(scriptTree) {
 		var printVisitor = {
 			Visit : function(node,depth) {
-				console.log("-".repeat(depth) + "- " + node.ToString());
+				console.debug("-".repeat(depth) + "- " + node.ToString());
 			},
 		};
 
@@ -365,7 +365,7 @@ var Utils = function() {
 
 /* BUILT-IN FUNCTIONS */ // TODO: better way to encapsulate these?
 function deprecatedFunc(environment,parameters,onReturn) {
-	console.log("BITSY SCRIPT WARNING: Tried to use deprecated function");
+	console.debug("BITSY SCRIPT WARNING: Tried to use deprecated function");
 	onReturn(null);
 }
 
@@ -381,7 +381,7 @@ function printFunc(environment, parameters, onReturn) {
 }
 
 function linebreakFunc(environment, parameters, onReturn) {
-	// console.log("LINEBREAK FUNC");
+	// console.debug("LINEBREAK FUNC");
 	environment.GetDialogBuffer().AddLinebreak();
 	environment.GetDialogBuffer().AddScriptReturn(function() { onReturn(null); });
 }
@@ -533,7 +533,7 @@ function propertyFunc(environment, parameters, onReturn) {
 		}
 	}
 
-	console.log("PROPERTY! " + propertyName + " " + outValue);
+	console.debug("PROPERTY! " + propertyName + " " + outValue);
 
 	onReturn(outValue);
 }
@@ -595,7 +595,7 @@ function getMusicPlayer(playerId, doLoop) {
 		document.querySelector('body').append(player);
 
 		player.addEventListener('pause', (e) => {
-			console.log('MUSIC PAUSED', e);
+			console.debug('MUSIC PAUSED', e);
 		});
 	}
 	return player;
@@ -621,7 +621,7 @@ function musicFunc(environment,parameters,onReturn) {
 
 	const src = getMusicSrc(parameters);
 	if (!src) {
-		console.log('STOPPING MUSIC');
+		console.debug('STOPPING MUSIC');
 		player1.pause();
 		player2.pause();
 		return;
@@ -646,14 +646,14 @@ function musicFunc(environment,parameters,onReturn) {
 			player1.currentTime = 0;
 			player1.volume = 1;
 			player1.play();
-			console.log('PLAYING MUSIC:', src);
+			console.debug('PLAYING MUSIC:', src);
 		} else {
 			player2.src = src;
 			player2.currentTime = 0;
 			player2.volume = 0;
 			player2.play();
 
-			console.log('CROSSFADING INTO:', src);
+			console.debug('CROSSFADING INTO:', src);
 			crossfadeAudio();
 		}
 	}
@@ -678,7 +678,7 @@ function sfxFunc(environment,parameters,onReturn) {
 
 /* BUILT-IN OPERATORS */
 function setExp(environment,left,right,onReturn) {
-	// console.log("SET " + left.name);
+	// console.debug("SET " + left.name);
 
 	if(left.type != "variable") {
 		// not a variable! return null and hope for the best D:
@@ -688,16 +688,16 @@ function setExp(environment,left,right,onReturn) {
 
 	right.Eval(environment,function(rVal) {
 		environment.SetVariable( left.name, rVal );
-		// console.log("VAL " + environment.GetVariable( left.name ) );
+		// console.debug("VAL " + environment.GetVariable( left.name ) );
 		left.Eval(environment,function(lVal) {
 			onReturn( lVal );
 		});
 	});
 }
 function equalExp(environment,left,right,onReturn) {
-	// console.log("EVAL EQUAL");
-	// console.log(left);
-	// console.log(right);
+	// console.debug("EVAL EQUAL");
+	// console.debug(left);
+	// console.debug(right);
 	right.Eval(environment,function(rVal){
 		left.Eval(environment,function(lVal){
 			onReturn( lVal === rVal );
@@ -804,7 +804,7 @@ var Environment = function() {
 	this.HasVariable = function(name) { return variableMap.has(name); };
 	this.GetVariable = function(name) { return variableMap.get(name); };
 	this.SetVariable = function(name,value,useHandler) {
-		// console.log("SET VARIABLE " + name + " = " + value);
+		// console.debug("SET VARIABLE " + name + " = " + value);
 		if(useHandler === undefined) useHandler = true;
 		variableMap.set(name, value);
 		if(onVariableChangeHandler != null && useHandler){
@@ -930,7 +930,7 @@ function leadingWhitespace(depth) {
 	for(var i = 0; i < depth; i++) {
 		str += "  "; // two spaces per indent
 	}
-	// console.log("WHITESPACE " + depth + " ::" + str + "::");
+	// console.debug("WHITESPACE " + depth + " ::" + str + "::");
 	return str;
 }
 
@@ -968,7 +968,7 @@ var TreeRelationship = function() {
 
 	this.rootId = null; // for debugging
 	this.GetId = function() {
-		// console.log(this);
+		// console.debug(this);
 		if (this.rootId != null) {
 			return this.rootId;
 		}
@@ -990,7 +990,7 @@ var DialogBlockNode = function(doIndentFirstLine) {
 	this.type = "dialog_block";
 
 	this.Eval = function(environment, onReturn) {
-		// console.log("EVAL BLOCK " + this.children.length);
+		// console.debug("EVAL BLOCK " + this.children.length);
 
 		if (isPlayerEmbeddedInEditor && events != undefined && events != null) {
 			events.Raise("script_node_enter", { id: this.GetId() });
@@ -1001,9 +1001,9 @@ var DialogBlockNode = function(doIndentFirstLine) {
 
 		function evalChildren(children, done) {
 			if (i < children.length) {
-				// console.log(">> CHILD " + i);
+				// console.debug(">> CHILD " + i);
 				children[i].Eval(environment, function(val) {
-					// console.log("<< CHILD " + i);
+					// console.debug("<< CHILD " + i);
 					lastVal = val;
 					i++;
 					evalChildren(children,done);
@@ -1080,7 +1080,7 @@ var CodeBlockNode = function() {
 	this.type = "code_block";
 
 	this.Eval = function(environment, onReturn) {
-		// console.log("EVAL BLOCK " + this.children.length);
+		// console.debug("EVAL BLOCK " + this.children.length);
 
 		if (isPlayerEmbeddedInEditor && events != undefined && events != null) {
 			events.Raise("script_node_enter", { id: this.GetId() });
@@ -1091,9 +1091,9 @@ var CodeBlockNode = function() {
 
 		function evalChildren(children, done) {
 			if (i < children.length) {
-				// console.log(">> CHILD " + i);
+				// console.debug(">> CHILD " + i);
 				children[i].Eval(environment, function(val) {
-					// console.log("<< CHILD " + i);
+					// console.debug("<< CHILD " + i);
 					lastVal = val;
 					i++;
 					evalChildren(children,done);
@@ -1119,9 +1119,9 @@ var CodeBlockNode = function() {
 			depth = 0;
 		}
 
-		// console.log("SERIALIZE BLOCK!!!");
-		// console.log(depth);
-		// console.log(doIndentFirstLine);
+		// console.debug("SERIALIZE BLOCK!!!");
+		// console.debug(depth);
+		// console.debug(doIndentFirstLine);
 
 		var str = "{"; // todo: increase scope of Sym?
 
@@ -1320,7 +1320,7 @@ var VarNode = function(name) {
 	this.name = name;
 
 	this.Eval = function(environment,onReturn) {
-		// console.log("EVAL " + this.name + " " + environment.HasVariable(this.name) + " " + environment.GetVariable(this.name));
+		// console.debug("EVAL " + this.name + " " + environment.HasVariable(this.name) + " " + environment.GetVariable(this.name));
 		if( environment.HasVariable(this.name) )
 			onReturn( environment.GetVariable( this.name ) );
 		else
@@ -1345,11 +1345,11 @@ var ExpNode = function(operator, left, right) {
 	this.right = right;
 
 	this.Eval = function(environment,onReturn) {
-		// console.log("EVAL " + this.operator);
+		// console.debug("EVAL " + this.operator);
 		var self = this; // hack to deal with scope
 		environment.EvalOperator( this.operator, this.left, this.right, 
 			function(val){
-				// console.log("EVAL EXP " + self.operator + " " + val);
+				// console.debug("EVAL EXP " + self.operator + " " + val);
 				onReturn(val);
 			} );
 		// NOTE : sadly this pushes a lot of complexity down onto the actual operator methods
@@ -1432,7 +1432,7 @@ var SequenceNode = function(options) {
 
 	var index = 0;
 	this.Eval = function(environment, onReturn) {
-		// console.log("SEQUENCE " + index);
+		// console.debug("SEQUENCE " + index);
 		this.children[index].Eval(environment, onReturn);
 
 		var next = index + 1;
@@ -1450,7 +1450,7 @@ var CycleNode = function(options) {
 
 	var index = 0;
 	this.Eval = function(environment, onReturn) {
-		// console.log("CYCLE " + index);
+		// console.debug("CYCLE " + index);
 		this.children[index].Eval(environment, onReturn);
 
 		var next = index + 1;
@@ -1503,7 +1503,7 @@ var IfNode = function(conditions, results, isSingleLine) {
 
 	var self = this;
 	this.Eval = function(environment, onReturn) {
-		// console.log("EVAL IF");
+		// console.debug("EVAL IF");
 		var i = 0;
 		function TestCondition() {
 			self.children[i].Eval(environment, function(result) {
@@ -1655,8 +1655,8 @@ var Parser = function(env) {
 		rootNode.rootId = rootId;
 		var state = new ParserState(rootNode, scriptStr);
 
-		console.log(scriptStr);
-		console.log(state.Source());
+		console.debug(scriptStr);
+		console.debug(state.Source());
 
 		if (state.MatchAhead(Sym.DialogOpen)) {
 			// multi-line dialog block
@@ -1686,10 +1686,10 @@ var Parser = function(env) {
 		this.Char = function() { return sourceStr[i]; };
 		this.Step = function(n) { if(n===undefined) n=1; i += n; };
 		this.MatchAhead = function(str) {
-			// console.log(str);
+			// console.debug(str);
 			str = "" + str; // hack to turn single chars into strings
-			// console.log(str);
-			// console.log(str.length);
+			// console.debug(str);
+			// console.debug(str.length);
 			for (var j = 0; j < str.length; j++) {
 				if (i + j >= sourceStr.length) {
 					return false;
@@ -1703,12 +1703,12 @@ var Parser = function(env) {
 		this.Peak = function(end) {
 			var str = "";
 			var j = i;
-			// console.log(j);
+			// console.debug(j);
 			while (j < sourceStr.length && end.indexOf(sourceStr[j]) == -1) {
 				str += sourceStr[j];
 				j++;
 			}
-			// console.log("PEAK ::" + str + "::");
+			// console.debug("PEAK ::" + str + "::");
 			return str;
 		}
 		this.ConsumeBlock = function(open, close, includeSymbols) {
@@ -1746,7 +1746,7 @@ var Parser = function(env) {
 			}
 		}
 
-		this.Print = function() { console.log(sourceStr); };
+		this.Print = function() { console.debug(sourceStr); };
 		this.Source = function() { return sourceStr; };
 	};
 
@@ -2002,7 +2002,7 @@ var Parser = function(env) {
 	}
 
 	function IsSequence(str) {
-		// console.log("IsSequence? " + str);
+		// console.debug("IsSequence? " + str);
 		return str === "sequence" || str === "cycle" || str === "shuffle";
 	}
 
@@ -2126,16 +2126,16 @@ var Parser = function(env) {
 	}
 
 	function ParseFunction(state, funcName) {
-		console.log("~~~ PARSE FUNCTION " + funcName);
+		console.debug("~~~ PARSE FUNCTION " + funcName);
 
 		var args = [];
 
 		var curSymbol = "";
 		function OnSymbolEnd() {
 			curSymbol = curSymbol.trim();
-			// console.log("PARAMTER " + curSymbol);
+			// console.debug("PARAMTER " + curSymbol);
 			args.push( StringToValue(curSymbol) );
-			// console.log(args);
+			// console.debug(args);
 			curSymbol = "";
 		}
 
@@ -2150,7 +2150,7 @@ var Parser = function(env) {
 			else if( state.MatchAhead(Sym.String) ) {
 				/* STRING LITERAL */
 				var str = state.ConsumeBlock(Sym.String, Sym.String);
-				// console.log("STRING " + str);
+				// console.debug("STRING " + str);
 				args.push( new LiteralNode(str) );
 				curSymbol = "";
 			}
@@ -2175,7 +2175,7 @@ var Parser = function(env) {
 	function IsValidVariableName(str) {
 		var reg = /^[a-zA-Z_$][a-zA-Z_$0-9]*$/;
 		var isValid = reg.test(str);
-		// console.log("VALID variable??? " + isValid);
+		// console.debug("VALID variable??? " + isValid);
 		return isValid;
 	}
 
@@ -2189,14 +2189,14 @@ var Parser = function(env) {
 		}
 		else if(valStr[0] === Sym.String) {
 			// STRING!!
-			// console.log("STRING");
+			// console.debug("STRING");
 			var str = "";
 			var i = 1;
 			while (i < valStr.length && valStr[i] != Sym.String) {
 				str += valStr[i];
 				i++;
 			}
-			// console.log(str);
+			// console.debug(str);
 			return new LiteralNode( str );
 		}
 		else if(valStr === "true") {
@@ -2209,12 +2209,12 @@ var Parser = function(env) {
 		}
 		else if( !isNaN(parseFloat(valStr)) ) {
 			// NUMBER!!
-			// console.log("NUMBER!!! " + valStr);
+			// console.debug("NUMBER!!! " + valStr);
 			return new LiteralNode( parseFloat(valStr) );
 		}
 		else if(IsValidVariableName(valStr)) {
 			// VARIABLE!!
-			// console.log("VARIABLE");
+			// console.debug("VARIABLE");
 			return new VarNode(valStr); // TODO : check for valid potential variables
 		}
 		else {
@@ -2355,9 +2355,9 @@ var Parser = function(env) {
 
 	function ParseExpression(state) {
 		var line = state.Source(); // state.Peak( [Sym.Linebreak] ); // TODO : remove the linebreak thing
-		// console.log("EXPRESSION " + line);
+		// console.debug("EXPRESSION " + line);
 		var exp = CreateExpression(line);
-		// console.log(exp);
+		// console.debug(exp);
 		state.curNode.AddChild(exp);
 		state.Step(line.length);
 		return state;

@@ -37,7 +37,7 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 	}
 
 	function drawColorPickerWheel() {
-		// console.log("DRAW COLOR PICKER");
+		// console.debug("DRAW COLOR PICKER");
 
 		wheelCanvas.width = width;
 		wheelCanvas.height = height;
@@ -76,10 +76,10 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 		// selectContext.fillStyle = "blue";
 		// selectContext.fillRect(0,0,width,height);
 
-		// console.log(curColor.h);
+		// console.debug(curColor.h);
 		var hueRadians = curColor.h * ( Math.PI * 2 );
 		var saturationDist = curColor.s * radius;
-		// console.log(saturationDist);
+		// console.debug(saturationDist);
 		var selectCircleX = centerX + ( Math.cos( hueRadians ) * saturationDist );
 		var selectCircleY = centerY + ( Math.sin( hueRadians ) * saturationDist );
 
@@ -97,7 +97,7 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 
 
 	function updateValue(e) {
-		// console.log(e.target.value);
+		// console.debug(e.target.value);
 		curColor.v = 1 - (e.target.value / 100);
 
 		events.Raise("color_picker_change", { rgbColor: HSVtoRGB(curColor), isMouseUp: true });
@@ -109,7 +109,7 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 	}
 
 	function changeHexCode(e) {
-		// console.log(e.target.value);
+		// console.debug(e.target.value);
 		var rgbColor = hexToRgb( e.target.value );
 		if( rgbColor != null ) {
 			self.setColor( rgbColor.r, rgbColor.g, rgbColor.b );
@@ -125,14 +125,14 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 			isMouseUp = false;
 		}
 
-		// console.log(isMouseDown);
+		// console.debug(isMouseDown);
 
 		if(isMouseDown) {
-			// console.log(e);
+			// console.debug(e);
 			var bounds = selectCanvas.getBoundingClientRect();
-			// console.log(bounds);
+			// console.debug(bounds);
 
-			// console.log("-- pick color --")
+			// console.debug("-- pick color --")
 
 			var containerX = e.clientX - bounds.left;
 			var containerY = e.clientY - bounds.top;
@@ -144,17 +144,17 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 			var radiusRatio = radius / width;
 			var containerRadius = minContainerSize * radiusRatio;
 
-			// console.log("center",containerCenterX,containerCenterY);
+			// console.debug("center",containerCenterX,containerCenterY);
 
 			var xRel = containerX - containerCenterX;
 			var yRel = containerY - containerCenterY;
 
-			// console.log("rel",xRel,yRel);
+			// console.debug("rel",xRel,yRel);
 
 			var dist = Math.sqrt( Math.pow( xRel, 2 ) + Math.pow( yRel, 2 ) );
 
-			// console.log("dist",dist);
-			// console.log("canvasRadius",containerRadius);
+			// console.debug("dist",dist);
+			// console.debug("canvasRadius",containerRadius);
 
 			var canvasX = centerX;
 			var canvasY = centerY;
@@ -181,7 +181,7 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 
 				canvasX = containerX * containerSizeRatio;
 				canvasY = containerY * containerSizeRatio;
-				// console.log("ADJUSTED X Y",x, y);
+				// console.debug("ADJUSTED X Y",x, y);
 			}
 
 			if( dist < containerRadius ) {
@@ -206,13 +206,13 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 	}
 
 	function pickColorEnd(e) {
-		console.log("color picker end");
+		console.debug("color picker end");
 		pickColor(e, true);
 		isMouseDown = false;
 	}
 
 	function pickColorTouchMove(e) {
-		// console.log(e.touches[0]);
+		// console.debug(e.touches[0]);
 
 		if (isMouseDown) {
 			e.preventDefault();
@@ -221,13 +221,13 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 	}
 
 	function pickColorTouchStart(e) {
-		// console.log(e.touches[0]);
+		// console.debug(e.touches[0]);
 		e.preventDefault();
 		pickColorStart(e.touches[0]);
 	}
 
 	function pickColorTouchEnd(e) {
-		// console.log(e.touches[0]);
+		// console.debug(e.touches[0]);
 		// pickColorEnd(e.touches[0]);
 
 		if (isMouseDown) {
@@ -246,13 +246,13 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 		}
 
 		if (isSliderMouseDown) {
-			// console.log("VALUE");
+			// console.debug("VALUE");
 			var sliderBounds = sliderBg.getBoundingClientRect();
 			var thumbBounds = slider.getBoundingClientRect();
 
 			var containerX = e.clientX - sliderBounds.left;
 			var xPercent = containerX / (sliderBounds.width);
-			// console.log(xPercent);
+			// console.debug(xPercent);
 
 			curColor.v = 1.0 - xPercent;
 			if (curColor.v < 0) {
@@ -273,14 +273,14 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 	}
 
 	function pickValueStart(e) {
-		// console.log("VALUE START");
+		// console.debug("VALUE START");
 		isSliderMouseDown = true;
 		pickValue(e,false);
 	}
 
 	function pickValueEnd(e) {
 		if (isSliderMouseDown) {
-			// console.log("VALUE END");
+			// console.debug("VALUE END");
 			pickValue(e,true);
 			isSliderMouseDown = false;
 		}
@@ -317,9 +317,9 @@ function ColorPicker( wheelId, selectId, sliderId, sliderBgId, hexTextId ) {
 	var hexText;
 
 	function initColorWheel() {
-		// console.log(wheelId);
-		// console.log(document);
-		// console.log(document.getElementById(wheelId));
+		// console.debug(wheelId);
+		// console.debug(document);
+		// console.debug(document.getElementById(wheelId));
 		wheelCanvas = document.getElementById(wheelId);
 		wheelContext = wheelCanvas.getContext("2d");
 

@@ -17,7 +17,7 @@ function RoomMarkerTool(markerCanvas1, markerCanvas2) {
 	// UpdatePlacementButtons();
 
 	function SelectMarker(marker) {
-		console.log("SELECT MARKER!!! " + marker);
+		console.debug("SELECT MARKER!!! " + marker);
 
 		curMarker = marker;
 
@@ -67,7 +67,7 @@ function RoomMarkerTool(markerCanvas1, markerCanvas2) {
 		}
 		var nextRoomId = roomIds[roomIndex];
 
-		// console.log(room);
+		// console.debug(room);
 		// TODO : I really need a shared "createExit()" function
 		var newExit = {
 			x : 2,
@@ -228,7 +228,7 @@ function RoomMarkerTool(markerCanvas1, markerCanvas2) {
 	}
 
 	function RenderMarkerSelection() { // TODO - break this up???
-		console.log('render marker');
+		console.debug('render marker');
 
 		var addMarkerOptions = document.getElementById("addMarkerOptions");
 		var markersSelect = document.getElementById("markersSelect");
@@ -518,7 +518,7 @@ function RoomMarkerTool(markerCanvas1, markerCanvas2) {
 		if (transitionId == null) {
 			transitionId = "none";
 		}
-		// console.log("transitionId " + transitionId);
+		// console.debug("transitionId " + transitionId);
 
 		var transitionSelect = document.getElementById(exitIndex == 0 ? "exitTransitionEffectSelect" : "returnExitTransitionEffectSelect");
 		for (var i = 0; i < transitionSelect.options.length; i++) {
@@ -653,7 +653,7 @@ function RoomMarkerTool(markerCanvas1, markerCanvas2) {
 	}
 
 	function FindMarkerAtLocation(x,y) {
-		console.log(markerList);
+		console.debug(markerList);
 		for (var i = 0; i < markerList.length; i++) {
 			var marker = markerList[i];
 			if (marker.IsAtLocation(selectedRoom,x,y)) {
@@ -823,7 +823,7 @@ function RoomMarkerTool(markerCanvas1, markerCanvas2) {
 
 	function GatherMarkerList()
 	{
-		console.log("GATHER EXITS!!");
+		console.debug("GATHER EXITS!!");
 
 		var markerList = [];
 

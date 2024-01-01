@@ -46,7 +46,7 @@ function RoomTool(canvas) {
 		off = mobileOffsetCorrection(off,e,(tilesize*mapsize*scale));
 		var x = Math.floor( off.x / (tilesize*scale) );
 		var y = Math.floor( off.y / (tilesize*scale) );
-		// console.log(x + " " + y);
+		// console.debug(x + " " + y);
 
 		events.Raise("click_room", { roomId : curRoom, x : x, y : y });
 
@@ -78,10 +78,10 @@ function RoomTool(canvas) {
 			//add tiles/sprites to map
 			if (self.drawing.type == TileType.Tile) {
 				if ( room[curRoom].tilemap[y][x] === "0" ) {
-					console.log("ADD");
+					console.debug("ADD");
 					//add
 					//row = row.substr(0, x) + drawingId + row.substr(x+1);
-					console.log( room[curRoom].tilemap );
+					console.debug( room[curRoom].tilemap );
 					room[curRoom].tilemap[y][x] = self.drawing.id;
 					isDragAddingTiles = true;
 				}
@@ -199,9 +199,9 @@ function RoomTool(canvas) {
 
 	function onTouchStart(e) {
 		e.preventDefault();
-		// console.log(e.touches[0]);
+		// console.debug(e.touches[0]);
 		var fakeEvent = { target:e.target, clientX:e.touches[0].clientX, clientY:e.touches[0].clientY };
-		// console.log(fakeEvent);
+		// console.debug(fakeEvent);
 		onMouseDown( fakeEvent );
 	}
 
@@ -240,7 +240,7 @@ function RoomTool(canvas) {
 					self.drawEditMap();
 				}
 				else {
-					console.log("BLINKY BUG :(");
+					console.debug("BLINKY BUG :(");
 					self.unlistenEditEvents(); // hacky attempt to prevent blinky bug (not sure what the real cause is)
 				}
 			}, animationTime ); // update animation in map mode

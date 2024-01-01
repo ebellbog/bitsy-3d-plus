@@ -128,7 +128,7 @@ var DialogRenderer = function() {
 		0,0,1,0,0
 	];
 	this.DrawNextArrow = function() {
-		// console.log("draw arrow!");
+		// console.debug("draw arrow!");
 		var top = (textboxInfo.height-5) * scale;
 		var left = (textboxInfo.width-(5+4)) * scale;
 		if (textDirection === TextDirection.RightToLeft) { // RTL hack
@@ -311,7 +311,7 @@ var DialogBuffer = function() {
 		for (var i = 0; i < rowCount; i++) {
 			var row = this.CurPage()[i];
 			var charCount = (i == rowIndex) ? charIndex+1 : row.length;
-			// console.log(charCount);
+			// console.debug(charCount);
 
 			var leftPos = 0;
 			if (textDirection === TextDirection.RightToLeft) {
@@ -324,7 +324,7 @@ var DialogBuffer = function() {
 					if (textDirection === TextDirection.RightToLeft) {
 						leftPos -= char.spacing;
 					}
-					// console.log(j + " " + leftPos);
+					// console.debug(j + " " + leftPos);
 
 					// handler( char, i /*rowIndex*/, j /*colIndex*/ );
 					handler(char, i /*rowIndex*/, j /*colIndex*/, leftPos)
@@ -400,7 +400,7 @@ var DialogBuffer = function() {
 	};
 
 	this.Skip = function() {
-		console.log("SKIPPP");
+		console.debug("SKIPPP");
 		didPageFinishThisFrame = false;
 		didFlipPageThisFrame = false;
 		// add new characters until you get to the end of the current line of dialog
@@ -423,6 +423,13 @@ var DialogBuffer = function() {
 		pageIndex++;
 		rowIndex = 0;
 		charIndex = 0;
+
+		// Prevent empty pages
+		const pageLength = this.CurPage()?.length;
+		if (!(pageLength > 1) && !activeTextEffects.length) {
+			this.Skip();
+			this.Continue();
+		}
 	}
 
 	this.EndDialog = function() {
@@ -436,7 +443,7 @@ var DialogBuffer = function() {
 	var afterManualPagebreak = false; // is it bad to track this state like this?
 
 	this.Continue = function() {
-		console.log("CONTINUE");
+		console.debug("CONTINUE");
 
 		// if we used a page break character to continue we need
 		// to run whatever is in the script afterwards! // TODO : make this comment better
@@ -450,13 +457,13 @@ var DialogBuffer = function() {
 			return false;
 		}
 		if (pageIndex + 1 < this.CurPageCount()) {
-			console.log("FLIP PAGE!");
+			console.debug("FLIP PAGE!");
 			//start next page
 			this.FlipPage();
 			return true; /* hasMoreDialog */
 		}
 		else {
-			console.log("END DIALOG!");
+			console.debug("END DIALOG!");
 			//end dialog mode
 			this.EndDialog();
 			return false; /* hasMoreDialog */
@@ -495,18 +502,18 @@ var DialogBuffer = function() {
 		this.row = 0;
 
 		this.SetPosition = function(row,col) {
-			// console.log("SET POS");
-			// console.log(this);
+			// console.debug("SET POS");
+			// console.debug(this);
 			this.row = row;
 			this.col = col;
 		}
 
 		this.ApplyEffects = function(time) {
-			// console.log("APPLY EFFECTS! " + time);
+			// console.debug("APPLY EFFECTS! " + time);
 			for(var i = 0; i < this.effectList.length; i++) {
                 var effectName = this.effectList[i].name;
                 var parameters = this.effectList[i].parameters; //passing undefined or null shouldn't be a problem?
-				// console.log("FX " + effectName);
+				// console.debug("FX " + effectName);
 				TextEffects[ effectName ].DoEffect( this, time, parameters );
 			}
 		}
@@ -517,7 +524,7 @@ var DialogBuffer = function() {
 		}
 		this.OnPrint = function() {
 			if (printHandler != null) {
-				// console.log("PRINT HANDLER ---- DIALOG BUFFER");
+				// console.debug("PRINT HANDLER ---- DIALOG BUFFER");
 				printHandler();
 				printHandler = null; // only call handler once (hacky)
 			}
@@ -551,7 +558,7 @@ var DialogBuffer = function() {
 		var imageData = renderer.GetImageSource(drawingId)[0];
 		var imageDataFlat = [];
 		for (var i = 0; i < imageData.length; i++) {
-			// console.log(imageData[i]);
+			// console.debug(imageData[i]);
 			imageDataFlat = imageDataFlat.concat(imageData[i]);
 		}
 
@@ -632,7 +639,7 @@ var DialogBuffer = function() {
 	}
 
 	this.AddDrawing = function(drawingId) {
-		// console.log("DRAWING ID " + drawingId);
+		// console.debug("DRAWING ID " + drawingId);
 
 		var curPageIndex = buffer.length - 1;
 		var curRowIndex = buffer[curPageIndex].length - 1;
@@ -684,7 +691,7 @@ var DialogBuffer = function() {
 
 	// TODO : convert this into something that takes DialogChar arrays
 	this.AddText = function(textStr) {
-		console.log("ADD TEXT " + textStr);
+		console.debug("ADD TEXT " + textStr);
 
 		//process dialog so it's easier to display
 		var words = textStr.split(" ");
@@ -763,7 +770,7 @@ var DialogBuffer = function() {
 			var lastChar = lastRow[lastRow.length-1];
 		}
 
-		// console.log(buffer);
+		// console.debug(buffer);
 
 		isActive = true;
 	};
@@ -771,7 +778,7 @@ var DialogBuffer = function() {
 	this.AddLinebreak = function() {
 		var lastPage = buffer[buffer.length-1];
 		if (lastPage.length <= 1) {
-			// console.log("LINEBREAK - NEW ROW ");
+			// console.debug("LINEBREAK - NEW ROW ");
 			// add new row
 			lastPage.push([]);
 		}
@@ -779,7 +786,7 @@ var DialogBuffer = function() {
 			// add new page
 			buffer.push([[]]);
 		}
-		// console.log(buffer);
+		// console.debug(buffer);
 
 		isActive = true;
 	}
@@ -819,7 +826,7 @@ var DialogBuffer = function() {
     }
 	this.RemoveTextEffect = function(name) {
         activeTextEffects.splice(activeTextEffects.findIndex(test => test.name === name), 1);
-        console.log("removed effect")
+        console.debug("removed effect")
 	}
 
 	/* this is a hook for GIF rendering */
@@ -996,10 +1003,10 @@ var TextEffects = new Map();
 
 var RainbowEffect = function() { // TODO - should it be an object or just a method?
 	this.DoEffect = function(char,time) {
-		// console.log("RAINBOW!!!");
-		// console.log(char);
-		// console.log(char.color);
-		// console.log(char.col);
+		// console.debug("RAINBOW!!!");
+		// console.debug(char);
+		// console.debug(char.color);
+		// console.debug(char.col);
 
 		var h = Math.abs( Math.sin( (time / 600) - (char.col / 8) ) );
 		var rgb = hslToRgb( h, 1, 0.5 );
@@ -1015,7 +1022,7 @@ var ColorEffect = function(index) {
 	this.DoEffect = function(char) {
 		var pal = getPal( curPal() );
 		var color = pal[ parseInt( index ) ];
-		// console.log(color);
+		// console.debug(color);
 		char.color.r = color[0];
 		char.color.g = color[1];
 		char.color.b = color[2];
@@ -1026,7 +1033,7 @@ var ColorEffectV2 = function() {
 	this.DoEffect = function(char,time,index) {
 		var pal = getPal( curPal() );
 		var color = pal[ parseInt( index ) ];
-		// console.log(color);
+		// console.debug(color);
 		char.color.r = color[0];
 		char.color.g = color[1];
 		char.color.b = color[2];

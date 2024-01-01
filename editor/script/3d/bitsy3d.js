@@ -1091,7 +1091,7 @@ b3d.serializeDataAsDialog = function () {
         mesh: meshSerialized,
         stack: stackSerialized
     }, null, 2);
-    // console.log(result);
+    // console.debug(result);
     bitsy.dialog['DATA3D'] = {
         src:'"""\n' + result + '\n"""',
         name: null,
@@ -1423,7 +1423,7 @@ b3d.clearCachesMesh = function (drw) {
 };
 
 b3d.update = function () {
-    // console.log("update called");
+    // console.debug("update called");
     b3d.curStack = b3d.stackPosOfRoom[bitsy.curRoom] && b3d.stackPosOfRoom[bitsy.curRoom].stack || null;
     var didChangeScene = b3d.curStack? b3d.curStack !== b3d.lastStack: bitsy.curRoom !== b3d.lastRoom;
     var editorMode = bitsy.isPlayerEmbeddedInEditor && !bitsy.isPlayMode;

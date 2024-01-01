@@ -104,7 +104,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 
 		for (var i = 0; i < idList.length; i++) {
 			var id = idList[i];
-			// console.log("ADD?? " + id);
+			// console.debug("ADD?? " + id);
 			if (id != "A" || drawingCategory == TileType.Avatar)
 			{
 				if(!skipRenderStep) {
@@ -120,7 +120,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 					filterThumbnail( id, filterString );
 				}
 				else {
-					// console.log(idPrefix + "Label_" + id);
+					// console.debug(idPrefix + "Label_" + id);
 					document.getElementById(idPrefix + "Label_" + id).style.display = "inline-block"; // make it visible otherwise
 				}
 			}
@@ -137,7 +137,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 			return;
 		}
 
-		// console.log("ADD THUMB " + id);
+		// console.debug("ADD THUMB " + id);
 
 		var paintExplorerForm = document.getElementById(idPrefix + "FormInner");
 
@@ -190,7 +190,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 			var drawingId = new DrawingId( curPaintMode, id );
 			var obj = drawingId.getEngineObject();
 			if( obj.name === undefined || obj.name === null ) {
-				// console.log("default name!!!!");
+				// console.debug("default name!!!!");
 				nameCaption.classList.add( "thumbnailDefaultName" );
 			}
 
@@ -289,7 +289,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 			}
 		}
 
-		console.log("RENDER COUNT " + x);
+		console.debug("RENDER COUNT " + x);
 	}
 
 	function getThumbnailId(id) {
@@ -297,7 +297,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 	}
 
 	function changeSelection(id) {
-		console.log("CHANGE SELECTION " + id);
+		console.debug("CHANGE SELECTION " + id);
 		selectedDrawingId = id; // store that value
 		var paintExplorerForm = document.getElementById(idPrefix + "FormInner");
 		for( var i = 0; i < paintExplorerForm.childNodes.length; i++ ) {
@@ -317,10 +317,10 @@ function PaintExplorer(idPrefix,selectCallback) {
 	};
 
 	function refreshAndChangeSelection(drawingId) {
-		console.log(drawingCategory);
-		console.log(drawingId.type);
+		console.debug(drawingCategory);
+		console.debug(drawingId.type);
 		if(drawingCategory != drawingId.type) {
-			console.log("refresh!!");
+			console.debug("refresh!!");
 			refresh(drawingId.type);
 		}
 		changeSelection(drawingId.id);
@@ -371,7 +371,7 @@ function PaintExplorer(idPrefix,selectCallback) {
 
 // TODO : should this really live in this file?
 function ThumbnailRenderer() {
-	console.log("NEW THUMB RENDERER");
+	console.debug("NEW THUMB RENDERER");
 
 	var drawingThumbnailCanvas, drawingThumbnailCtx;
 	drawingThumbnailCanvas = document.createElement("canvas");
@@ -394,7 +394,7 @@ function ThumbnailRenderer() {
 			hexPalette.push(hexStr);
 		}
 
-		// console.log(id);
+		// console.debug(id);
 
 		var drawingFrameData = [];
 

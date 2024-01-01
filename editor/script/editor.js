@@ -192,7 +192,7 @@ function safeParseHex(str) {
 function getContrastingColor(palId) {
 	if (!palId) palId = curPal();
 	var hsl = rgbToHsl( getPal(palId)[0][0], getPal(palId)[0][1], getPal(palId)[0][2] );
-	// console.log(hsl);
+	// console.debug(hsl);
 	var lightness = hsl[2];
 	if (lightness > 0.5) {
 		return "#000";
@@ -252,9 +252,9 @@ function makeSprite(id,imageData) {
 }
 
 function makeItem(id,imageData) { // NOTE : same as tile right now? make more like sprite?
-	// console.log(id);
+	// console.debug(id);
 	var drwId = "ITM_" + id;
-	// console.log(drwId);
+	// console.debug(drwId);
 	item[id] = {
 		id : id,
 		drw : drwId,
@@ -329,7 +329,7 @@ function onChangeDrawingSize(event) {
 		}
 	}
 	setNewDrawingSize(newSize);
-	console.log('changed new drawing size to ' + newSize);
+	console.debug('changed new drawing size to ' + newSize);
 }
 
 function updateDrawingSizeUi() {
@@ -374,17 +374,17 @@ function mobileOffsetCorrection(off,e,innerSize) {
 		off.y -= (bounds.height - bounds.width) / 2;
 	}
 
-	// console.log(off);
+	// console.debug(off);
 
 	// convert container size to internal canvas size
 	var containerRatio = innerSize / Math.min( bounds.width, bounds.height );
 
-	// console.log(containerRatio);
+	// console.debug(containerRatio);
 
 	off.x *= containerRatio;
 	off.y *= containerRatio;
 
-	// console.log(off);
+	// console.debug(off);
 
 	return off;
 }
@@ -480,7 +480,7 @@ function openDialogTool(dialogId, insertNextToId, showIfHidden) { // todo : rena
 		(insertNextToId != undefined && insertNextToId != null);
 
 	if (isHiddenOrShouldMove && showIfHidden) {
-		console.log("insert next to : " + insertNextToId);
+		console.debug("insert next to : " + insertNextToId);
 		showPanel("dialogPanel", insertNextToId);
 	}
 
@@ -549,7 +549,7 @@ function prevDialog() {
 		}
 	}
 
-	console.log("PREV DIALOG " + id);
+	console.debug("PREV DIALOG " + id);
 
 	openDialogTool(id);
 
@@ -683,7 +683,7 @@ function getCurDialogId() {
 
 function setDefaultGameState() {
 	var defaultData = Resources["defaultGameData.bitsy"];
-	// console.log("DEFAULT DATA \n" + defaultData);
+	// console.debug("DEFAULT DATA \n" + defaultData);
 	document.getElementById("game_data").value = defaultData;
 	localStorage.bitsy_color_game_3d_data = document.getElementById("game_data").value; // save game
 	clearGameData();
@@ -851,7 +851,7 @@ var defaultFonts = [
 fontManager = new FontManager(defaultFonts); // replaces font manager in the engine with one containing all fonts loaded in the editor
 
 function detectBrowserFeatures() {
-	console.log("BROWSER FEATURES");
+	console.debug("BROWSER FEATURES");
 	//test feature support
 	try {
 		var input = document.createElement("input");
@@ -859,15 +859,15 @@ function detectBrowserFeatures() {
 		document.body.appendChild(input);
 
 		if (input.type === "color") {
-			console.log("color picker supported!");
+			console.debug("color picker supported!");
 			browserFeatures.colorPicker = true;
 		} else {
 			browserFeatures.colorPicker = false;
 		}
 
 		if(input.offsetWidth <= 10 && input.offsetHeight <= 10) {
-			// console.log(input.clientWidth);
-			console.log("WEIRD SAFARI COLOR PICKER IS BAD!");
+			// console.debug(input.clientWidth);
+			console.debug("WEIRD SAFARI COLOR PICKER IS BAD!");
 			browserFeatures.colorPicker = false;
 			document.getElementById("pageColor").type = "text";
 		}
@@ -879,7 +879,7 @@ function detectBrowserFeatures() {
 
 	var a = document.createElement('a');
 	if (typeof a.download != "undefined") {
-		console.log("downloads supported!");
+		console.debug("downloads supported!");
 		browserFeatures.fileDownload = true;
 	}
 	else {
@@ -888,7 +888,7 @@ function detectBrowserFeatures() {
 
 	browserFeatures.blobURL = (!!new Blob) && (URL != undefined || webkitURL != undefined);
 	if( browserFeatures.blobURL ) {
-		console.log("blob supported!");
+		console.debug("blob supported!");
 		makeURL = URL || webkitURL;
 	}
 }
@@ -923,7 +923,7 @@ var defaultPanelPrefs = {
 		{ id:"settingsPanel",		visible:false,	position:12 },
 	]
 };
-// console.log(defaultPanelPrefs);
+// console.debug(defaultPanelPrefs);
 
 function getPanelPrefs() {
 	// (TODO: weird that engine version and editor version are the same??)
@@ -935,7 +935,7 @@ function getPanelPrefs() {
     var prefs = useDefaultPrefs ? defaultPanelPrefs : JSON.parse(localStorage.bitsy_color_3d_panel_prefs );
 
 	// add missing panel prefs (if any)
-	// console.log(defaultPanelPrefs);
+	// console.debug(defaultPanelPrefs);
 	for( var i = 0; i < defaultPanelPrefs.workspace.length; i++ ) {
 		var isMissing = true;
 		var panelPref = defaultPanelPrefs.workspace[i];
@@ -956,7 +956,7 @@ function getPanelPrefs() {
 
 var urlFlags = {};
 function readUrlFlags() {
-	console.log("@@@@@ FLAGGS")
+	console.debug("@@@@@ FLAGGS")
 	var urlSplit = window.location.href.split("?");
 	if (urlSplit.length > 1) {
 		for(var i = 1; i < urlSplit.length; i++) {
@@ -964,7 +964,7 @@ function readUrlFlags() {
 			urlFlags[ flagSplit[0] ] = flagSplit[1];
 		}
 	}
-	console.log(urlFlags);
+	console.debug(urlFlags);
 }
 
 function isPortraitOrientation() {
@@ -1038,7 +1038,7 @@ function start() {
 	paintTool.onReloadItem = function(){ reloadItem() };
 
 	markerTool = new RoomMarkerTool(document.getElementById("markerCanvas1"), document.getElementById("markerCanvas2") );
-	console.log("MARKER TOOL " + markerTool);
+	console.debug("MARKER TOOL " + markerTool);
 
 	roomTool.markers = markerTool;
 
@@ -1057,8 +1057,8 @@ function start() {
 
 	//load last auto-save
     if (localStorage.bitsy_color_3d_game_data) {
-		//console.log("~~~ found old save data! ~~~");
-		//console.log(localStorage.game_data);
+		//console.debug("~~~ found old save data! ~~~");
+		//console.debug(localStorage.game_data);
         document.getElementById("game_data").value = localStorage.bitsy_color_3d_game_data;
 		on_game_data_change_core();
 	}
@@ -1182,7 +1182,7 @@ function start() {
 	// 	if (inputElements[i].type === "checkbox") {
 	// 		var checkbox = inputElements[i];
 	// 		if (checkbox.checked) {
-	// 			console.log(checkbox);
+	// 			console.debug(checkbox);
 	// 			checkbox.dispatchEvent(new Event("click"));
 	// 		}
 	// 	}
@@ -1265,8 +1265,8 @@ function on_drawing_name_change() {
 	else
 		obj.name = null;
 
-	console.log("NEW NAME!");
-	console.log(obj);
+	console.debug("NEW NAME!");
+	console.debug(obj);
 
 	updateNamesFromCurData()
 
@@ -1276,15 +1276,15 @@ function on_drawing_name_change() {
 
 	// make sure items referenced in scripts update their names
 	if(drawing.type === TileType.Item) {
-		// console.log("SWAP ITEM NAMES");
+		// console.debug("SWAP ITEM NAMES");
 
 		var ItemNameSwapVisitor = function() {
 			var didSwap = false;
 			this.DidSwap = function() { return didSwap; };
 
 			this.Visit = function(node) {
-				// console.log("VISIT!");
-				// console.log(node);
+				// console.debug("VISIT!");
+				// console.debug(node);
 
 				if( node.type != "function" || node.name != "item" )
 					return; // not the right type of node
@@ -1303,11 +1303,11 @@ function on_drawing_name_change() {
 		if(newName === null || newName === undefined) newName = drawing.id;
 		if(oldName === null || oldName === undefined) oldName = drawing.id;
 
-		// console.log(oldName + " <-> " + newName);
+		// console.debug(oldName + " <-> " + newName);
 
 		if(newName != oldName) {
 			for(dlgId in dialog) {
-				// console.log("DLG " + dlgId);
+				// console.debug("DLG " + dlgId);
 				var dialogScript = scriptInterpreter.Parse(dialog[dlgId].src);
 				var visitor = new ItemNameSwapVisitor();
 				dialogScript.VisitAll(visitor);
@@ -1327,7 +1327,7 @@ function on_drawing_name_change() {
 	}
 
 	refreshGameData();
-	console.log(names);
+	console.debug(names);
 }
 
 function on_palette_name_change(event) {
@@ -1335,7 +1335,7 @@ function on_palette_name_change(event) {
 }
 
 function selectRoom(roomId) {
-	console.log("SELECT ROOM " + roomId);
+	console.debug("SELECT ROOM " + roomId);
 
 	// ok watch out this is gonna be hacky
 	var ids = sortedRoomIdList();
@@ -1412,7 +1412,7 @@ function duplicateRoom() {
 	roomIndex = Object.keys( room ).length;
 	var newRoomId = nextRoomId();
 
-	console.log(newRoomId);
+	console.debug(newRoomId);
 	var duplicateTilemap = [];
 	for (y in roomToCopy.tilemap) {
 		duplicateTilemap.push([]);
@@ -1439,7 +1439,7 @@ function duplicateRoom() {
 	refreshGameData();
 
 	curRoom = newRoomId;
-	//console.log(curRoom);
+	//console.debug(curRoom);
 	markerTool.SetRoom(curRoom); // hack to re-find all the markers
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
@@ -1478,7 +1478,7 @@ function newRoom() {
 	var palIdList = sortedPaletteIdList();
 	var palId = palIdList.length > 0 ? palIdList[0] : "default";
 
-	console.log(roomId);
+	console.debug(roomId);
 	room[roomId] = {
 		id : roomId,
 		tilemap : [
@@ -1509,7 +1509,7 @@ function newRoom() {
 	refreshGameData();
 
 	curRoom = roomId;
-	//console.log(curRoom);
+	//console.debug(curRoom);
 	markerTool.SetRoom(curRoom);
 	roomTool.drawEditMap();
 	paintTool.updateCanvas();
@@ -1885,9 +1885,9 @@ function on_play_mode() {
 	// load_game(document.getElementById("game_data").value, !isPreviewDialogMode /* startWithTitle */);
 	load_game(getFullGameData(), !isPreviewDialogMode /* startWithTitle */);
 
-	console.log("PLAY!! ~~ PREVIEW ? " + isPreviewDialogMode);
+	console.debug("PLAY!! ~~ PREVIEW ? " + isPreviewDialogMode);
 	if(!isPreviewDialogMode) {
-		console.log("DISALBE PREVIEW!!!");
+		console.debug("DISALBE PREVIEW!!!");
 		document.getElementById("previewDialogCheck").disabled = true;
 	}
 }
@@ -1950,7 +1950,7 @@ function updateRoomSettings() {
 	const palOptions = document.getElementById("roomPaletteSelect").options;
 	for (i in palOptions) {
 		const o = palOptions[i];
-		// console.log(o);
+		// console.debug(o);
 		if (o.value === curPal()) {
 			o.selected = true;
 		}
@@ -2154,11 +2154,11 @@ function on_paint_sprite_ui_update() {
 }
 
 function on_paint_item() {
-	console.log("PAINT ITEM");
+	console.debug("PAINT ITEM");
 	drawing.type = TileType.Item;
 	itemIndex = 0;
 	drawing.id = sortedItemIdList()[itemIndex];
-	console.log(drawing.id);
+	console.debug(drawing.id);
 	paintTool.curDrawingFrameIndex = 0;
 	paintTool.reloadDrawing();
 	paintExplorer.Refresh( paintTool.drawing.type );
@@ -2186,13 +2186,13 @@ function on_paint_item_ui_update() {
 }
 
 function paintExplorerFilterChange( e ) {
-	console.log("paint explorer filter : " + e.target.value);
+	console.debug("paint explorer filter : " + e.target.value);
 	paintExplorer.Refresh( paintTool.drawing.type, true, e.target.value );
 }
 
 function editDrawingAtCoordinate(x,y) {
 	var spriteId = getSpriteAt(x,y); // todo: need more consistency with these methods
-	// console.log(spriteId);
+	// console.debug(spriteId);
 	if(spriteId) {
 		if(spriteId === "A") {
 			on_paint_avatar_ui_update();
@@ -2208,7 +2208,7 @@ function editDrawingAtCoordinate(x,y) {
 	}
 
 	var item = getItem(curRoom,x,y);
-	// console.log(item);
+	// console.debug(item);
 	if(item) {
 		on_paint_item_ui_update();
 		var drawing = new DrawingId( TileType.Item, item.id );
@@ -2218,7 +2218,7 @@ function editDrawingAtCoordinate(x,y) {
 	}
 
 	var tileId = getTile(x,y);
-	// console.log(tileId);
+	// console.debug(tileId);
 	if(tileId != 0) {
 		on_paint_tile_ui_update(); // really wasteful probably
 		var drawing = new DrawingId( TileType.Tile, tileId );
@@ -2235,13 +2235,13 @@ function renderAnimationThumbnail(imgId,id,frameIndex) {
 }
 
 function renderAnimationPreview(id) {
-	// console.log("RENDRE ANIM PREVIW");
+	// console.debug("RENDRE ANIM PREVIW");
 	renderAnimationThumbnail( "animationThumbnailPreview", id );
 	renderAnimationThumbnail( "animationThumbnailFrame1", id, 0 );
 	renderAnimationThumbnail( "animationThumbnailFrame2", id, 1 );
 }
 function selectColor() {
-    console.log(this);
+    console.debug(this);
     var colors = getPal(paletteTool.GetSelectedId());
     var lastIndex = colors.length - 1;
     if (this.value === undefined || this.value === null || this.value > lastIndex) {
@@ -2342,7 +2342,7 @@ function on_game_data_change() {
 }
 
 function on_game_data_change_core() {
-	console.log(document.getElementById("game_data").value);
+	console.debug(document.getElementById("game_data").value);
 
 	clearGameData();
 	var version = parseWorld(document.getElementById("game_data").value); //reparse world if user directly manipulates game data
@@ -2462,7 +2462,7 @@ function updateFontDescriptionUI() {
 	for (var i in fontSelect.options) {
 		var fontOption = fontSelect.options[i];
 		var fontDescriptionId = fontOption.value + "_description";
-		// console.log(fontDescriptionId);
+		// console.debug(fontDescriptionId);
 		var fontDescription = document.getElementById(fontDescriptionId);
 		if (fontDescription != null) {
 			fontDescription.style.display = fontOption.selected ? "block" : "none";
@@ -2659,7 +2659,7 @@ function setElementClass(elementId, classId, addClass) {
 	else {
 		el.classList.remove(classId);
 	}
-	console.log(el.classList);
+	console.debug(el.classList);
 }
 
 function togglePanelAnimated(e) {
@@ -2783,10 +2783,10 @@ function savePanelPref(id,visible) {
 }
 
 function updatePanelPrefs() {
-	// console.log("UPDATE PREFS");
+	// console.debug("UPDATE PREFS");
 
 	var prefs = getPanelPrefs();
-	// console.log(prefs);
+	// console.debug(prefs);
 
 	var editorContent = document.getElementById("editorContent");
 	var cards = editorContent.getElementsByClassName("panel");
@@ -2805,9 +2805,9 @@ function updatePanelPrefs() {
 		}
 	}
 
-	// console.log(prefs);
+	// console.debug(prefs);
     localStorage.bitsy_color_3d_panel_prefs = JSON.stringify( prefs );
-	// console.log(localStorage.panel_prefs);
+	// console.debug(localStorage.panel_prefs);
 }
 
 
@@ -3019,7 +3019,7 @@ function importFontFromFile(e) {
 
 	reader.onloadend = function() {
 		var fileText = reader.result;
-		console.log(fileText);
+		console.debug(fileText);
 
 		var customFontName = (fontManager.Create(fileText)).getName();
 
@@ -3042,10 +3042,10 @@ function importFontFromFile(e) {
 
 /* ANIMATION EDITING*/
 function on_toggle_animated() {
-	console.log("ON TOGGLE ANIMATED");
-	console.log(document.getElementById("animatedCheckbox").checked);
-	console.log(drawing.type);
-	console.log("~~~~~");
+	console.debug("ON TOGGLE ANIMATED");
+	console.debug(document.getElementById("animatedCheckbox").checked);
+	console.debug(drawing.type);
+	console.debug("~~~~~");
 	if ( document.getElementById("animatedCheckbox").checked ) {
 		if ( drawing.type === TileType.Sprite || drawing.type === TileType.Avatar ) {
 			addSpriteAnimation();
@@ -3058,7 +3058,7 @@ function on_toggle_animated() {
 		}
 		document.getElementById("animation").setAttribute("style","display:block;");
 		iconUtils.LoadIcon(document.getElementById("animatedCheckboxIcon"), "expand_more");
-		console.log(drawing.id);
+		console.debug(drawing.id);
 		renderAnimationPreview( drawing.id );
 	}
 	else {
@@ -3069,7 +3069,7 @@ function on_toggle_animated() {
 			removeTileAnimation();			
 		}
 		else if ( drawing.type === TileType.Item ) {
-			console.log("REMOVE ITEM ANIMATION");
+			console.debug("REMOVE ITEM ANIMATION");
 			removeItemAnimation();
 		}
 		document.getElementById("animation").setAttribute("style","display:none;");
@@ -3291,7 +3291,7 @@ var export_settings = {
 
 function on_change_color_page() {
 	var hex = document.getElementById("pageColor").value;
-	//console.log(hex);
+	//console.debug(hex);
 	var rgb = hexToRgb( hex );
 	// document.body.style.background = hex;
 	document.getElementById("roomPanel").style.background = hex;
@@ -3303,7 +3303,7 @@ function on_change_color_page() {
 function getComplimentingColor(palId) {
 	if (!palId) palId = curPal();
 	var hsl = rgbToHsl( getPal(palId)[0][0], getPal(palId)[0][1], getPal(palId)[0][2] );
-	// console.log(hsl);
+	// console.debug(hsl);
 	var lightness = hsl[2];
 	if (lightness > 0.5) {
 		return "#fff";
@@ -3329,8 +3329,8 @@ function grabCard(e) {
 
 	// e.preventDefault();
 
-	console.log("--- GRAB START");
-	console.log(grabbedPanel.card);
+	console.debug("--- GRAB START");
+	console.debug(grabbedPanel.card);
 
 	if (grabbedPanel.card != null) return;
 
@@ -3341,8 +3341,8 @@ function grabCard(e) {
 
 	if(grabbedPanel.card == null) return; // couldn't find a panel above the handle - abort!
 
-	console.log(grabbedPanel.card);
-	console.log("--")
+	console.debug(grabbedPanel.card);
+	console.debug("--")
 
 	grabbedPanel.size = getElementSize( grabbedPanel.card );
 	var pos = getElementPosition( grabbedPanel.card );
@@ -3352,17 +3352,17 @@ function grabCard(e) {
 	grabbedPanel.shadow.style.width = grabbedPanel.size.x + "px";
 	grabbedPanel.shadow.style.height = grabbedPanel.size.y + "px";
 
-	console.log( document.getElementById("editorContent") );
-	console.log( grabbedPanel.shadow );
-	console.log( grabbedPanel.card );
+	console.debug( document.getElementById("editorContent") );
+	console.debug( grabbedPanel.shadow );
+	console.debug( grabbedPanel.card );
 
 	document.getElementById("editorContent").insertBefore( grabbedPanel.shadow, grabbedPanel.card );
 	grabbedPanel.cursorOffset.x = e.clientX - pos.x;
 	grabbedPanel.cursorOffset.y = e.clientY - pos.y;
-	console.log("client " + e.clientX);
-	console.log("card " + pos.x);
-	console.log("offset " + grabbedPanel.cursorOffset.x);
-	// console.log("screen " + e.screenX);
+	console.debug("client " + e.clientX);
+	console.debug("card " + pos.x);
+	console.debug("offset " + grabbedPanel.cursorOffset.x);
+	// console.debug("screen " + e.screenX);
 	grabbedPanel.card.style.position = "absolute";
 	grabbedPanel.card.style.left = e.clientX - grabbedPanel.cursorOffset.x + "px";
 	grabbedPanel.card.style.top = e.clientY - grabbedPanel.cursorOffset.y + "px";
@@ -3372,8 +3372,8 @@ function grabCard(e) {
 function panel_onMouseMove(e) {
 	if (grabbedPanel.card == null) return;
 
-	console.log("-- PANEL MOVE");
-	console.log(grabbedPanel.card);
+	console.debug("-- PANEL MOVE");
+	console.debug(grabbedPanel.card);
 
 	grabbedPanel.card.style.left = e.clientX - grabbedPanel.cursorOffset.x + "px";
 	grabbedPanel.card.style.top = e.clientY - grabbedPanel.cursorOffset.y + "px";
@@ -3382,7 +3382,7 @@ function panel_onMouseMove(e) {
 	var cardSize = grabbedPanel.size;
 	var cardCenter = { x:cardPos.x+cardSize.x/2, y:cardPos.y+cardSize.y/2 };
 
-	console.log(cardCenter);
+	console.debug(cardCenter);
 
 	var editorContent = document.getElementById("editorContent");
 	var editorContentWidth = editorContent.getBoundingClientRect().width;
@@ -3393,7 +3393,7 @@ function panel_onMouseMove(e) {
 	// for (var i = 0; i < cardCollection.length; i++) {
 	// 	otherCards.push(cardCollection[i]);
 	// }
-	// // console.log(otherCards);
+	// // console.debug(otherCards);
 
 	// // hacky fix for arabic -- need better solution
 	// if (curEditorLanguageCode === "ar") {
@@ -3401,21 +3401,21 @@ function panel_onMouseMove(e) {
 	// 	cardCenter.x = editorContentWidth - cardCenter.x;
 	// }
 
-	// console.log(cardCenter);
-	// console.log("---");
+	// console.debug(cardCenter);
+	// console.debug("---");
 
 	for(var j = 0; j < otherCards.length; j++) {
 		var other = otherCards[j];
-		// console.log(other);
+		// console.debug(other);
 		var otherPos = getElementPosition( other );
 		var otherSize = getElementSize( other );
 		var otherCenter = { x:otherPos.x+otherSize.x/2, y:otherPos.y+otherSize.y/2 };
 
-		// console.log(otherCenter);
+		// console.debug(otherCenter);
 
 		if ( cardCenter.x < otherCenter.x ) {
-			console.log("INSERT " + cardCenter.x + " " + otherCenter.x);
-			console.log(other);
+			console.debug("INSERT " + cardCenter.x + " " + otherCenter.x);
+			console.debug(other);
 
 			editorContent.insertBefore( grabbedPanel.shadow, other );
 			break;
@@ -3426,7 +3426,7 @@ function panel_onMouseMove(e) {
 		}
 	}
 
-	console.log("********")
+	console.debug("********")
 }
 document.addEventListener("mousemove",panel_onMouseMove);
 
@@ -3455,13 +3455,13 @@ document.addEventListener("mouseup",panel_onMouseUp);
 // TODO consolidate these into one function?
 function getElementPosition(e) { /* gets absolute position on page */
 	if (!e.getBoundingClientRect) {
-		console.log("NOOO BOUNDING RECT!!!");
+		console.debug("NOOO BOUNDING RECT!!!");
 		return {x:0,y:0};
 	}
 
 	var rect = e.getBoundingClientRect();
 	var pos = {x:rect.left,y:rect.top};
-	// console.log(pos);
+	// console.debug(pos);
 	return pos;
 }
 
@@ -3674,7 +3674,7 @@ function switchFont(newFontName, doPickTextDirection) {
 	fontName = newFontName;
 
 	if (doPickTextDirection) {
-		console.log("PICK TEXT DIR");
+		console.debug("PICK TEXT DIR");
 		pickDefaultTextDirectionForFont(newFontName);
 	}
 
@@ -3701,7 +3701,7 @@ function initLanguageOptions() {
 }
 
 function on_change_text_direction(e) {
-	console.log("CHANGE TEXT DIR " + e.target.value);
+	console.debug("CHANGE TEXT DIR " + e.target.value);
 	updateEditorTextDirection(e.target.value);
 	refreshGameData();
 }
@@ -3719,7 +3719,7 @@ function updateEditorTextDirection(newTextDirection) {
 	var prevTextDirection = textDirection;
 	textDirection = newTextDirection;
 
-	console.log("TEXT BOX TEXT DIR " + textDirection);
+	console.debug("TEXT BOX TEXT DIR " + textDirection);
 
 	if (prevTextDirection != null) {
 		document.body.classList.remove("dir_" + prevTextDirection.toLowerCase());
@@ -3783,8 +3783,8 @@ function CreateDefaultName(defaultNamePrefix, objectStore, ignoreNumberIfFirstNa
 
 /* DOCS */
 function toggleDialogDocs(e) {
-	console.log("SHOW DOCS");
-	console.log(e.target.checked);
+	console.debug("SHOW DOCS");
+	console.debug(e.target.checked);
 	if (e.target.checked) {
 		document.getElementById("dialogDocs").style.display = "block";
 		document.getElementById("dialogToggleDocsShowText").style.display = "none";
@@ -3816,7 +3816,7 @@ function tryWarnAboutMissingCharacters(text) {
 
 	var hasMissingCharacter = false;
 
-	console.log(missingCharacterWarningState.curFont.getData());
+	console.debug(missingCharacterWarningState.curFont.getData());
 
 	for (var i = 0; i < text.length; i++) {
 		var character = text[i];

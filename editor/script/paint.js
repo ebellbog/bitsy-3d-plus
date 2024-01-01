@@ -26,7 +26,7 @@ function DrawingId(type,id) { // TODO: is this the right name?
 
 		// TODO RENDERER : pass in renderer?
 		imageSource = (renderer.GetImageSource( self.toString() )).slice();
-		console.log(imageSource);
+		console.debug(imageSource);
 	}
 
 	this.updateImageSource = function() {
@@ -43,7 +43,7 @@ function DrawingId(type,id) { // TODO: is this the right name?
 
 	// note: can't believe I didn't make this before -- where else should I use it?
 	this.getNameOrDescription = function() {
-		console.log("NAME " + self.getEngineObject().name);
+		console.debug("NAME " + self.getEngineObject().name);
 		return self.getEngineObject().name ? self.getEngineObject().name : tileTypeToString(self.type) + " " + self.id;
 	}
 
@@ -121,8 +121,8 @@ function PaintTool(canvas, roomTool) {
 	this.curDrawingFrameIndex = 0; // TODO eventually this can be internal
 	this.drawPaintGrid = true;
 
-	console.log("NEW PAINT TOOL");
-	console.log(renderer);
+	console.debug("NEW PAINT TOOL");
+	console.debug(renderer);
 	this.drawing = new DrawingId( TileType.Avatar, "A" );
 
 	this.explorer = null; // TODO: hacky way to tie this to a paint explorer -- should use events instead
@@ -166,8 +166,8 @@ function PaintTool(canvas, roomTool) {
 			return; //can't paint during play mode
 		}
 
-		console.log("PAINT TOOL!!!");
-		console.log(e);
+		console.debug("PAINT TOOL!!!");
+		console.debug(e);
 
 		var off = getOffset(e);
 
@@ -205,7 +205,7 @@ function PaintTool(canvas, roomTool) {
 	}
 
 	function onMouseUp(e) {
-		console.log("?????");
+		console.debug("?????");
 		if (isPainting) {
 			isPainting = false;
 			updateDrawingData();
@@ -243,10 +243,10 @@ function PaintTool(canvas, roomTool) {
 	//hacky hacky pain in the butt
 	function changePaintColor(e) {
         var testCol = e.target.value;
-        console.log(testCol);
+        console.debug(testCol);
         testCol.replace(/[^0-9]/g, "");
         if (testCol.trim !== "") {
-            console.log(testCol);
+            console.debug(testCol);
             if (testCol < getPal(curPal()).length) {
                 curPaintColor.value = parseInt(testCol);
                 if (curPaintColor.value == "NaN") {
@@ -263,7 +263,7 @@ function PaintTool(canvas, roomTool) {
             }
         }
         else { paintColorDummy = 0;}
-        console.log(paintColorDummy);
+        console.debug(paintColorDummy);
     }
 
 	this.updateCanvas = function() {
@@ -405,7 +405,7 @@ function PaintTool(canvas, roomTool) {
         var curDrawingCopy = curDrawingData().map(function (x) { return x.slice() });
         var maxTile = self.curTilesize - 1;
         var mirror = maxTile / 2;
-        console.log(maxTile + " mirrorpoint: " + mirror);
+        console.debug(maxTile + " mirrorpoint: " + mirror);
         switch (direction) {
             case 0://left to right
                 for (var x = 0; x < self.curTilesize; x++) {

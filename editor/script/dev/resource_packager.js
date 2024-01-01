@@ -66,6 +66,6 @@ while (resourceJavascriptFile.indexOf('\\r\\n') != -1 ) {
 
 fs.writeFile("../generated/resources.js", resourceJavascriptFile, function () {});
 
-// console.log(resourcePackage);
+// console.debug(resourcePackage);
 
-console.log("done!");
+console.debug("done!");

@@ -63,8 +63,8 @@ this.encode = function(gifData, callback, progressCallback) {
 				clearInterval( loop );
 			}
 			else if (i < gifData.frames.length) {
-				// console.log("ENCODE GIF!!!!");
-				// console.log(i + " / " + gifData.frames.length);
+				// console.debug("ENCODE GIF!!!!");
+				// console.debug(i + " / " + gifData.frames.length);
 
 				if(progressCallback != undefined && progressCallback != null) {
 					progressCallback(i, gifData.frames.length);
@@ -104,7 +104,7 @@ this.cancel = function() {
 function save(gifArr, fileName) {
 	var buf = arrayToBuffer(gifArr);
 	fs.writeFile(fileName, buf, function() {
-		console.log("gif saved!");
+		console.debug("gif saved!");
 	});
 }
 */
@@ -124,8 +124,8 @@ function returnAsDataUri(gifArr, callback) {
 		base64data = reader.result;
 		// base64data = base64data.replace("data:;", "data:image/gif;");
 		// base64data = base64data.replace("data:;", "data:attachment/file;"); // for safari
-		// console.log("!!!!");
-		// console.log(base64data);
+		// console.debug("!!!!");
+		// console.debug(base64data);
 		callback( base64data, blob ); // TODO: just return blob?
 	}
 
@@ -472,7 +472,7 @@ function lzw(indexStream, colors, lzwMinimumCodeSize) {
 	codeStream = packCode(codeStream, codeMap.get(EOI_CODE), codeSize);
 
 	//todo might need to account for going past 255 here
-	//if (codeStream.bytes.length > 255) console.log("uh oh BIGGER THAN 255 at end");
+	//if (codeStream.bytes.length > 255) console.debug("uh oh BIGGER THAN 255 at end");
 	imageBlocks.push(codeStream.bytes.length);
 	imageBlocks = imageBlocks.concat(codeStream.bytes);
 
@@ -623,13 +623,13 @@ function perf(name) {
 }
 
 function perfPrint() {
-	console.log("***** PERF ****");
+	console.debug("***** PERF ****");
 	for (block in perfData) {
 		var t = (perfData[block].time)/1e6;
 		var n = perfData[block].count;
-		console.log( block + " " + t + " / " + n + " = " + (t/n) );
+		console.debug( block + " " + t + " / " + n + " = " + (t/n) );
 	}
-	console.log("***************");
+	console.debug("***************");
 }
 */
 /* END PERF */
@@ -640,7 +640,7 @@ function perfPrint() {
 
 /* TEST */
 this.test = function() {
-	console.log("START");
+	console.debug("START");
 
 	var gif = {
 		frames: [[255,0,0,255, 0,255,0,255, 0,0,255,255], [0,0,255,255, 255,0,0,255, 0,255,0,255], [0,255,0,255, 0,0,255,255, 255,0,0,255]],
@@ -655,20 +655,20 @@ this.test = function() {
 	this.encode(gif, function(buffer) {
 		//perf("total");
 		//perfPrint();
-		console.log("gif encoded!");
-		console.log(buffer);
+		console.debug("gif encoded!");
+		console.debug(buffer);
 		//fs only works in node.js
 		/*
 		fs.writeFile("proof.gif", buffer, function() {
-			console.log("gif saved!");
+			console.debug("gif saved!");
 		});
 		*/
 	});
 
-	console.log("END");
+	console.debug("END");
 }
 //test();
 
-console.log("gif encoder initialized!");
+console.debug("gif encoder initialized!");
 
 } // gif()

@@ -173,7 +173,7 @@ var renderer = new Renderer(tilesize, scale);
 
 function getGameNameFromURL() {
 	var game = window.location.hash.substring(1);
-	// console.log("game name --- " + game);
+	// console.debug("game name --- " + game);
 	return game;
 }
 
@@ -304,7 +304,7 @@ function getOffset(evt) {
 }
 
 function stopGame() {
-	console.log("stop GAME!");
+	console.debug("stop GAME!");
 
 	document.removeEventListener('keydown', input.onkeydown);
 	document.removeEventListener('keyup', input.onkeyup);
@@ -670,13 +670,13 @@ var InputManager = function() {
 		for (var key in pressed) {
 			if (pressed[key]) { // only ignore keys that are actually held
 				ignored[key] = true;
-				// console.log("IGNORE -- " + key);
+				// console.debug("IGNORE -- " + key);
 			}
 		}
 	}
 
 	this.onkeydown = function(event) {
-		// console.log("KEYDOWN -- " + event.keyCode);
+		// console.debug("KEYDOWN -- " + event.keyCode);
 
 		tryRestartGame(event);
 
@@ -708,7 +708,7 @@ var InputManager = function() {
 	}
 
 	this.onkeyup = function(event) {
-		// console.log("KEYUP -- " + event.keyCode);
+		// console.debug("KEYUP -- " + event.keyCode);
 		pressed[event.keyCode] = false;
 		ignored[event.keyCode] = false;
 	}
@@ -806,7 +806,7 @@ var InputManager = function() {
 	}
 
 	this.onblur = function() {
-		// console.log("~~~ BLUR ~~");
+		// console.debug("~~~ BLUR ~~");
 		resetAll();
 	}
 }
@@ -1065,7 +1065,7 @@ function getEnding(roomId,x,y) {
 }
 
 function getTile(x,y) {
-	// console.log(x + " " + y);
+	// console.debug(x + " " + y);
 	var t = getRoom().tilemap[y][x];
 	return t;
 }
@@ -1113,7 +1113,7 @@ function parseWorld(file) {
 	while (i < lines.length) {
 		var curLine = lines[i];
 
-		// console.log(lines[i]);
+		// console.debug(lines[i]);
 
 		if (i == 0) {
 			i = parseTitle(lines, i);
@@ -1219,7 +1219,7 @@ function parseWorld(file) {
 
 function scriptCompatibility(compatibilityFlags) {
 	if (compatibilityFlags.convertSayToPrint) {
-		console.log("CONVERT SAY TO PRINT!");
+		console.debug("CONVERT SAY TO PRINT!");
 
 		var PrintFunctionVisitor = function() {
 			var didChange = false;
@@ -1526,13 +1526,13 @@ function isExitValid(e) {
 
 function placeSprites() {
 	for (id in spriteStartLocations) {
-		//console.log(id);
-		//console.log( spriteStartLocations[id] );
-		//console.log(sprite[id]);
+		//console.debug(id);
+		//console.debug( spriteStartLocations[id] );
+		//console.debug(sprite[id]);
 		sprite[id].room = spriteStartLocations[id].room;
 		sprite[id].x = spriteStartLocations[id].x;
 		sprite[id].y = spriteStartLocations[id].y;
-		//console.log(sprite[id]);
+		//console.debug(sprite[id]);
 	}
 }
 
@@ -1609,7 +1609,7 @@ function parseRoom(lines, i, compatibilityFlags) {
 	}
 
 	while (i < lines.length && lines[i].length > 0) { //look for empty line
-		// console.log(getType(lines[i]));
+		// console.debug(getType(lines[i]));
 		if (getType(lines[i]) === "SPR") {
 			/* NOTE SPRITE START LOCATIONS */
 			var sprId = getId(lines[i]);
@@ -1968,8 +1968,8 @@ function parseItem(lines, i) {
 		name : name
 	};
 
-	// console.log("ITM " + id);
-	// console.log(item[id]);
+	// console.debug("ITM " + id);
+	// console.debug(item[id]);
 
 	return i;
 }
@@ -2205,7 +2205,7 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 
 	// if (room.id != debugLastRoomDrawn) {
 	// 	debugLastRoomDrawn = room.id;
-	// 	console.log("DRAW ROOM " + debugLastRoomDrawn);
+	// 	console.debug("DRAW ROOM " + debugLastRoomDrawn);
 	// }
 
 	var paletteId = "default";
@@ -2229,13 +2229,13 @@ function drawRoom(room,context,frameIndex) { // context & frameIndex are optiona
 		for (j in room.tilemap[i]) {
 			var id = room.tilemap[i][j];
 			if (id != "0") {
-				//console.log(id);
+				//console.debug(id);
 				if (tile[id] == null) { // hack-around to avoid corrupting files (not a solution though!)
 					id = "0";
 					room.tilemap[i][j] = id;
 				}
 				else {
-					// console.log(id);
+					// console.debug(id);
 					drawTile( getTileImage(tile[id],paletteId,frameIndex), j, i, context );
 				}
 			}
@@ -2314,7 +2314,7 @@ var fontManager = new FontManager();
 
 // TODO : is this scriptResult thing being used anywhere???
 function onExitDialog(scriptResult, dialogCallback) {
-	console.log("EXIT DIALOG!");
+	console.debug("EXIT DIALOG!");
 
 	isDialogMode = false;
 
@@ -2343,7 +2343,7 @@ TODO
 - what about a special script block separate from DLG?
 */
 function startNarrating(dialogStr,end,settings) {
-	console.log("NARRATE " + dialogStr);
+	console.debug("NARRATE " + dialogStr);
 
 	if(end === undefined) {
 		end = false;
@@ -2374,7 +2374,7 @@ function startEndingDialog(ending) {
 
 function startItemDialog(itemId, dialogCallback) {
 	var dialogId = item[itemId].dlg;
-	// console.log("START ITEM DIALOG " + dialogId);
+	// console.debug("START ITEM DIALOG " + dialogId);
 	if (dialog[dialogId]) {
 		const {src: dialogStr, bgColor, maxLines} = dialog[dialogId];
 		startDialog(dialogStr, dialogId, dialogCallback, {bgColor, maxLines});
@@ -2387,7 +2387,7 @@ function startItemDialog(itemId, dialogCallback) {
 function startSpriteDialog(spriteId) {
 	var spr = sprite[spriteId];
 	var dialogId = spr.dlg;
-	// console.log("START SPRITE DIALOG " + dialogId);
+	// console.debug("START SPRITE DIALOG " + dialogId);
 	if (dialog[dialogId]){
 		const {src: dialogStr, bgColor, maxLines} = dialog[dialogId];
 		startDialog(dialogStr, dialogId, null, {bgColor, maxLines});
@@ -2395,9 +2395,9 @@ function startSpriteDialog(spriteId) {
 }
 
 function startDialog(dialogStr, scriptId, dialogCallback, objectContext) {
-	// console.log("START DIALOG ");
+	// console.debug("START DIALOG ");
 	if (dialogStr.length <= 0) {
-		// console.log("ON EXIT DIALOG -- startDialog 1");
+		// console.debug("ON EXIT DIALOG -- startDialog 1");
 		onExitDialog(null, dialogCallback);
 		return;
 	}

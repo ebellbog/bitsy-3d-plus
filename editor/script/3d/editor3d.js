@@ -576,7 +576,7 @@ editor3d.init = function() {
         if (bitsy.paletteTool){
             b3d.clearCachesPalette(bitsy.paletteTool.GetSelectedId());
         }
-        // console.log('palette change event hiya hey');
+        // console.debug('palette change event hiya hey');
     });
 
     // update texture for the current drawing when editing with paint tool
@@ -918,8 +918,8 @@ editor3d.selectDrawingAtCursor = function () {
     var bitsyOrigin = editor3d.getBitsyOrigin(editor3d.cursor.pickedMesh);
     if (!bitsyOrigin) return;
 
-    console.log('bitsy origin:');
-    console.log(bitsyOrigin);
+    console.debug('bitsy origin:');
+    console.debug(bitsyOrigin);
 
     bitsy.selectRoom(bitsyOrigin.roomId);
     // call the function that bitsy calls when alt-clicking
@@ -979,17 +979,17 @@ editor3d.updateCursor = function (pickInfo) {
     var point = pickInfo.pickedPoint;
 
     // var meshName = mesh.name || mesh.sourceMesh.source.name;
-    // console.log('id: ' + mesh.id + ', source mesh: ' + meshName + ', faceId: ' + faceId);
-    // console.log(mesh);
+    // console.debug('id: ' + mesh.id + ', source mesh: ' + meshName + ', faceId: ' + faceId);
+    // console.debug(mesh);
 
     if (editor3d.cursor.mode === editor3d.CursorModes.Add) {
-        // console.log('cursor mode: add');
+        // console.debug('cursor mode: add');
         editor3d.cursor.mesh.material.ambientColor = editor3d.CursorColors.Green;
         // figure out the normal manually, because babylon's built in method doesn't work for wedges
         // and possibly other custom meshes
         var normal = editor3d.getNormal(mesh, faceId);
-        // console.log('face normal: ' + normal.asArray().map(i => ' ' + i.toFixed(1)));
-        // console.log('picked point: ' + point.asArray().map(i => ' ' + i.toFixed(1)));
+        // console.debug('face normal: ' + normal.asArray().map(i => ' ' + i.toFixed(1)));
+        // console.debug('picked point: ' + point.asArray().map(i => ' ' + i.toFixed(1)));
 
         // improve cursor resolution for floors, planes, billboards etc
         // so that it's always placed between the object you are hovering over and the camera
@@ -999,19 +999,19 @@ editor3d.updateCursor = function (pickInfo) {
         var cursorPos = point.add(normal.scale(0.75 * -Math.sign(dotProduct)));
 
         var cursorPosRounded = BABYLON.Vector3.FromArray(cursorPos.asArray().map(function(i) {return Math.round(i);}));
-        // console.log('cursorPosRounded: ' + cursorPosRounded);
+        // console.debug('cursorPosRounded: ' + cursorPosRounded);
 
         editor3d.cursor.mesh.position = cursorPosRounded;
 
         // figure out the corresponding bitsy cell
         editor3d.cursor.roomX = editor3d.cursor.mesh.position.x;
         editor3d.cursor.roomY = bitsy.mapsize - 1 - editor3d.cursor.mesh.position.z;
-        // console.log('roomX: ' + editor3d.cursor.roomX + ' roomY: ' + editor3d.cursor.roomY);
+        // console.debug('roomX: ' + editor3d.cursor.roomX + ' roomY: ' + editor3d.cursor.roomY);
 
         // make sure that the cursor isn't out of bounds
         // if it is, don't draw the 3d cursor and make sure drawing can't be added to the b3d.scene
         if (!(editor3d.cursor.roomX * (editor3d.cursor.roomX-15) <= 0) || !(editor3d.cursor.roomY * (editor3d.cursor.roomY-15) <= 0)) {
-            // console.log("can't place the cursor: coordinates are out of bounds");
+            // console.debug("can't place the cursor: coordinates are out of bounds");
             return;
         }
 
@@ -1020,14 +1020,14 @@ editor3d.updateCursor = function (pickInfo) {
             return b3d.stackPosOfRoom[roomId].pos === editor3d.cursor.mesh.position.y;
         }) || (editor3d.cursor.mesh.position.y === 0) && bitsy.curRoom;
 
-        // console.log('editor3d.cursor.curRoomId: ' + editor3d.cursor.curRoomId);
+        // console.debug('editor3d.cursor.curRoomId: ' + editor3d.cursor.curRoomId);
 
         // if the cursor resolves into an existing room,
         // check if the space in this room is already occupied
         // check if there is an empty space for a tile and for item/sprite
         // return depending on what type of the drawing is currently selected as a brush
         if (editor3d.cursor.curRoomId && !editor3d.canPlaceDrawing(room[editor3d.cursor.curRoomId], editor3d.cursor.roomX, editor3d.cursor.roomY)) {
-            // console.log("can't place the cursor: the cell isn't empty");
+            // console.debug("can't place the cursor: the cell isn't empty");
             return;
         }
 
@@ -1036,10 +1036,10 @@ editor3d.updateCursor = function (pickInfo) {
 
     } else if (editor3d.cursor.mode === editor3d.CursorModes.Remove || editor3d.cursor.mode === editor3d.CursorModes.Select) {
         if (editor3d.cursor.mode === editor3d.CursorModes.Remove) {
-            // console.log('cursor mode: remove');
+            // console.debug('cursor mode: remove');
             editor3d.cursor.mesh.material.ambientColor = editor3d.CursorColors.Red;
         } else if (editor3d.cursor.mode === editor3d.CursorModes.Select) {
-            // console.log('cursor mode: select');
+            // console.debug('cursor mode: select');
             editor3d.cursor.mesh.material.ambientColor = editor3d.CursorColors.Gray;
         }
 
@@ -1078,14 +1078,14 @@ editor3d.getNormal = function (mesh, faceId) {
     var i1 = indices[faceId * 3 + 1];
     var i2 = indices[faceId * 3 + 2];
 
-    // console.log('indices: ' + i0 + ', ' + i1 + ', ' + i2);
+    // console.debug('indices: ' + i0 + ', ' + i1 + ', ' + i2);
     // now get the vertices
-    // console.log('data kinds:');
-    // console.log(mesh.getVerticesDataKinds());
+    // console.debug('data kinds:');
+    // console.debug(mesh.getVerticesDataKinds());
 
     var vertexBuf = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind, false);
-    // console.log('vertexBuf:');
-    // console.log(vertexBuf);
+    // console.debug('vertexBuf:');
+    // console.debug(vertexBuf);
 
     // TODO:
     // gotta optimize this a big deal
@@ -1100,8 +1100,8 @@ editor3d.getNormal = function (mesh, faceId) {
     var p1 = new BABYLON.Vector3(vertexBuf[i1 * 3], vertexBuf[i1 * 3 + 1], vertexBuf[i1 * 3 + 2]);
     var p2 = new BABYLON.Vector3(vertexBuf[i2 * 3], vertexBuf[i2 * 3 + 1], vertexBuf[i2 * 3 + 2]);
 
-    // console.log('points: ' + p0 + ', ' + p1 + ', ' + p2);
-    // console.log(p0);
+    // console.debug('points: ' + p0 + ', ' + p1 + ', ' + p2);
+    // console.debug(p0);
 
     // if i'm going to reuse them use subtractToRef(otherVector: DeepImmutable<Vector3>, result: Vector3): Vector3
     var tempVec0 = p0.subtract(p1);
@@ -1116,7 +1116,7 @@ editor3d.getNormal = function (mesh, faceId) {
     normal.normalize();
 
     BABYLON.Vector3.TransformNormalToRef(normal, mesh.getWorldMatrix(), normal);
-    // console.log('transformed by world matrix: ' + normal);
+    // console.debug('transformed by world matrix: ' + normal);
 
     return normal;
 }; // editor3d.getNormal()
@@ -1164,7 +1164,7 @@ editor3d.update = function () {
     // check for changes in the environment and update ui
     if (editor3d.lastSelectedDrawing !== bitsy.drawing.getEngineObject()) {
         editor3d.lastSelectedDrawing = bitsy.drawing.getEngineObject();
-        // console.log('NEW DRAWING WAS SELECTED');
+        // console.debug('NEW DRAWING WAS SELECTED');
         meshPanel.updateSelection();
     }
 };
@@ -1497,14 +1497,14 @@ var meshPanel = {
         // the child radio button will be marked as checked by the click
         // also select the respective drawing as current
         meshPanel.curChildIndex = Number(event.target.value);
-        console.log('selected child: ' + meshPanel.curChildIndex);
+        console.debug('selected child: ' + meshPanel.curChildIndex);
 
         meshPanel.updateMeshConfigWidgets();
     },
 
     // when pressing a plus sign button that expands into a drag & drop area
     onAddChildButton: function(event) {
-        // console.log('deleted child: ' + event.target.value);
+        // console.debug('deleted child: ' + event.target.value);
         document.getElementById('meshConfig').style.display = 'none';
         document.getElementById('meshAddChildArea').style.display = 'block';
         document.getElementById('meshAddChildButton').style.display = 'none';
@@ -1724,7 +1724,7 @@ var meshPanel = {
     addChildDropHandler: function (event) {
         event.preventDefault();
         const data = event.dataTransfer.getData("text/plain");
-        console.log('dropped a child: ' + data);
+        console.debug('dropped a child: ' + data);
 
         document.getElementById('meshAddChildArea').style.display = 'none';
         document.getElementById('meshChildrenList').style.display = 'block';
@@ -1737,7 +1737,7 @@ var meshPanel = {
     addChildDragoverHandler: function (event) {
         event.preventDefault();
         event.dataTransfer.dropEffect = "link";
-        console.log('addChildDragoverHandler');
+        console.debug('addChildDragoverHandler');
     },
 
     // generate ui for selected 3d game settings
@@ -1780,7 +1780,7 @@ var meshPanel = {
             }
         });
         select.onchange = function (event) {
-            console.log('select onchange: ' + event.target.value);
+            console.debug('select onchange: ' + event.target.value);
             b3d.settings.tweenFunction = event.target.value;
             bitsy.refreshGameData();
         }
@@ -1830,7 +1830,7 @@ var meshPanel = {
     },
 
     onChangeEngineSize: function (event) {
-        console.log('changed engine size');
+        console.debug('changed engine size');
         var newEngineSize;
         // todo: implement engine size with a downscale factor
         switch (event.target.id) {
@@ -1845,13 +1845,13 @@ var meshPanel = {
                 newEngineSize = `${document.getElementById('engineWidthInput').value}x${document.getElementById('engineHeightInput').value}`;
                 break;
         }
-        console.log(newEngineSize);
+        console.debug(newEngineSize);
         b3d.settings.engineSize = newEngineSize || b3d.settings.engineSize;
         refreshGameData();
     },
 
     onChangeCanvasSize: function (event) {
-        console.log('changed canvas size');
+        console.debug('changed canvas size');
         var newCanvasSize;
         // todo: implement canvas size as an aspect ratio
         switch (event.target.id) {
@@ -1866,7 +1866,7 @@ var meshPanel = {
                 newCanvasSize = `${document.getElementById('canvasWidthInput').value}x${document.getElementById('canvasHeightInput').value}`;
                 break;
         }
-        console.log(newCanvasSize);
+        console.debug(newCanvasSize);
         b3d.settings.canvasSize = newCanvasSize || b3d.settings.canvasSize;
         refreshGameData();
     },

@@ -14,7 +14,7 @@ function replaceTemplateMarker(template, marker, text) {
 
 this.exportGame = function(gameData, title, pageColor, filename, isFixedSize, size) {
 	var html = Resources["exportTemplate.html"].substr(); //copy template
-	// console.log(html);
+	// console.debug(html);
 
 	html = replaceTemplateMarker( html, "@@T", title );
 
@@ -42,7 +42,7 @@ this.exportGame = function(gameData, title, pageColor, filename, isFixedSize, si
 
 	html = replaceTemplateMarker( html, "@@D", gameData );
 
-	// console.log(html);
+	// console.debug(html);
 
 	// include 3d hack
 	html = replaceTemplateMarker( html, "@@babylon", Resources["babylon.js"] );
@@ -60,13 +60,13 @@ function unescapeSpecialCharacters(str) {
 }
 
 this.importGame = function( html ) {
-    console.log("IMPORT!!!");
+    console.debug("IMPORT!!!");
 
 	// IMPORT : old style
 	// find start of game data
 	var i = html.indexOf("var exportedGameData");
 	if(i > -1) {
-		console.log("OLD STYLE");
+		console.debug("OLD STYLE");
 
 		while ( html.charAt(i) != '"' ) {
 			i++; // move to first quote
@@ -99,7 +99,7 @@ this.importGame = function( html ) {
 	if (i === -1) {
         scriptStart = '<script type="text/bitsyGameData" id="exportedGameData">\n';
         i = html.indexOf(scriptStart);
-        console.log(html.indexOf('<head>'))
+        console.debug(html.indexOf('<head>'))
     }
     //bitys says no to \n
 
@@ -128,7 +128,7 @@ this.importGame = function( html ) {
 		return gameStr;
 	}
 
-	console.log("FAIL!!!!");
+	console.debug("FAIL!!!!");
 
 	return "";
 }

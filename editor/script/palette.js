@@ -109,7 +109,7 @@ function PaletteTool(colorPicker,colorCallback,nameFieldId) { //,colorCallback
     function changeColorPickerIndex(index) {
 		colorPickerIndex = index;
 		var color = getPal(GetSelectedId())[ index ];
-		// console.log(color);
+		// console.debug(color);
         colorPicker.setColor(color[0], color[1], color[2]);
 
         //only the the intial colors have this

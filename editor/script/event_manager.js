@@ -12,7 +12,7 @@ function EventManager() {
 		callbacks[eventName].push(callback);
 
 		if (isDebug) {
-			console.log("EVENTS >>> " + eventName + " >>> " + callbacks[eventName].length);
+			console.debug("EVENTS >>> " + eventName + " >>> " + callbacks[eventName].length);
 		}
 
 		return callback;
@@ -25,7 +25,7 @@ function EventManager() {
 				callbacks[eventName].splice(i, 1);
 
 				if (isDebug) {
-					console.log("EVENTS >>> " + eventName + " >>> " + callbacks[eventName].length);
+					console.debug("EVENTS >>> " + eventName + " >>> " + callbacks[eventName].length);
 				}
 			}
 		}
@@ -34,14 +34,14 @@ function EventManager() {
 	// this.Remove // TODO (use indexOf)
 
 	this.Raise = function(eventName, eventObj) {
-		// console.log(">>> EVENT > " + eventName);
+		// console.debug(">>> EVENT > " + eventName);
 
 		if (callbacks[eventName] == null) {
 			return;
 		}
 
 		eventStack.push(eventName);
-		// console.log(eventStack);
+		// console.debug(eventStack);
 
 		for (var i = 0; i < callbacks[eventName].length; i++) {
 			callbacks[eventName][i](eventObj);

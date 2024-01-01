@@ -8,7 +8,7 @@ TODO
 
 
 function updateInventoryUI() {
-	// console.log("~~~ UPDATE INVENTORY ~~~");
+	// console.debug("~~~ UPDATE INVENTORY ~~~");
 	updateInventoryItemUI();
 	updateInventoryVariableUI();
 }
@@ -30,13 +30,13 @@ function updateInventoryItemUI(){
 		}
 	}
 
-	// console.log("UPDATE!!!!");
+	// console.debug("UPDATE!!!!");
 	var itemLabel = localization.GetStringOrFallback("item_label", "item");
 	for(id in item) {
 		var itemName = item[id].name != null ? item[id].name : itemLabel + " " + id;
-		// console.log( id );
-		// console.log( player() );
-		// console.log( player().inventory );
+		// console.debug( id );
+		// console.debug( player() );
+		// console.debug( player().inventory );
 		var itemCount = player().inventory[id] != undefined ? parseFloat( player().inventory[id] ) : 0;
 
 		var itemDiv = document.createElement("div");
@@ -72,7 +72,7 @@ function updateInventoryVariableUI(){
 
 	function createOnVariableValueChange(varInfo) {
 		return function(event) {
-			console.log("VARIABLE CHANGE " + event.target.value);
+			console.debug("VARIABLE CHANGE " + event.target.value);
 			if(isPlayMode) {
 				scriptInterpreter.SetVariable( varInfo.id, event.target.value, false /*useHandler*/ );
 			}
@@ -85,7 +85,7 @@ function updateInventoryVariableUI(){
 
 	function createOnVariableNameChange(varInfo,varDiv) {
 		return function(event) {
-			console.log("VARIABLE NAME CHANGE " + event.target.value);
+			console.debug("VARIABLE NAME CHANGE " + event.target.value);
 			if(isPlayMode) {
 				var value = ""; // default empty string in case there is no variable yet
 				if( scriptInterpreter.HasVariable(varInfo.id) ) {
@@ -190,7 +190,7 @@ function updateInventoryVariableUI(){
 		addVarEl.appendChild(iconUtils.CreateIcon("add"));
 		var addVarText = document.createElement("span");
 		addVarText.innerText = localization.GetStringOrFallback("variable_add", "add variable");
-		console.log("CREATE ADD BUTTON " + addVarText.innerText);
+		console.debug("CREATE ADD BUTTON " + addVarText.innerText);
 		addVarEl.appendChild( addVarText );
 		addVarEl.addEventListener('click', function() {
 			viewport.removeChild(addVarEl);
