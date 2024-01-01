@@ -14,6 +14,7 @@ var DialogRenderer = function() {
 	var textboxInfo = {
 		img : null,
 		bgColor: [0, 0, 0],
+		arrowColor: [255, 255, 255],
 		lineCount : 2,
 		width : 104,
 		height : 0,
@@ -46,6 +47,10 @@ var DialogRenderer = function() {
 
 	this.SetBgColor = function(rgbArray) {
 		textboxInfo.bgColor = rgbArray || [0, 0, 0];
+	};
+
+	this.SetArrowColor = function(rgbArray) {
+		textboxInfo.arrowColor = rgbArray || [255, 255, 255];
 	}
 
 	this.SetLineCount = function(lineCount) {
@@ -138,9 +143,9 @@ var DialogRenderer = function() {
 					for (var sy = 0; sy < scale; sy++) {
 						for (var sx = 0; sx < scale; sx++) {
 							var pxl = 4 * ( ((top+(y*scale)+sy) * (textboxInfo.width*scale)) + (left+(x*scale)+sx) );
-							textboxInfo.img.data[pxl+0] = 255; // ELANA TODO: custom color
-							textboxInfo.img.data[pxl+1] = 255;
-							textboxInfo.img.data[pxl+2] = 255;
+							for (let sz = 0; sz < 3; sz++) {
+								textboxInfo.img.data[pxl+sz] = textboxInfo.arrowColor[sz];
+							}
 							textboxInfo.img.data[pxl+3] = 255;
 						}
 					}
@@ -261,7 +266,8 @@ var DialogRenderer = function() {
 
 	this.Reset = function() {
 		effectTime = 0;
-		textboxInfo.bgColor = [0, 0, 0];
+		this.SetBgColor();
+		this.SetArrowColor();
 		this.SetLineCount(2);
 		// TODO - anything else?
 	}
@@ -435,6 +441,7 @@ var DialogBuffer = function() {
 		// if we used a page break character to continue we need
 		// to run whatever is in the script afterwards! // TODO : make this comment better
 		if (this.CurChar().isPageBreak) {
+			dialogRenderer.SetArrowColor();
 			// hacky: always treat a page break as the end of dialog
 			// if there's more dialog later we re-activate the dialog buffer
 			this.EndDialog();

@@ -466,24 +466,44 @@ function rainbowFunc(environment,parameters,onReturn) {
 
 // TODO : should the colors use a parameter instead of special names?
 function color1Func(environment,parameters,onReturn) {
+	if (parameters[0]) {
+		const pal = getPal(curPal());
+		const color = pal[0];
+		dialogRenderer.SetArrowColor(color);
+	}
 	addOrRemoveTextEffect(environment,"clr1");
 	onReturn(null);
 }
 
 function color2Func(environment,parameters,onReturn) {
+	if (parameters[0]) {
+		const pal = getPal(curPal());
+		const color = pal[1];
+		dialogRenderer.SetArrowColor(color);
+	}
 	addOrRemoveTextEffect(environment,"clr2");
 	onReturn(null);
 }
 
 function color3Func(environment,parameters,onReturn) {
+	if (parameters[0]) {
+		const pal = getPal(curPal());
+		const color = pal[2];
+		dialogRenderer.SetArrowColor(color);
+	}
 	addOrRemoveTextEffect(environment,"clr3");
 	onReturn(null);
 }
     
 function colorFunc(environment,parameters,onReturn) {
+	if (parameters[1]) {
+		const pal = getPal(curPal());
+		const color = pal[parameters[0]];
+		dialogRenderer.SetArrowColor(color);
+	}
     addOrRemoveTextEffect(environment, "clr", parameters[0]);
 	onReturn(null);
-    }
+}
 
 function wavyFunc(environment,parameters,onReturn) {
 	addOrRemoveTextEffect(environment,"wvy");
