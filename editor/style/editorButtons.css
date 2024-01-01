@@ -31,6 +31,16 @@ button .material-icons {
 	line-height: 100%;
 }
 
+#room-quick-select {
+	cursor: pointer;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 24px;
+	height: 30px;
+	opacity: 0;
+}
+
 /* checkbox */
 input[type=checkbox] {
 	display: none;
@@ -151,6 +161,9 @@ input[type=radio] + label.right {
 
 select {
 	font-size: 90%;
+}
+option {
+	font-size: 15px;
 }
 
 /*button.left {

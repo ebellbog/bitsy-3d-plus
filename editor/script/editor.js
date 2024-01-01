@@ -759,8 +759,13 @@ function refreshGameData() {
 
     localStorage.setItem("bitsy_color_3d_game_data", gameDataNoFonts);
 
+	refreshDlgSelect();
+	refreshRoomSelect();
+}
+
+function refreshDlgSelect() {
 	const dlgSelect = document.getElementById('dlg-quick-select');
-	dlgSelect.innerHtml = '';
+	dlgSelect.innerHTML = '';
 
 	Object.entries(dialog)
 		.sort((a, b) => (a[1].name || 'title') > (b[1].name || 'title') ? 1 : -1)
@@ -773,8 +778,20 @@ function refreshGameData() {
 
 			dlgSelect.append(newOption);
 		});
-	
-	dlgSelect.value = curDialogEditorId || 'title';
+}
+
+function refreshRoomSelect() {
+	const roomSelect = document.getElementById('room-quick-select');
+	roomSelect.innerHTML = '';
+
+	Object.entries(room)
+		.sort((a, b) => a[1].name > b[1].name ? 1 : -1)
+		.forEach(([id, roomData]) => {
+			const newOption = document.createElement('option');
+			newOption.value = id;
+			newOption.text = roomData.name || id;
+			roomSelect.append(newOption);
+		});
 }
 
 /* TIMER */
@@ -1349,6 +1366,8 @@ function selectRoom(roomId) {
 
 		updateRoomName();
 	}
+
+	document.getElementById('room-quick-select').value = null;
 }
 
 function nextRoom() {
