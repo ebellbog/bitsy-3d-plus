@@ -774,7 +774,7 @@ function refreshGameData() {
 			dlgSelect.append(newOption);
 		});
 	
-	dlgSelect.value = getCurDialogId() || 'title';
+	dlgSelect.value = curDialogEditorId || 'title';
 }
 
 /* TIMER */

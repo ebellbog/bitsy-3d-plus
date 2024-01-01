@@ -14,8 +14,9 @@ var DialogRenderer = function() {
 	var textboxInfo = {
 		img : null,
 		bgColor: [0, 0, 0],
+		lineCount : 2,
 		width : 104,
-		height : 8+4+2+5, //8 for text, 4 for top-bottom padding, 2 for line padding, 5 for arrow
+		height : 0,
 		top : 12,
 		left : 12,
 		bottom : 12, //for drawing it from the bottom
@@ -25,15 +26,35 @@ var DialogRenderer = function() {
 		arrow_height : 5,
 	};
 
+	this.UpdateTextboxHeight = function() {
+		textboxInfo.height = 
+			(textboxInfo.padding_vert * (textboxInfo.lineCount + 1))
+			+ (relativeFontHeight() * textboxInfo.lineCount)
+			+ textboxInfo.arrow_height;
+	}
+
+	function resetImg() {
+		textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+	}
+
 	var font = null;
 	this.SetFont = function(f) {
 		font = f;
-		textboxInfo.height = (textboxInfo.padding_vert * 3) + (relativeFontHeight() * 2) + textboxInfo.arrow_height;
-		textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+		this.UpdateTextboxHeight();
+		resetImg();
 	}
 
 	this.SetBgColor = function(rgbArray) {
 		textboxInfo.bgColor = rgbArray || [0, 0, 0];
+	}
+
+	this.SetLineCount = function(lineCount) {
+		this.ClearCanvas();
+
+		textboxInfo.lineCount = Math.max(lineCount, 2);
+		this.UpdateTextboxHeight();
+
+		resetImg();
 	}
 
 	function textScale() {
@@ -53,12 +74,18 @@ var DialogRenderer = function() {
 		context = c;
 	};
 
+	this.ClearCanvas = function() {
+		if (context) {
+			context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+		}
+	}
+
 	this.ClearTextbox = function() {
 		if(context == null) return;
 
 		//create new image none exists
 		if(textboxInfo.img == null)
-			textboxInfo.img = context.createImageData(textboxInfo.width*scale, textboxInfo.height*scale);
+			resetImg();
 
 		// fill text box with background color
 		for (let i=0; i<textboxInfo.img.data.length; i+=4)
@@ -111,7 +138,7 @@ var DialogRenderer = function() {
 					for (var sy = 0; sy < scale; sy++) {
 						for (var sx = 0; sx < scale; sx++) {
 							var pxl = 4 * ( ((top+(y*scale)+sy) * (textboxInfo.width*scale)) + (left+(x*scale)+sx) );
-							textboxInfo.img.data[pxl+0] = 255;
+							textboxInfo.img.data[pxl+0] = 255; // ELANA TODO: custom color
 							textboxInfo.img.data[pxl+1] = 255;
 							textboxInfo.img.data[pxl+2] = 255;
 							textboxInfo.img.data[pxl+3] = 255;
@@ -210,6 +237,9 @@ var DialogRenderer = function() {
 
 		this.ClearTextbox();
 
+		const curLines = Math.max(buffer.CurPage().length, 2);
+		if (textboxInfo.lineCount !== curLines) this.SetLineCount(curLines);
+
 		buffer.ForEachActiveChar(this.DrawChar);
 
 		if (buffer.CanContinue()) {
@@ -232,6 +262,7 @@ var DialogRenderer = function() {
 	this.Reset = function() {
 		effectTime = 0;
 		textboxInfo.bgColor = [0, 0, 0];
+		this.SetLineCount(2);
 		// TODO - anything else?
 	}
 
@@ -246,6 +277,7 @@ var DialogBuffer = function() {
 	var pageIndex = 0;
 	var rowIndex = 0;
 	var charIndex = 0;
+	var maxLines = 2;
 	var nextCharTimer = 0;
 	var nextCharMaxTime = 50; // in milliseconds
 	var isDialogReadyToContinue = false;
@@ -256,6 +288,9 @@ var DialogBuffer = function() {
 
 	this.SetFont = function(f) {
 		font = f;
+	}
+	this.SetMaxLines = function(numLines) {
+		maxLines = numLines;
 	}
 
 	this.CurPage = function() { return buffer[ pageIndex ]; };
@@ -300,7 +335,8 @@ var DialogBuffer = function() {
 		buffer = [[[]]];
 		pageIndex = 0;
 		rowIndex = 0;
-		charIndex = 0;
+		charIndex = 0
+		maxLines = 2;
 		isDialogReadyToContinue = false;
 
 		afterManualPagebreak = false;
@@ -617,7 +653,7 @@ var DialogBuffer = function() {
 			//stay on same row
 			curRowArr.push(drawingChar);
 		}
-		else if (curRowIndex == 0) {
+		else if (curRowIndex < maxLines - 1) {
 			//start next row
 			buffer[curPageIndex][curRowIndex] = curRowArr;
 			buffer[curPageIndex].push([]);
@@ -683,7 +719,7 @@ var DialogBuffer = function() {
 				//stay on same row
 				curRowArr = AddWordToCharArray(curRowArr, wordWithPrecedingSpace, activeTextEffects);
 			}
-			else if (curRowIndex == 0) {
+			else if (curRowIndex < maxLines - 1) {
 				//start next row
 				buffer[curPageIndex][curRowIndex] = curRowArr;
 				buffer[curPageIndex].push([]);

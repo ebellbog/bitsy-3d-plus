@@ -22,12 +22,18 @@ function getTitle() {
 	return dialog[titleDialogId].src;
 }
 function getTitleSettings() {
-	return dialog[titleDialogId].bgColor;
+	const titleDlg = dialog[titleDialogId];
+	return {
+		bgColor: titleDlg.bgColor,
+		maxLines: titleDlg.maxLines
+	}
 }
-function setTitle(titleSrc, bgColor) {
+function setTitle(titleSrc, bgColor, maxLines) {
 	if (!dialog[titleDialogId]) dialog[titleDialogId] = {name: null};
 	dialog[titleDialogId].src = titleSrc;
+
 	if (bgColor) dialog[titleDialogId].bgColor = bgColor;
+	if (maxLines) dialog[titleDialogId].maxLines = maxLines;
 }
 
 var defaultFontName = "ascii_small";
@@ -261,7 +267,7 @@ function onready(startWithTitle) {
 	update_interval = setInterval(update,16);
 
 	if(startWithTitle && !doSkipTitle) { // used by editor
-		startNarrating(getTitle(), null, {bgColor: getTitleSettings()});
+		startNarrating(getTitle(), null, getTitleSettings());
 	}
 }
 
@@ -906,6 +912,8 @@ function movePlayerThroughExit(ext) {
 		// so I don't have to get the ID and the source str
 		// every time!
 		ext.bgColor = dialog[ext.dlg].bgColor;
+		ext.maxLines = dialog[ext.dlg].maxLines;
+
 		startDialog(
 			dialog[ext.dlg].src,
 			ext.dlg,
@@ -1252,9 +1260,12 @@ function serializeWorld(skipFonts) {
 	var worldStr = "";
 	/* TITLE */
 	worldStr += getTitle() + "\n";
-	const titleBgColor = getTitleSettings();
+	const {bgColor: titleBgColor, maxLines: titleMaxLines} = getTitleSettings();
 	if (titleBgColor) {
-		worldStr += `BG_COLOR ${JSON.stringify(getTitleSettings())}\n`
+		worldStr += `BG_COLOR ${JSON.stringify(titleBgColor)}\n`
+	}
+	if (titleMaxLines) {
+		worldStr += `MAX_LINES ${titleMaxLines}\n`;
 	}
 	worldStr += "\n";
 
@@ -1465,8 +1476,11 @@ function serializeWorld(skipFonts) {
 			if (dialog[id].name != null) {
 				worldStr += "NAME " + dialog[id].name + "\n";
 			}
-			if (dialog[id].bgColor != null) {
+			if (dialog[id].bgColor?.length) {
 				worldStr += `BG_COLOR ${JSON.stringify(dialog[id].bgColor)}\n`;
+			}
+			if (isNumber(dialog[id].maxLines) && dialog[id].maxLines !== 2) {
+				worldStr += `MAX_LINES ${dialog[id].maxLines}\n`;
 			}
 			worldStr += "\n";
 		}
@@ -1544,7 +1558,11 @@ function parseTitle(lines, i) {
 	i = results.index;
 
 	const bgColor = parseBgColor(lines, i);
-	setTitle(results.script, bgColor);
+	if (bgColor) i++;
+
+	const maxLines = parseMaxLines(lines, i);
+
+	setTitle(results.script, bgColor, maxLines);
 
 	return i + 1;
 }
@@ -2044,10 +2062,16 @@ function parseScript(lines, i, backCompatPrefix, compatibilityFlags) {
 }
 
 function parseBgColor(lines, i) {
-	if (lines[i]?.length > 0 && getType(lines[i]) === "BG_COLOR") {
-		const bgColor = JSON.parse(lines[i].split(' ')[1]);
-		i++;
+	if (lines[i]?.length && getType(lines[i]) === "BG_COLOR") {
+		const bgColor = JSON.parse(getId(lines[i]));
 		return bgColor;
+	}
+}
+
+function parseMaxLines(lines, i) {
+	if (lines[i]?.length && getType(lines[i]) === "MAX_LINES") {
+		const maxLines = parseInt(getId(lines[i]));
+		return maxLines;
 	}
 }
 
@@ -2064,7 +2088,16 @@ function parseDialog(lines, i, compatibilityFlags) {
 	}
 
 	const bgColor = parseBgColor(lines, i);
-	if (bgColor) dialog[id].bgColor = bgColor;
+	if (bgColor) {
+		dialog[id].bgColor = bgColor;
+		i++;
+	}
+
+	const maxLines = parseMaxLines(lines, i);
+	if (isNumber(maxLines)) {
+		dialog[id].maxLines = maxLines;
+		i++;
+	}
 
 	return i;
 }
@@ -2343,8 +2376,8 @@ function startItemDialog(itemId, dialogCallback) {
 	var dialogId = item[itemId].dlg;
 	// console.log("START ITEM DIALOG " + dialogId);
 	if (dialog[dialogId]) {
-		const {src: dialogStr, bgColor} = dialog[dialogId];
-		startDialog(dialogStr, dialogId, dialogCallback, {bgColor});
+		const {src: dialogStr, bgColor, maxLines} = dialog[dialogId];
+		startDialog(dialogStr, dialogId, dialogCallback, {bgColor, maxLines});
 	}
 	else {
 		dialogCallback();
@@ -2356,8 +2389,8 @@ function startSpriteDialog(spriteId) {
 	var dialogId = spr.dlg;
 	// console.log("START SPRITE DIALOG " + dialogId);
 	if (dialog[dialogId]){
-		const {src: dialogStr, bgColor} = dialog[dialogId];
-		startDialog(dialogStr, dialogId, null, {bgColor});
+		const {src: dialogStr, bgColor, maxLines} = dialog[dialogId];
+		startDialog(dialogStr, dialogId, null, {bgColor, maxLines});
 	}
 }
 
@@ -2372,10 +2405,16 @@ function startDialog(dialogStr, scriptId, dialogCallback, objectContext) {
 	isDialogMode = true;
 
 	dialogRenderer.Reset();
-	dialogRenderer.SetCentered(isNarrating /*centered*/);
+	dialogRenderer.SetCentered(isNarrating /*centered*/); // ELANA TODO: set from context
 	dialogRenderer.SetBgColor(objectContext?.bgColor);
 
 	dialogBuffer.Reset();
+
+	const maxLines = objectContext?.maxLines;
+	if (maxLines) {
+		dialogBuffer.SetMaxLines(maxLines);
+	}
+
 	scriptInterpreter.SetDialogBuffer(dialogBuffer);
 
 	var onScriptEnd = function(scriptResult) {

@@ -493,6 +493,9 @@ function DialogTool() {
 				document.querySelector('.dlg-color').value
 			);
 
+			const maxLines = parseInt(document.querySelector('.dlg-max-lines').value);
+			dialog[dialogId].maxLines = maxLines;
+
 			refreshGameData();
 
 			events.Raise("dialog_update", { dialogId:dialogId, editorId:editorId });
@@ -1239,6 +1242,37 @@ function DialogTool() {
 		dlgColorDiv.appendChild(dlgColorLabel);
 
 		dlgSettingsControlsDiv.appendChild(dlgColorDiv);
+
+		// add max lines
+
+		const maxLinesInput = document.createElement("input");
+		Object.assign(maxLinesInput, {
+			size: 4,
+			className: "dlg-max-lines",
+			title: "maximum lines of text to display at a time",
+			placeholder: 2,
+			onchange: (e) => {
+				let newMax = parseInt(e.target.value);
+				if (!newMax || newMax < 2) {
+					newMax = null;
+					alert('The maximum line count must be a number great than or equal to 2.');
+				}
+				document.querySelectorAll(".dlg-max-lines").forEach((el) => el.value = newMax);
+				parentEditor.NotifyUpdate();
+			},
+		});
+
+		const {maxLines} = dialog[curDialogEditorId];
+		if (maxLines) maxLinesInput.value = maxLines;
+
+		const maxLinesLabel = document.createElement("label");
+		maxLinesLabel.innerHTML = "max lines:";
+		maxLinesLabel.for = "dlg-max-lines";
+		maxLinesLabel.style.paddingLeft = '6px';
+		maxLinesLabel.style.paddingRight = '2px';
+
+		dlgSettingsControlsDiv.appendChild(maxLinesLabel);
+		dlgSettingsControlsDiv.appendChild(maxLinesInput);
 
 		// show & hide both text effects & dialog settings
 		function toggleTextEffects(doDisplay) {
