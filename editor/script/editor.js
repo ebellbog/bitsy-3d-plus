@@ -778,6 +778,8 @@ function refreshDlgSelect() {
 
 			dlgSelect.append(newOption);
 		});
+
+	dlgSelect.value = curDialogEditorId;
 }
 
 function refreshRoomSelect() {
@@ -792,6 +794,8 @@ function refreshRoomSelect() {
 			newOption.text = roomData.name || id;
 			roomSelect.append(newOption);
 		});
+
+	roomSelect.value = null;
 }
 
 /* TIMER */

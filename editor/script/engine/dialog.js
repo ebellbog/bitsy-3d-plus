@@ -248,7 +248,13 @@ var DialogRenderer = function() {
 		buffer.ForEachActiveChar(this.DrawChar);
 
 		if (buffer.CanContinue()) {
-			this.DrawNextArrow();
+			if (buffer.CurCharCount() <= 2 && buffer.CurRowCount() <= 1) {
+				// Automatically continue if page is empty
+				console.debug('SKIPPING BLANK DIALOG');
+				buffer.Continue();
+			} else {
+				this.DrawNextArrow();
+			}
 		}
 
 		this.DrawTextbox();
@@ -423,13 +429,6 @@ var DialogBuffer = function() {
 		pageIndex++;
 		rowIndex = 0;
 		charIndex = 0;
-
-		// Prevent empty pages
-		const pageLength = this.CurPage()?.length;
-		if (!(pageLength > 1) && !activeTextEffects.length) {
-			this.Skip();
-			this.Continue();
-		}
 	}
 
 	this.EndDialog = function() {
