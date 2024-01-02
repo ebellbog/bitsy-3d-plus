@@ -1302,42 +1302,61 @@ function DialogTool() {
 		textEffectsControlsDiv.style.marginBottom = "5px";
 		textEffectsDiv.appendChild(textEffectsControlsDiv);
 
-		var effectsTags = ["{center}", "{clr}", "{wvy}", "{shk}", "{rbw}", "{paper}"];
-		var effectsNames = [
-			localization.GetStringOrFallback("dialog_effect_center", "center"),
-			localization.GetStringOrFallback("dialog_effect_color", "color"),
-			localization.GetStringOrFallback("dialog_effect_wavy", "wavy"),
-			localization.GetStringOrFallback("dialog_effect_shaky", "shaky"),
-			localization.GetStringOrFallback("dialog_effect_rainbow", "rainbow"),
-			localization.GetStringOrFallback("dialog_effect_paper", "lined paper"),
-		];
-
-		var effectsDescriptions = [
-			"dialog box will be centered on page (until next pagebreak)",
-			"text in tags matches specified color in the palette",
-			"text in tags waves up and down",
-			"text in tags shakes constantly",
-			"text in tags is rainbow colored",
-			"dialog box appears as lined paper",
-		]; // TODO : localize
+		const effectsData = {
+			center: {
+				name: localization.GetStringOrFallback("dialog_effect_center", "center"),
+				description: "dialog box will be centered on page (until next pagebreak)",
+			},
+			clr: {
+				name: localization.GetStringOrFallback("dialog_effect_color", "color"),
+				description: "set text color with numeric index; add true to set matching arrow color",
+				wrap: true,
+				defaultArg: 1,
+			},
+			bgClr: {
+				name: localization.GetStringOrFallback("dialog_effect_bg-color", "bg color"),
+				description: "set dialog background color with numeric index",
+				defaultArg: 1,
+			},
+			wvy: {
+				name: localization.GetStringOrFallback("dialog_effect_wavy", "wavy"),
+				description: "text in tags waves up and down",
+				wrap: true,
+			},
+			shk: {
+				name: localization.GetStringOrFallback("dialog_effect_shaky", "shaky"),
+				description: "text in tags shakes constantly",
+				wrap: true,
+			},
+			rbw: {
+				name: localization.GetStringOrFallback("dialog_effect_rainbow", "rainbow"),
+				description: "text in tags is rainbow colored",
+				wrap: true,
+			},
+			paper: {
+				name: localization.GetStringOrFallback("dialog_effect_paper", "lined paper"),
+				description: "dialog box appears as lined paper",
+			},
+		};
 
 		function CreateAddEffectHandler(tag) {
 			return function() {
-				if (['{center}', '{paper}'].includes(tag)) {
-					insertEffectTag(tag);
+				const {defaultArg} = effectsData[tag];
+				if (effectsData[tag].wrap) {
+					wrapTextSelection(tag, defaultArg); // hacky to still use this?
 				} else {
-					wrapTextSelection(tag); // hacky to still use this?
+					insertEffectTag(tag, defaultArg);
 				}
 			}
 		}
 
-		for (var i = 0; i < effectsTags.length; i++) {
+		Object.entries(effectsData).forEach(([tag, data]) => {
 			var effectButton = document.createElement("button");
-			effectButton.onclick = CreateAddEffectHandler(effectsTags[i]);
-			effectButton.innerText = effectsNames[i];
-			effectButton.title = effectsDescriptions[i];
+			effectButton.onclick = CreateAddEffectHandler(tag);
+			effectButton.innerText = data.name;
+			effectButton.title = data.description;
 			textEffectsControlsDiv.appendChild(effectButton);
-		}
+		});
 
 		var textEffectsPrintDrawingDiv = document.createElement("div");
 		textEffectsDiv.appendChild(textEffectsPrintDrawingDiv);
@@ -3873,7 +3892,7 @@ function preventTextDeselectAndClick(event) {
 	}
 }
 
-function wrapTextSelection(effect) {
+function wrapTextSelection(effect, defaultArg) {
 	if( dialogSel.target != null ) {
 		var curText = dialogSel.target.value;
 		var selText = curText.slice(dialogSel.start, dialogSel.end);
@@ -3890,7 +3909,7 @@ function wrapTextSelection(effect) {
 		}
 		else {
 			// add effect
-			var effectText = effect + selText + effect;
+			var effectText = `{${effect}${defaultArg ? ` ${defaultArg}` : ''}}${selText}{${effect}}`;
 			var newText = curText.slice(0, dialogSel.start) + effectText + curText.slice(dialogSel.end);
 			dialogSel.target.value = newText;
 			dialogSel.target.setSelectionRange(dialogSel.start,dialogSel.start + effectText.length);
@@ -3900,9 +3919,11 @@ function wrapTextSelection(effect) {
 	}
 }
 
-function insertEffectTag(tag) {
+function insertEffectTag(tag, defaultArg) {
 	var curText = dialogSel.target.value;
-	dialogSel.target.value = `${tag}${curText}`;
+	if (defaultArg) tag += ` ${defaultArg}`;
+
+	dialogSel.target.value = `{${tag}}${curText}`;
 	if(dialogSel.onchange != null)
 		dialogSel.onchange( dialogSel ); // dialogSel needs to mimic the event the onchange would usually receive
 }

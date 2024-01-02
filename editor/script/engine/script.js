@@ -505,6 +505,13 @@ function colorFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
+function bgColorFunc(environment, parameters, onReturn) {
+	const pal = getPal(curPal());
+	const color = pal[parameters[0]];
+	dialogRenderer.SetBgColor(color);
+	onReturn(null);
+}
+
 function wavyFunc(environment,parameters,onReturn) {
 	addOrRemoveTextEffect(environment,"wvy");
 	onReturn(null);
@@ -789,6 +796,7 @@ var Environment = function() {
 	functionMap.set("clr2", color2Func);
     functionMap.set("clr3", color3Func);
     functionMap.set("clr", colorFunc);
+    functionMap.set("bgClr", bgColorFunc);
 	functionMap.set("wvy", wavyFunc);
 	functionMap.set("shk", shakyFunc);
 	functionMap.set("printSprite", printSpriteFunc);

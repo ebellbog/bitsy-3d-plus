@@ -2408,7 +2408,7 @@ function startDialog(dialogStr, scriptId, dialogCallback, objectContext) {
 
 	dialogRenderer.Reset();
 	dialogRenderer.SetCentered(isNarrating /*centered*/); // ELANA TODO: set from context
-	dialogRenderer.SetBgColor(objectContext?.bgColor);
+	dialogRenderer.SetBgColor(objectContext?.bgColor, true);
 
 	dialogBuffer.Reset();
 

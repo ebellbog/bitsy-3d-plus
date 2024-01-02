@@ -47,9 +47,17 @@ var DialogRenderer = function() {
 		this.UpdateTextboxHeight();
 	}
 
-	this.SetBgColor = function(rgbArray) {
+	let defaultBgColor;
+	this.SetBgColor = function(rgbArray, makeDefault) {
+		if (makeDefault) {
+			defaultBgColor = rgbArray;
+		}
 		textboxInfo.bgColor = rgbArray || [0, 0, 0];
 	};
+	this.ResetBgColor = function(useDefault) {
+		if (!useDefault) defaultBgColor = null;
+		this.SetBgColor(defaultBgColor);
+	}
 
 	this.SetArrowColor = function(rgbArray) {
 		textboxInfo.arrowColor = rgbArray || [255, 255, 255];
@@ -343,7 +351,7 @@ var DialogRenderer = function() {
 
 	this.Reset = function() {
 		effectTime = 0;
-		this.SetBgColor();
+		this.ResetBgColor();
 		this.SetArrowColor();
 		this.SetLineCount(2);
 		this.SetDialogStyle();
@@ -527,6 +535,7 @@ var DialogBuffer = function() {
 			dialogRenderer.SetDialogStyle();
 			dialogRenderer.ResetCentering();
 			dialogRenderer.SetPaddingRows();
+			dialogRenderer.ResetBgColor(true);
 			this.SetRowWidth();
 
 			// hacky: always treat a page break as the end of dialog
