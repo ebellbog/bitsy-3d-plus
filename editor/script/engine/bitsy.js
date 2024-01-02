@@ -312,6 +312,8 @@ function stopGame() {
 	document.getElementById('music-player-1')?.pause();
 	document.getElementById('music-player-2')?.pause();
 
+	document.getElementById('textCanvas').style.backdropFilter = 'none';
+
 	if (isPlayerEmbeddedInEditor) {
 		canvas.removeEventListener('touchstart', input.ontouchstart);
 		canvas.removeEventListener('touchmove', input.ontouchmove);

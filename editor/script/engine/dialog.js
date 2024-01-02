@@ -17,21 +17,24 @@ var DialogRenderer = function() {
 		arrowColor: [255, 255, 255],
 		lineCount : 2,
 		width : 104,
-		height : 0,
+		height : 1,
 		top : 12,
 		left : 12,
 		bottom : 12, //for drawing it from the bottom
 		font_scale : 0.5, // we draw font at half-size compared to everything else
 		padding_vert : 2,
 		padding_horz : 4,
+		padding_rows : 0,
 		arrow_height : 5,
 	};
 
 	this.UpdateTextboxHeight = function() {
+		const totalLines = textboxInfo.lineCount + textboxInfo.padding_rows * 2;
 		textboxInfo.height = 
-			(textboxInfo.padding_vert * (textboxInfo.lineCount + 1))
-			+ (relativeFontHeight() * textboxInfo.lineCount)
+			(textboxInfo.padding_vert * (totalLines + 1))
+			+ (relativeFontHeight() * totalLines)
 			+ textboxInfo.arrow_height;
+		resetImg();
 	}
 
 	function resetImg() {
@@ -42,7 +45,6 @@ var DialogRenderer = function() {
 	this.SetFont = function(f) {
 		font = f;
 		this.UpdateTextboxHeight();
-		resetImg();
 	}
 
 	this.SetBgColor = function(rgbArray) {
@@ -58,8 +60,16 @@ var DialogRenderer = function() {
 
 		textboxInfo.lineCount = Math.max(lineCount, 2);
 		this.UpdateTextboxHeight();
+	}
 
+	this.SetTextboxWidth = function(width) {
+		textboxInfo.width = width || 104;
 		resetImg();
+	}
+
+	this.SetPaddingRows = function(rows) {
+		textboxInfo.padding_rows = rows || 0;
+		this.UpdateTextboxHeight();
 	}
 
 	function textScale() {
@@ -85,6 +95,15 @@ var DialogRenderer = function() {
 		}
 	}
 
+	this.FillCanvas = function(color) {
+		if (context) {
+			context.save();
+			context.fillStyle = color;
+			context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+			context.restore();
+		}
+	}
+
 	this.ClearTextbox = function() {
 		if(context == null) return;
 
@@ -92,26 +111,69 @@ var DialogRenderer = function() {
 		if(textboxInfo.img == null)
 			resetImg();
 
+
 		// fill text box with background color
 		for (let i=0; i<textboxInfo.img.data.length; i+=4)
 		{
 			for (let j = 0; j < 3; j++) {
-				textboxInfo.img.data[i + j] = textboxInfo.bgColor[j];
+				let pixelColor = textboxInfo.bgColor;
+				if (dlgStyle === 'paper') {
+					const lightBlueColor = [180, 180, 255];
+					const redColor = [200, 80, 80];
+					const whiteColor = [255, 255, 255];
+
+					const pixelWidth = textboxInfo.width * scale * 4;
+
+					if ((Math.floor(i / pixelWidth) % 24 === 8) && i / pixelWidth > 30) {
+						pixelColor = lightBlueColor;
+					} else if (i % pixelWidth === 92 || i % pixelWidth === 108) {
+						pixelColor = redColor;
+					} else {
+						pixelColor = whiteColor;
+					}
+				}
+				textboxInfo.img.data[i + j] = pixelColor[j];
 			}
 			textboxInfo.img.data[i+3]=255;
 		}
 	};
 
-	var isCentered = false;
-	this.SetCentered = function(centered) {
+	var isCentered = false, isManuallyCentered = false;
+	this.SetCentered = function(centered, isManual) {
 		this.ClearCanvas();
 		isCentered = centered;
+		isManuallyCentered = isManual;
 	};
+	this.ResetCentering = function() {
+		if (isManuallyCentered) {
+			isCentered = false;
+			isManuallyCentered = false;
+			this.ClearCanvas();
+		}
+	}
+
+	let dlgStyle;
+	this.SetDialogStyle = function(style) {
+		if (style === 'paper') {
+			this.SetCentered(true, true);
+			this.SetPaddingRows(1);
+			context.canvas.style.backdropFilter = 'blur(8px)';
+		} else {
+			context.canvas.style.backdropFilter = 'none';
+		}
+		dlgStyle = style;
+	}
 
 	this.DrawTextbox = function() {
 		if(context == null) return;
+		if (dlgStyle === 'paper') {
+			this.ClearCanvas();
+			this.FillCanvas("rgba(0, 0, 0, .2)");
+		}
+
+		const leftPlacement = ((width/2) - (textboxInfo.width/2))*scale;
 		if (isCentered) {
-			context.putImageData(textboxInfo.img, textboxInfo.left*scale, ((height/2)-(textboxInfo.height/2))*scale);
+			context.putImageData(textboxInfo.img, leftPlacement, ((height/2)-(textboxInfo.height/2))*scale);
 		}
 		else if (player().y < mapsize/2) {
 			//bottom
@@ -145,7 +207,7 @@ var DialogRenderer = function() {
 						for (var sx = 0; sx < scale; sx++) {
 							var pxl = 4 * ( ((top+(y*scale)+sy) * (textboxInfo.width*scale)) + (left+(x*scale)+sx) );
 							for (let sz = 0; sz < 3; sz++) {
-								textboxInfo.img.data[pxl+sz] = textboxInfo.arrowColor[sz];
+								textboxInfo.img.data[pxl+sz] = (dlgStyle === 'paper') ? 0 : textboxInfo.arrowColor[sz];
 							}
 							textboxInfo.img.data[pxl+3] = 255;
 						}
@@ -157,9 +219,15 @@ var DialogRenderer = function() {
 
 	var text_scale = 2; //using a different scaling factor for text feels like cheating... but it looks better
 	this.DrawChar = function(char, row, col, leftPos) {
+		if (dlgStyle === 'paper') {
+			char.color.r = 60;
+			char.color.g = 60;
+			char.color.b = 60;
+		}
+
 		char.offset = {
 			x: char.base_offset.x,
-			y: char.base_offset.y
+			y: char.base_offset.y,
 		}; // compute render offset *every* frame
 
 		char.SetPosition(row,col);
@@ -167,8 +235,10 @@ var DialogRenderer = function() {
 
         var charData = char.bitmap;
 
-		var top = (4 * scale) + (row * 2 * scale) + (row * font.getHeight() * text_scale) + Math.floor( char.offset.y );
-		var left = (4 * scale) + (leftPos * text_scale) + Math.floor( char.offset.x );
+		var top = (4 * scale) + (row * 2 * scale) + (row * font.getHeight() * text_scale) + Math.floor( char.offset.y )
+			+ 4 * textboxInfo.padding_rows * (relativeFontHeight() + textboxInfo.padding_vert);
+		var left = (4 * scale) + (leftPos * text_scale) + Math.floor( char.offset.x )
+			+ ((dlgStyle === 'paper') ? 30 : 0 );
 
 		var debug_r = Math.random() * 255;
 
@@ -276,6 +346,9 @@ var DialogRenderer = function() {
 		this.SetBgColor();
 		this.SetArrowColor();
 		this.SetLineCount(2);
+		this.SetDialogStyle();
+		this.SetTextboxWidth();
+		this.SetPaddingRows();
 		// TODO - anything else?
 	}
 
@@ -359,6 +432,8 @@ var DialogBuffer = function() {
 		onDialogEndCallbacks = [];
 
 		isActive = false;
+
+		this.SetRowWidth();
 	};
 
 	this.DoNextChar = function() {
@@ -449,11 +524,10 @@ var DialogBuffer = function() {
 		// to run whatever is in the script afterwards! // TODO : make this comment better
 		if (this.CurChar().isPageBreak) {
 			dialogRenderer.SetArrowColor();
-
-			if (this.isManuallyCentered) {
-				dialogRenderer.SetCentered(false);
-				this.isManuallyCentered = false;
-			}
+			dialogRenderer.SetDialogStyle();
+			dialogRenderer.ResetCentering();
+			dialogRenderer.SetPaddingRows();
+			this.SetRowWidth();
 
 			// hacky: always treat a page break as the end of dialog
 			// if there's more dialog later we re-activate the dialog buffer
@@ -630,6 +704,10 @@ var DialogBuffer = function() {
 	}
 
 	var pixelsPerRow = 192; // hard-coded fun times!!!
+	this.SetRowWidth = function(rowWidth) {
+		pixelsPerRow = rowWidth || 192;
+		dialogRenderer.SetTextboxWidth(rowWidth ? rowWidth * .65 : 104); // TODO: more precise calculation
+	}
 
 	this.AddScriptReturn = function(onReturnHandler) {
 		var curPageIndex = buffer.length - 1;

@@ -1302,13 +1302,14 @@ function DialogTool() {
 		textEffectsControlsDiv.style.marginBottom = "5px";
 		textEffectsDiv.appendChild(textEffectsControlsDiv);
 
-		var effectsTags = ["{center}", "{clr}", "{wvy}", "{shk}", "{rbw}"];
+		var effectsTags = ["{center}", "{clr}", "{wvy}", "{shk}", "{rbw}", "{paper}"];
 		var effectsNames = [
 			localization.GetStringOrFallback("dialog_effect_center", "center"),
 			localization.GetStringOrFallback("dialog_effect_color", "color"),
 			localization.GetStringOrFallback("dialog_effect_wavy", "wavy"),
 			localization.GetStringOrFallback("dialog_effect_shaky", "shaky"),
 			localization.GetStringOrFallback("dialog_effect_rainbow", "rainbow"),
+			localization.GetStringOrFallback("dialog_effect_paper", "lined paper"),
 		];
 
 		var effectsDescriptions = [
@@ -1316,7 +1317,8 @@ function DialogTool() {
 			"text in tags matches specified color in the palette",
 			"text in tags waves up and down",
 			"text in tags shakes constantly",
-			"text in tags is rainbow colored"
+			"text in tags is rainbow colored",
+			"dialog box appears as lined paper",
 		]; // TODO : localize
 
 		function CreateAddEffectHandler(tag) {

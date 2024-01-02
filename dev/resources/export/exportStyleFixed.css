@@ -7,6 +7,10 @@ body {
 	background:@@B;
 }
 
+#sceneCanvas {
+	background:@@BB;
+}
+
 #game {
 	background:black;
 	margin: 0 auto;

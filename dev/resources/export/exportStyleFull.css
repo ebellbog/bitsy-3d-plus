@@ -18,6 +18,10 @@ body {
 	display:block;
 }
 
+#sceneCanvas {
+	background:@@BB;
+}
+
 #transitionMatte {
 	pointer-events: none;
 

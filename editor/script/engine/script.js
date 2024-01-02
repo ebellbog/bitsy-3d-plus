@@ -677,8 +677,14 @@ function sfxFunc(environment, parameters, onReturn) {
 }
 
 function centerAlignFunc(environment,parameters, onReturn) {
-	dialogRenderer.SetCentered(true);
-	dialogBuffer.isManuallyCentered = true;
+	dialogRenderer.SetCentered(true, true);
+	onReturn(null);
+}
+
+function paperStyleFunc(environment, parameters, onReturn) {
+	dialogBuffer.SetRowWidth(140);
+	dialogBuffer.SetMaxLines(12);
+	dialogRenderer.SetDialogStyle('paper');
 	onReturn(null);
 }
 
@@ -796,6 +802,7 @@ var Environment = function() {
 	functionMap.set("music", musicFunc);
 	functionMap.set("sfx", sfxFunc);
 	functionMap.set("center", centerAlignFunc);
+	functionMap.set("paper", paperStyleFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
