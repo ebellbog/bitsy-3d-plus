@@ -300,7 +300,8 @@
 
 .dialogBoxContainer textarea {
 	height: calc(100% - 10px);
-	width: auto;
+	width: 100%;
+	max-width: 350px;
 	background: transparent;
 	color: white;
 	resize: none;

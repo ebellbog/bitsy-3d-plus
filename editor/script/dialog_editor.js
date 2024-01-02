@@ -1300,6 +1300,7 @@ function DialogTool() {
 
 		var textEffectsControlsDiv = document.createElement("div");
 		textEffectsControlsDiv.style.marginBottom = "5px";
+		textEffectsControlsDiv.style.maxWidth = "335px";
 		textEffectsDiv.appendChild(textEffectsControlsDiv);
 
 		const effectsData = {
@@ -1314,8 +1315,13 @@ function DialogTool() {
 				defaultArg: 1,
 			},
 			bgClr: {
-				name: localization.GetStringOrFallback("dialog_effect_bg-color", "bg color"),
+				name: localization.GetStringOrFallback("dialog_effect_bg-color", "background"),
 				description: "set dialog background color with numeric index",
+				defaultArg: 1,
+			},
+			borderClr: {
+				name: localization.GetStringOrFallback("dialog_effect_border-color", "border"),
+				description: "set dialog border color with numeric index",
 				defaultArg: 1,
 			},
 			wvy: {
@@ -1334,7 +1340,7 @@ function DialogTool() {
 				wrap: true,
 			},
 			paper: {
-				name: localization.GetStringOrFallback("dialog_effect_paper", "lined paper"),
+				name: localization.GetStringOrFallback("dialog_effect_paper", "paper"),
 				description: "dialog box appears as lined paper",
 			},
 		};

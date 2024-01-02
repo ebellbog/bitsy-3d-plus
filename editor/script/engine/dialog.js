@@ -35,6 +35,7 @@ var DialogRenderer = function() {
 			+ (relativeFontHeight() * totalLines)
 			+ textboxInfo.arrow_height;
 		resetImg();
+		this.ClearCanvas();
 	}
 
 	function resetImg() {
@@ -63,9 +64,13 @@ var DialogRenderer = function() {
 		textboxInfo.arrowColor = rgbArray || [255, 255, 255];
 	}
 
-	this.SetLineCount = function(lineCount) {
-		this.ClearCanvas();
+	let borderColor;
+	this.SetBorderColor = function(rgbArray) {
+		borderColor = rgbArray;
+		this.SetPaddingRows(borderColor ? .25 : 0);
+	}
 
+	this.SetLineCount = function(lineCount) {
 		textboxInfo.lineCount = Math.max(lineCount, 2);
 		this.UpdateTextboxHeight();
 	}
@@ -124,21 +129,29 @@ var DialogRenderer = function() {
 		for (let i=0; i<textboxInfo.img.data.length; i+=4)
 		{
 			for (let j = 0; j < 3; j++) {
+				const lightBlueColor = [180, 180, 255];
+				const redColor = [200, 80, 80];
+				const whiteColor = [255, 255, 255];
+
+				const pixelWidth = textboxInfo.width * scale * 4;
 				let pixelColor = textboxInfo.bgColor;
+
 				if (dlgStyle === 'paper') {
-					const lightBlueColor = [180, 180, 255];
-					const redColor = [200, 80, 80];
-					const whiteColor = [255, 255, 255];
 
-					const pixelWidth = textboxInfo.width * scale * 4;
-
-					if ((Math.floor(i / pixelWidth) % 24 === 8) && i / pixelWidth > 30) {
+					if ((Math.floor(i / pixelWidth) % 24 === 8) && i / pixelWidth > 30) { // don't hard code these values
 						pixelColor = lightBlueColor;
 					} else if (i % pixelWidth === 92 || i % pixelWidth === 108) {
 						pixelColor = redColor;
 					} else {
 						pixelColor = whiteColor;
 					}
+				} else if (borderColor) {
+					if (
+						i < 2 * pixelWidth  || // top border
+						i > textboxInfo.img.data.length - 2 * pixelWidth || // bottom border
+						i % pixelWidth < 8 || // left border
+						i % pixelWidth >= pixelWidth - 8 // right border
+					) pixelColor = borderColor;
 				}
 				textboxInfo.img.data[i + j] = pixelColor[j];
 			}
@@ -357,6 +370,7 @@ var DialogRenderer = function() {
 		this.SetDialogStyle();
 		this.SetTextboxWidth();
 		this.SetPaddingRows();
+		this.SetBorderColor();
 		// TODO - anything else?
 	}
 
@@ -536,6 +550,7 @@ var DialogBuffer = function() {
 			dialogRenderer.ResetCentering();
 			dialogRenderer.SetPaddingRows();
 			dialogRenderer.ResetBgColor(true);
+			dialogRenderer.SetBorderColor();
 			this.SetRowWidth();
 
 			// hacky: always treat a page break as the end of dialog
