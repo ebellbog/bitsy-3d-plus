@@ -1185,6 +1185,24 @@ b3d.initMeshTemplates = function () {
     }
     meshTemplates.box = meshTemplates.tower1;
 
+    const tableUVs = [];
+    for (let i = 0; i < 6; i++) {
+        // Set top-facing texture from color in upper left corner of drawing
+        tableUVs.push(i === 4 ? new BABYLON.Vector4(0, 1, 0, 1) : new BABYLON.Vector4(0, 0, 1, 1));
+    }
+    const tableMesh = BABYLON.MeshBuilder.CreateBox('table', {
+        size: 1,
+        height: 1,
+        faceUV: tableUVs,
+        wrap: true,
+    }, b3d.scene);
+
+    tableMesh.doNotSyncBoundingInfo = true;
+    b3d.transformGeometry(tableMesh, BABYLON.Matrix.Scaling(1, .7, 1));
+    b3d.transformGeometry(tableMesh, BABYLON.Matrix.Translation(0, -.55, 0));
+
+    meshTemplates.table = tableMesh;
+
     // floor
     var floorMesh = BABYLON.MeshBuilder.CreatePlane(`floor`, {
         width: 1,
