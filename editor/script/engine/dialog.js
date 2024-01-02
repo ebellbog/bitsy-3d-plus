@@ -104,6 +104,7 @@ var DialogRenderer = function() {
 
 	var isCentered = false;
 	this.SetCentered = function(centered) {
+		this.ClearCanvas();
 		isCentered = centered;
 	};
 
@@ -448,6 +449,12 @@ var DialogBuffer = function() {
 		// to run whatever is in the script afterwards! // TODO : make this comment better
 		if (this.CurChar().isPageBreak) {
 			dialogRenderer.SetArrowColor();
+
+			if (this.isManuallyCentered) {
+				dialogRenderer.SetCentered(false);
+				this.isManuallyCentered = false;
+			}
+
 			// hacky: always treat a page break as the end of dialog
 			// if there's more dialog later we re-activate the dialog buffer
 			this.EndDialog();

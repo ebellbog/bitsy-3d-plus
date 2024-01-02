@@ -1302,20 +1302,18 @@ function DialogTool() {
 		textEffectsControlsDiv.style.marginBottom = "5px";
 		textEffectsDiv.appendChild(textEffectsControlsDiv);
 
-		var effectsTags = ["{clr1}", "{clr2}", "{clr3}", "{wvy}", "{shk}", "{rbw}"];
+		var effectsTags = ["{center}", "{clr}", "{wvy}", "{shk}", "{rbw}"];
 		var effectsNames = [
-			localization.GetStringOrFallback("dialog_effect_color1", "color 1"),
-			localization.GetStringOrFallback("dialog_effect_color2", "color 2"),
-			localization.GetStringOrFallback("dialog_effect_color3", "color 3"),
+			localization.GetStringOrFallback("dialog_effect_center", "center"),
+			localization.GetStringOrFallback("dialog_effect_color", "color"),
 			localization.GetStringOrFallback("dialog_effect_wavy", "wavy"),
 			localization.GetStringOrFallback("dialog_effect_shaky", "shaky"),
 			localization.GetStringOrFallback("dialog_effect_rainbow", "rainbow"),
 		];
 
 		var effectsDescriptions = [
-			"text in tags matches the 1st color in the palette",
-			"text in tags matches the 2nd color in the palette",
-			"text in tags matches the 3rd color in the palette",
+			"dialog box will be centered on page (until next pagebreak)",
+			"text in tags matches specified color in the palette",
 			"text in tags waves up and down",
 			"text in tags shakes constantly",
 			"text in tags is rainbow colored"
@@ -1323,7 +1321,11 @@ function DialogTool() {
 
 		function CreateAddEffectHandler(tag) {
 			return function() {
-				wrapTextSelection(tag); // hacky to still use this?
+				if (['{center}', '{paper}'].includes(tag)) {
+					insertEffectTag(tag);
+				} else {
+					wrapTextSelection(tag); // hacky to still use this?
+				}
 			}
 		}
 
@@ -3894,6 +3896,13 @@ function wrapTextSelection(effect) {
 				dialogSel.onchange( dialogSel ); // dialogSel needs to mimic the event the onchange would usually receive
 		}
 	}
+}
+
+function insertEffectTag(tag) {
+	var curText = dialogSel.target.value;
+	dialogSel.target.value = `${tag}${curText}`;
+	if(dialogSel.onchange != null)
+		dialogSel.onchange( dialogSel ); // dialogSel needs to mimic the event the onchange would usually receive
 }
 
 function getHexFromRgb(rgbArray) {

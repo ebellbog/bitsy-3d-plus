@@ -613,7 +613,7 @@ function getMusicSrc(parameters) {
 	}
 }
 
-function musicFunc(environment,parameters,onReturn) {
+function musicFunc(environment, parameters, onReturn) {
 	if (isPlayerEmbeddedInEditor && doMuteAudio) return onReturn(null);
 
 	const player1 = getMusicPlayer('music-player-1', true);
@@ -662,7 +662,7 @@ function musicFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
-function sfxFunc(environment,parameters,onReturn) {
+function sfxFunc(environment, parameters, onReturn) {
 	if (isPlayerEmbeddedInEditor && doMuteAudio) return onReturn(null);
 
 	const sfxPlayer = getMusicPlayer('sfx-player');
@@ -673,6 +673,12 @@ function sfxFunc(environment,parameters,onReturn) {
 	sfxPlayer.src = src;
 	sfxPlayer.play();
 
+	onReturn(null);
+}
+
+function centerAlignFunc(environment,parameters, onReturn) {
+	dialogRenderer.SetCentered(true);
+	dialogBuffer.isManuallyCentered = true;
 	onReturn(null);
 }
 
@@ -789,6 +795,7 @@ var Environment = function() {
 	functionMap.set("property", propertyFunc);
 	functionMap.set("music", musicFunc);
 	functionMap.set("sfx", sfxFunc);
+	functionMap.set("center", centerAlignFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
