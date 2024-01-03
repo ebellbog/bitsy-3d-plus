@@ -687,6 +687,7 @@ var DialogBuffer = function() {
 		this.width = 0;
 		this.height = 0;
 		this.spacing = 0;
+		this.type = 'control';
 	}
 
 	// is a control character really the best way to handle page breaks?
@@ -830,7 +831,7 @@ var DialogBuffer = function() {
 				word = ''; // don't render escape character
 			}
 
-			addPrecedingSpace = curRowArr.length > 0;
+			addPrecedingSpace = curRowArr.some((char) => char.type !== 'control'); // ignore non-font characters
 
 			if (arabicHandler.ContainsArabicCharacters(word)) {
 				word = arabicHandler.ShapeArabicCharacters(word);
