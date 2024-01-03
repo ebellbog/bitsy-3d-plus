@@ -147,10 +147,10 @@ var DialogRenderer = function() {
 					}
 				} else if (borderColor) {
 					if (
-						i < 2 * pixelWidth  || // top border
-						i > textboxInfo.img.data.length - 2 * pixelWidth || // bottom border
-						i % pixelWidth < 8 || // left border
-						i % pixelWidth >= pixelWidth - 8 // right border
+						i < 3 * pixelWidth  || // top border
+						i > textboxInfo.img.data.length - 3 * pixelWidth || // bottom border
+						i % pixelWidth < 12 || // left border
+						i % pixelWidth >= pixelWidth - 12 // right border
 					) pixelColor = borderColor;
 				}
 				textboxInfo.img.data[i + j] = pixelColor[j];
