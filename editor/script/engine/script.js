@@ -573,6 +573,7 @@ function exitFunc(environment,parameters,onReturn) {
 	if (parameters.length >= 4) {
 		var transitionEffect = parameters[3];
 
+		transition.Transition3D(transitionEffect);
 		transition.BeginTransition(
 			player().room,
 			player().x,
@@ -702,6 +703,20 @@ function paperStyleFunc(environment, parameters, onReturn) {
 	onReturn(null);
 }
 
+function userInputFunc(environment, parameters, onReturn) {
+	const variableName = parameters[0];
+	if (!variableName) {
+		return onReturn(null);
+	}
+
+	document.addEventListener("keydown", function(e) {
+		environment.SetVariable(variableName, parseInt(e.key));
+		console.debug(`Set ${variableName} to ${e.key}`);
+	}, {once: true});
+
+	onReturn(null);
+}
+
 /* BUILT-IN OPERATORS */
 function setExp(environment,left,right,onReturn) {
 	// console.debug("SET " + left.name);
@@ -819,6 +834,7 @@ var Environment = function() {
 	functionMap.set("sfx", sfxFunc);
 	functionMap.set("center", centerAlignFunc);
 	functionMap.set("paper", paperStyleFunc);
+	functionMap.set("input", userInputFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {

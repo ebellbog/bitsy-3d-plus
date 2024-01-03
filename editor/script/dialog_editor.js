@@ -1258,10 +1258,10 @@ function DialogTool() {
 			title: "maximum lines of text to display at a time",
 			placeholder: 2,
 			onchange: (e) => {
-				let newMax = parseInt(e.target.value);
-				if (!newMax || newMax < 2) {
-					newMax = null;
+				let newMax = parseInt(e.target.value) || null;
+				if (newMax && newMax < 2) {
 					alert('The maximum line count must be a number great than or equal to 2.');
+					newMax = null;
 				}
 				document.querySelectorAll(".dlg-max-lines").forEach((el) => el.value = newMax);
 				parentEditor.NotifyUpdate();
@@ -1349,15 +1349,21 @@ function DialogTool() {
 				name: localization.GetStringOrFallback("dialog_effect_paper", "paper"),
 				description: "dialog box appears as lined paper",
 			},
+			input: {
+				name: localization.GetStringOrFallback("dialog_effect_input", "input"),
+				description: "record value of next keypress and save to specified variable",
+				defaultArg: `"a"`,
+				placeAtEnd: true,
+			}
 		};
 
 		function CreateAddEffectHandler(tag) {
 			return function() {
-				const {defaultArg} = effectsData[tag];
+				const {defaultArg, placeAtEnd} = effectsData[tag];
 				if (effectsData[tag].wrap) {
 					wrapTextSelection(tag, defaultArg); // hacky to still use this?
 				} else {
-					insertEffectTag(tag, defaultArg);
+					insertEffectTag(tag, defaultArg, placeAtEnd);
 				}
 			}
 		}
@@ -3931,11 +3937,13 @@ function wrapTextSelection(effect, defaultArg) {
 	}
 }
 
-function insertEffectTag(tag, defaultArg) {
+function insertEffectTag(tag, defaultArg, placeAtEnd) {
 	var curText = dialogSel.target.value;
-	if (defaultArg) tag += ` ${defaultArg}`;
+	tag = `{${tag}${defaultArg ? ` ${defaultArg}` : ''}}`;
 
-	dialogSel.target.value = `{${tag}}${curText}`;
+	dialogSel.target.value = (placeAtEnd) ?
+		`${curText}${tag}` :
+		`${tag}${curText}`;
 	if(dialogSel.onchange != null)
 		dialogSel.onchange( dialogSel ); // dialogSel needs to mimic the event the onchange would usually receive
 }
