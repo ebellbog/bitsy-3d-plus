@@ -95,14 +95,14 @@ var TransitionManager = function() {
 		}
 	}
 
-	this.Transition3D = function(effect) {
+	this.Transition3D = function(effect, callback) {
 		if (effect.includes('fade')) {
 			const fadeColor = effect.split('_')[1];
 			b3d.transitionMatte.style.backgroundColor = (fadeColor === 'b') ? 'black' : 'white';
 			b3d.transitionMatte.style.opacity = 1;
 			return setTimeout(() => {
 				b3d.transitionMatte.style.opacity = 0;
-				updatePosition();
+				if (callback) callback();
 			}, 500);
 		}
 	}

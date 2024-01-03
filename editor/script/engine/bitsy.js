@@ -893,10 +893,10 @@ function movePlayerThroughExit(ext) {
 				transition.UpdateTransition(0);
 			}
 			const effect = ext.transition_effect;
-			transition.Transition3D(effect);
+			transition.Transition3D(effect, updatePosition);
+		} else {
+			updatePosition();
 		}
-
-		updatePosition();
 	};
 
 	if (ext.dlg != undefined && ext.dlg != null) {

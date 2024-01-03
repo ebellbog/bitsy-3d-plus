@@ -570,10 +570,18 @@ function exitFunc(environment,parameters,onReturn) {
 	var destX = parseInt(parameters[1]);
 	var destY = parseInt(parameters[2]);
 
+	const updatePosition = () => {
+		player().room = destRoom;
+		player().x = destX;
+		player().y = destY;
+		curRoom = destRoom;
+		initRoom(curRoom);
+	}
+
 	if (parameters.length >= 4) {
 		var transitionEffect = parameters[3];
 
-		transition.Transition3D(transitionEffect);
+		transition.Transition3D(transitionEffect, updatePosition);
 		transition.BeginTransition(
 			player().room,
 			player().x,
@@ -583,13 +591,9 @@ function exitFunc(environment,parameters,onReturn) {
 			destY,
 			transitionEffect);
 		transition.UpdateTransition(0);
+	} else {
+		updatePosition();
 	}
-
-	player().room = destRoom;
-	player().x = destX;
-	player().y = destY;
-	curRoom = destRoom;
-	initRoom(curRoom);
 
 	// TODO : this doesn't play nice with pagebreak because it thinks the dialog is finished!
 	if (transition.IsTransitionActive()) {
