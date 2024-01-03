@@ -1080,9 +1080,9 @@ var DialogBlockNode = function(doIndentFirstLine) {
 
 			// need to insert a newline before the first block of non-inline code that isn't 
 			// preceded by a {br}, since those will create their own newline
-			if (i > 0 && curNodeIsNonInlineCode && !prevNodeIsNonInlineCode && !shouldIndentAfterLinebreak) {
-				str += "\n";
-			}
+			// if (i > 0 && curNodeIsNonInlineCode && !prevNodeIsNonInlineCode && !shouldIndentAfterLinebreak) {
+			// 	str += "\n";
+			// }
 
 			if (shouldIndentFirstLine || shouldIndentAfterLinebreak || shouldIndentCodeBlock || shouldIndentAfterCodeBlock) {
 				str += leadingWhitespace(depth);
@@ -1090,9 +1090,9 @@ var DialogBlockNode = function(doIndentFirstLine) {
 
 			str += curNode.Serialize(depth);
 
-			if (i < this.children.length-1 && curNodeIsNonInlineCode) {
-				str += "\n";
-			}
+			// if (i < this.children.length-1 && curNodeIsNonInlineCode) {
+			// 	str += "\n";
+			// }
 
 			lastNode = curNode;
 		}
@@ -1862,20 +1862,20 @@ var Parser = function(env) {
 				tryAddTextNodeToList();
 				addCodeNodeToList();
 			}
-			else if (state.MatchAhead(Sym.Linebreak)) { // process new line
-				// add any buffered text to a print node, 
-				// and add a linebreak if we are between two dialog lines
-				tryAddTextNodeToList();
-				tryAddLinebreakNodeToList();
+			// else if (state.MatchAhead(Sym.Linebreak)) { // process new line
+			// 	// add any buffered text to a print node, 
+			// 	// and add a linebreak if we are between two dialog lines
+			// 	tryAddTextNodeToList();
+			// 	tryAddLinebreakNodeToList();
 
-				// since we've reached the end of a line
-				// add stored nodes for this line to the parent node we are building,
-				// and reset state for the next line
-				addLineNodesToParent();
-				resetLineStateForNewLine();
+			// 	// since we've reached the end of a line
+			// 	// add stored nodes for this line to the parent node we are building,
+			// 	// and reset state for the next line
+			// 	addLineNodesToParent();
+			// 	resetLineStateForNewLine();
 
-				state.Step();
-			}
+			// 	state.Step();
+			// }
 			else {
 				// continue adding text to the current text buffer
 				curText += state.Char();

@@ -900,7 +900,7 @@ function movePlayerThroughExit(ext) {
 				return setTimeout(() => {
 					b3d.transitionMatte.style.opacity = 0;
 					updatePosition();
-				}, 300);
+				}, 500);
 			}
 		}
 

@@ -582,5 +582,5 @@ span.controlBox {
 	aspect-ratio: 1 / 1;
 
 	opacity: 0;
-	transition: opacity .3s;
+	transition: opacity .5s;
 }

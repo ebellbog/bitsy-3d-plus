@@ -544,7 +544,7 @@ var DialogBuffer = function() {
 
 		// if we used a page break character to continue we need
 		// to run whatever is in the script afterwards! // TODO : make this comment better
-		if (this.CurChar().isPageBreak) {
+		if (this.CurChar()?.isPageBreak) {
 			dialogRenderer.SetArrowColor();
 			dialogRenderer.SetDialogStyle();
 			dialogRenderer.ResetCentering();
@@ -568,6 +568,7 @@ var DialogBuffer = function() {
 		}
 		else {
 			console.debug("END DIALOG!");
+			dialogRenderer.SetDialogStyle();
 			//end dialog mode
 			this.EndDialog();
 			return false; /* hasMoreDialog */
@@ -802,7 +803,8 @@ var DialogBuffer = function() {
 		console.debug("ADD TEXT " + textStr);
 
 		//process dialog so it's easier to display
-		var words = textStr.split(" ");
+		var words = textStr.trimStart().match(/[^\s]+|\n/g); // split on, and also preserve, newline characters
+		if (!words?.length) return;
 
 		// var curPageIndex = this.CurPageCount() - 1;
 		// var curRowIndex = this.CurRowCount() - 1;
@@ -812,13 +814,21 @@ var DialogBuffer = function() {
 		var curRowIndex = buffer[curPageIndex].length - 1;
 		var curRowArr = buffer[curPageIndex][curRowIndex];
 
+		let addPrecedingSpace = false;
+
 		for (var i = 0; i < words.length; i++) {
 			var word = words[i];
+			if (word === '\n') {
+				word = ''; // don't render escape character
+			}
+
+			addPrecedingSpace = curRowArr.length > 0;
+
 			if (arabicHandler.ContainsArabicCharacters(word)) {
 				word = arabicHandler.ShapeArabicCharacters(word);
 			}
 
-			var wordWithPrecedingSpace = ((i == 0) ? "" : " ") + word;
+			var wordWithPrecedingSpace = (addPrecedingSpace ? " " : "") + word;
 			var wordLength = GetStringWidth(wordWithPrecedingSpace);
 
 			var rowLength = GetCharArrayWidth(curRowArr);
@@ -837,7 +847,7 @@ var DialogBuffer = function() {
 
 				afterManualPagebreak = false;
 			}
-			else if (rowLength + wordLength <= pixelsPerRow || rowLength <= 0) {
+			else if (word.length && (rowLength + wordLength <= pixelsPerRow || rowLength <= 0)) {
 				//stay on same row
 				curRowArr = AddWordToCharArray(curRowArr, wordWithPrecedingSpace, activeTextEffects);
 			}
@@ -871,7 +881,7 @@ var DialogBuffer = function() {
 			buffer.splice(buffer.length-1, 1);
 		}
 
-		//finish up 
+		//finish up
 		lastPage = buffer[buffer.length-1];
 		lastRow = lastPage[lastPage.length-1];
 		if (lastRow.length > 0) {
@@ -885,7 +895,7 @@ var DialogBuffer = function() {
 
 	this.AddLinebreak = function() {
 		var lastPage = buffer[buffer.length-1];
-		if (lastPage.length <= 1) {
+		if (lastPage.length < maxLines) {
 			// console.debug("LINEBREAK - NEW ROW ");
 			// add new row
 			lastPage.push([]);

@@ -48,9 +48,15 @@ function DialogTool() {
 		div.appendChild(openButton);
 
 		function updateWidgetContent() {
-			var titleLines = getTitle().split("\n");
-			isMultiline = titleLines.length > 1;
-			titleTextInput.value = (isMultiline ? titleLines[1] + "..." : titleLines[0]);
+			const title = getTitle().replace(/\"/g, "") || '';
+			const displayTitle = title
+				.split("{pg}")[0]
+				.replace(/{.*?}/gs, "") // remove code tags and extra quotes
+				.split("\n")
+				.filter((line) => line.length)[0] || '';
+
+			const isMultiline = (title !== displayTitle);
+			titleTextInput.value = `${displayTitle}${isMultiline ? '...' : ''}`;
 			titleTextInput.readOnly = isMultiline;
 			openButton.style.display = isMultiline ? "flex" : "none";
 		}
