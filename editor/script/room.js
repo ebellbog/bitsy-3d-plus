@@ -336,8 +336,8 @@ function setCustomFog(useCustom) {
 	const roomData = room[curRoom];
 	if (useCustom) {
 		fogControls.style.display = 'inline-block';
-		document.getElementById('room-fog-start').value = roomData.fogStart || b3d.settings.fogStart;
-		document.getElementById('room-fog-end').value = roomData.fogEnd || b3d.settings.fogEnd;
+		document.getElementById('room-fog-start').value = isNumber(roomData.fogStart) ? roomData.fogStart : b3d.settings.fogStart;
+		document.getElementById('room-fog-end').value = isNumber(roomData.fogEnd) ? roomData.fogEnd : b3d.settings.fogEnd;
 	} else {
 		fogControls.style.display = 'none';
 		roomData.fogStart = null;

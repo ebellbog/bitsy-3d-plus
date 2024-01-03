@@ -961,7 +961,7 @@ function initRoom(roomId) {
 	setTimeout(() => {
 		['fogStart', 'fogEnd'].forEach((prop) => {
 			const val = roomData[prop];
-			b3d.scene[prop] = (typeof val === 'number') ? val : b3d.settings[prop];
+			b3d.scene[prop] = isNumber(val) ? val : b3d.settings[prop];
 		});
 	}, 0);
 }
@@ -1711,10 +1711,12 @@ function parseRoom(lines, i, compatibilityFlags) {
 			room[id].renderMode = getId(lines[i]);
 		}
 		else if (getType(lines[i]) === "FOG_START") {
-			room[id].fogStart = parseFloat(getId(lines[i])) || null;
+			const fogStart = parseFloat(getId(lines[i]));
+			room[id].fogStart = isNumber(fogStart) ? fogStart : null;
 		}
 		else if (getType(lines[i]) === "FOG_END") {
-			room[id].fogEnd = parseFloat(getId(lines[i])) || null;
+			const fogEnd = parseFloat(getId(lines[i]));
+			room[id].fogEnd = isNumber(fogEnd) ? fogEnd : null;
 		}
 		else if (getType(lines[i]) === "NAME") {
 			var name = lines[i].split(/\s(.+)/)[1];
