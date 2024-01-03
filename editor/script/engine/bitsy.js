@@ -2404,7 +2404,7 @@ function startDialog(dialogStr, scriptId, dialogCallback, objectContext) {
 
 	const maxLines = objectContext?.maxLines;
 	if (maxLines) {
-		dialogBuffer.SetMaxLines(maxLines);
+		dialogBuffer.SetMaxLines(maxLines, true);
 	}
 
 	scriptInterpreter.SetDialogBuffer(dialogBuffer);

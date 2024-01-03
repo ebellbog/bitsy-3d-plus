@@ -397,8 +397,15 @@ var DialogBuffer = function() {
 	this.SetFont = function(f) {
 		font = f;
 	}
-	this.SetMaxLines = function(numLines) {
-		maxLines = numLines;
+
+	let defaultMaxLines;
+	this.SetMaxLines = function(numLines, setDefault) {
+		maxLines = numLines || 2;
+		if (setDefault) defaultMaxLines = maxLines;
+	}
+	this.ResetMaxLines = function(useDefault) {
+		if (!useDefault) defaultMaxLines = null;
+		this.SetMaxLines(defaultMaxLines);
 	}
 
 	this.CurPage = function() { return buffer[ pageIndex ]; };
@@ -444,7 +451,6 @@ var DialogBuffer = function() {
 		pageIndex = 0;
 		rowIndex = 0;
 		charIndex = 0
-		maxLines = 2;
 		isDialogReadyToContinue = false;
 
 		afterManualPagebreak = false;
@@ -456,6 +462,7 @@ var DialogBuffer = function() {
 		isActive = false;
 
 		this.SetRowWidth();
+		this.ResetMaxLines();
 	};
 
 	this.DoNextChar = function() {
@@ -551,6 +558,7 @@ var DialogBuffer = function() {
 			dialogRenderer.SetPaddingRows();
 			dialogRenderer.ResetBgColor(true);
 			dialogRenderer.SetBorderColor();
+			this.ResetMaxLines(true);
 			this.SetRowWidth();
 
 			// hacky: always treat a page break as the end of dialog
