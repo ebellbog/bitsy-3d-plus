@@ -545,6 +545,7 @@ b3d.init = function () {
             height: 100%;
             background: none;
             pointer-events: none;
+            transition: backdrop-filter .5s;
         }`;
         var sheet = document.createElement('style');
         sheet.textContent = style;
