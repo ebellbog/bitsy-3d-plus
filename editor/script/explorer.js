@@ -394,7 +394,8 @@ function ThumbnailRenderer() {
 			hexPalette.push(hexStr);
 		}
 
-		// console.debug(id);
+		// to support sprite transparencies, clear any background images first
+		drawingThumbnailCtx.clearRect(0, 0, drawingThumbnailCanvas.width, drawingThumbnailCanvas.height);
 
 		var drawingFrameData = [];
 
