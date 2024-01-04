@@ -595,13 +595,7 @@ function exitFunc(environment,parameters,onReturn) {
 		updatePosition();
 	}
 
-	// TODO : this doesn't play nice with pagebreak because it thinks the dialog is finished!
-	if (transition.IsTransitionActive()) {
-		transition.OnTransitionComplete(function() { onReturn(null); });
-	}
-	else {
-		onReturn(null);
-	}
+	onReturn(null);
 }
 
 function getMusicPlayer(playerId, doLoop) {
