@@ -118,10 +118,13 @@ function imageDataFromImageSource(imageSource, pal, col) {
                             console.debug('passed index out of palette range: ' + px);
                             px = 0;
                         }
-                        img.data[pxl + 0] = colors[px][0];//r
-                        img.data[pxl + 1] = colors[px][1];//g
-                        img.data[pxl + 2] = colors[px][2];//b
-                        img.data[pxl + 3] = 255;//a
+
+						if (px > 0) { // treat background color as transparent
+							img.data[pxl + 0] = colors[px][0];//r
+							img.data[pxl + 1] = colors[px][1];//g
+							img.data[pxl + 2] = colors[px][2];//b
+							img.data[pxl + 3] = 255;
+						}
 
                     }
 				}
