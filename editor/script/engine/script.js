@@ -691,12 +691,12 @@ function sfxFunc(environment, parameters, onReturn) {
 	if (isPlayerEmbeddedInEditor && doMuteAudio) return onReturn(null);
 
 	const sfxPlayer = getMusicPlayer('sfx-player');
-	const src = getMusicSrc(parameters);
-
-	sfxPlayer.pause();
-	sfxPlayer.currentTime = 0;
-	sfxPlayer.src = src;
-	sfxPlayer.play();
+	if (!sfxPlayer.currentTime || sfxPlayer.paused) {
+		const src = getMusicSrc(parameters);
+		sfxPlayer.currentTime = 0;
+		sfxPlayer.src = src;
+		sfxPlayer.play();
+	}
 
 	onReturn(null);
 }
