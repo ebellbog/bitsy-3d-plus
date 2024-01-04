@@ -634,12 +634,13 @@ function musicFunc(environment, parameters, onReturn) {
 	const player1 = getMusicPlayer('music-player-1', true);
 	const player2 = getMusicPlayer('music-player-2', true);
 
-	const src = getMusicSrc(parameters);
-	if (!src) {
-		console.debug('STOPPING MUSIC');
-		player1.pause();
-		player2.pause();
-		return;
+	const fadeAudio = () => {
+		if (player1.volume > 0) {
+			player1.volume = Math.max(player1.volume - .01, 0);
+			setTimeout(fadeAudio, 20);
+		} else {
+			player1.pause();
+		}
 	}
 
 	const crossfadeAudio = () => {
@@ -653,6 +654,7 @@ function musicFunc(environment, parameters, onReturn) {
 		player2.volume = Math.min(player2.volume + .01, MAX_MUSIC_VOLUME);
 		setTimeout(crossfadeAudio, 20);
 	}
+
 	const playMusic = () => {
 		player2.pause();
 
@@ -672,7 +674,15 @@ function musicFunc(environment, parameters, onReturn) {
 			crossfadeAudio();
 		}
 	}
-	dialogBuffer.OnceOnEnd(playMusic);
+
+	const src = getMusicSrc(parameters);
+	if (src) {
+		dialogBuffer.OnceOnEnd(playMusic);
+	} else {
+		console.debug('STOPPING MUSIC');
+		player2.pause();
+		fadeAudio();
+	}
 
 	onReturn(null);
 }
