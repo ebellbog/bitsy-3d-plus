@@ -1349,12 +1349,17 @@ function DialogTool() {
 				name: localization.GetStringOrFallback("dialog_effect_paper", "paper"),
 				description: "dialog box appears as lined paper",
 			},
+			fog: {
+				name: localization.GetStringOrFallback("dialog_effect_fog", "fog"),
+				description: "change fog start & end; specify room name or default to current room",
+				defaultArg: '0 16 "room name"'
+			},
 			input: {
 				name: localization.GetStringOrFallback("dialog_effect_input", "input"),
 				description: "record value of next keypress and save to specified variable",
 				defaultArg: `"a"`,
 				placeAtEnd: true,
-			}
+			},
 		};
 
 		function CreateAddEffectHandler(tag) {

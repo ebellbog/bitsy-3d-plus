@@ -1435,6 +1435,13 @@ b3d.clearCachesPalette = function (pal) {
 b3d.clearCachesTexture = function (drw) {
     b3d.clearCaches(Object.values(b3d.caches), drw, null, null);
 };
+b3d.resetTextureCache = function(e) {
+    const tileIds = Object.keys(tile);
+    tileIds.forEach((id) => {
+        const curTile = tile[id];
+        b3d.clearCachesTexture(curTile.drw);
+    });
+};
 
 b3d.clearCachesMesh = function (drw) {
     b3d.clearCaches([b3d.caches.mesh], drw, null, null);

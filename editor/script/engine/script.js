@@ -635,6 +635,8 @@ function getMusicSrc(parameters) {
 function musicFunc(environment, parameters, onReturn) {
 	if (isPlayerEmbeddedInEditor && doMuteAudio) return onReturn(null);
 
+	const MAX_MUSIC_VOLUME = .6;
+
 	const player1 = getMusicPlayer('music-player-1', true);
 	const player2 = getMusicPlayer('music-player-2', true);
 
@@ -653,8 +655,8 @@ function musicFunc(environment, parameters, onReturn) {
 			player2.id = 'music-player-1';
 			return;
 		}
-		player1.volume = Math.max(player1.volume - .03, 0);
-		player2.volume = Math.min(player2.volume + .03, 1);
+		player1.volume = Math.max(player1.volume - .01, 0);
+		player2.volume = Math.min(player2.volume + .01, MAX_MUSIC_VOLUME);
 		setTimeout(crossfadeAudio, 20);
 	}
 	const playMusic = () => {
@@ -663,7 +665,7 @@ function musicFunc(environment, parameters, onReturn) {
 		if (player1.paused || !player1.currentTime) {
 			player1.src = src;
 			player1.currentTime = 0;
-			player1.volume = 1;
+			player1.volume = MAX_MUSIC_VOLUME;
 			player1.play();
 			console.debug('PLAYING MUSIC:', src);
 		} else {
@@ -717,6 +719,65 @@ function userInputFunc(environment, parameters, onReturn) {
 		environment.SetVariable(variableName, parseInt(e.key));
 		console.debug(`Set ${variableName} to ${e.key}`);
 	}, {once: true});
+
+	onReturn(null);
+}
+
+function fogFunc(environment, parameters, onReturn) {
+	const newFogStart = parseFloat(parameters[0]);
+	const newFogEnd = parseFloat(parameters[1]);
+	const roomName = parameters[2];
+
+	let roomData, isCurRoom;
+	if (roomName && names.room.has(roomName)) {
+		const roomId = names.room.get(roomName);
+		roomData = room[roomId];
+		isCurRoom = (roomId === curRoom);
+	} else {
+		roomData = room[curRoom];
+		isCurRoom = true;
+	}
+
+	const FOG_INCREMENT = .25;
+
+	function animateFogSettings() {
+		let doneAnimating = true;
+		if (isNumber(newFogStart)) {
+			const currentFogStart = b3d.scene.fogStart;
+			const startDelta = newFogStart - currentFogStart;
+			if (Math.abs(startDelta) > FOG_INCREMENT) {
+				roomData.fogStart = currentFogStart + (startDelta > 0 ? FOG_INCREMENT : -FOG_INCREMENT);
+				doneAnimating = false;
+			} else {
+				roomData.fogStart = newFogStart;
+			}
+		}
+		if (isNumber(newFogEnd)) {
+			const currentFogEnd = b3d.scene.fogEnd;
+			const endDelta = newFogEnd - currentFogEnd;
+			if (Math.abs(endDelta) > FOG_INCREMENT) {
+				roomData.fogEnd = currentFogEnd + (endDelta > 0 ? FOG_INCREMENT : -FOG_INCREMENT);
+				doneAnimating = false;
+			} else {
+				roomData.fogEnd = newFogEnd;
+			}
+		}
+
+		b3d.applySettings();
+		b3d.resetTextureCache();
+
+		if (!doneAnimating) {
+			setTimeout(() => animateFogSettings(), 10);
+		}
+	}
+
+	if (isCurRoom) {
+		animateFogSettings();
+	} else {
+		if (isNumber(newFogStart)) roomData.fogStart = newFogStart;
+		if (isNumber(newFogEnd)) roomData.fogEnd = newFogEnd;
+		b3d.resetTextureCache();
+	}
 
 	onReturn(null);
 }
@@ -839,6 +900,7 @@ var Environment = function() {
 	functionMap.set("center", centerAlignFunc);
 	functionMap.set("paper", paperStyleFunc);
 	functionMap.set("input", userInputFunc);
+	functionMap.set("fog", fogFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {
