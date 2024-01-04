@@ -768,6 +768,8 @@ function fogFunc(environment, parameters, onReturn) {
 
 		if (!doneAnimating) {
 			setTimeout(() => animateFogSettings(), 10);
+		} else {
+			console.debug('FINISHED UPDATING ROOM FOG');
 		}
 	}
 
@@ -777,6 +779,87 @@ function fogFunc(environment, parameters, onReturn) {
 		if (isNumber(newFogStart)) roomData.fogStart = newFogStart;
 		if (isNumber(newFogEnd)) roomData.fogEnd = newFogEnd;
 		b3d.resetTextureCache();
+	}
+
+	onReturn(null);
+}
+
+function ambientFunc(environment, parameters, onReturn) {
+	const newColor = JSON.parse(parameters[0]);
+	const COLOR_INCREMENT = .01;
+
+	function animateColor() {
+		const curColor = b3d.scene.ambientColor.asArray();
+		let doneAnimating = true;
+
+		for (let i = 0; i < 3; i++) {
+			const colorDelta = newColor[i] - curColor[i];
+			if (Math.abs(colorDelta) > COLOR_INCREMENT) {
+				doneAnimating = false;
+				curColor[i] = curColor[i] + (colorDelta > 1 ? COLOR_INCREMENT : -COLOR_INCREMENT);
+			} else {
+				curColor[i] = newColor[i];
+			}
+		}
+
+		// Color3 should support fromArray(), but it's not working...
+		b3d.scene.ambientColor.r = curColor[0];
+		b3d.scene.ambientColor.g = curColor[1];
+		b3d.scene.ambientColor.b = curColor[2];
+
+		if (!doneAnimating) {
+			setTimeout(() => animateColor(), 15);
+		} else {
+			console.debug('FINISHED UPDATING AMBIENT COLOR');
+		}
+	}
+
+	animateColor();
+	onReturn(null);
+}
+
+function replaceTileFunc(environment, parameters, onReturn) {
+	const oldTileName = parameters[0];
+	const newTileName = parameters[1];
+	const roomName = parameters[2];
+
+	let isSprite = false;
+	const findTileOrSprite = (entityName) => {
+		let entityId;
+		if (names.tile.has(entityName)) {
+			entityId = names.tile.get(entityName);
+		} else if (names.sprite.has(entityName)) {
+			entityId = names.sprite.get(entityName);
+			isSprite = true;
+		}
+		return entityId;
+	}
+
+	const oldTileId = findTileOrSprite(oldTileName);
+	const newTileId = findTileOrSprite(newTileName);
+
+	let roomData;
+	if (!isSprite && names.room.has(roomName)) {
+		const roomId = names.room.get(roomName);
+		roomData = room[roomId];
+	}
+
+	if (isSprite && oldTileId && newTileId) {
+		const oldSpriteData = sprite[oldTileId];
+		const newSpriteData = sprite[newTileId];
+
+		['room', 'x', 'y'].forEach((prop) => {
+			newSpriteData[prop] = oldSpriteData[prop];
+			oldSpriteData[prop] = null;
+		});
+	} else if (roomData && oldTileId && newTileId) {
+		roomData.tilemap.forEach((row) => {
+			row.forEach((col, idx) => {
+				if (row[idx] === oldTileId) row[idx] = newTileId;
+			});
+		});
+	} else {
+		console.error(`Unable to replace tile ${oldTileName} with tile ${newTileName} for room ${roomName}`);
 	}
 
 	onReturn(null);
@@ -900,7 +983,9 @@ var Environment = function() {
 	functionMap.set("center", centerAlignFunc);
 	functionMap.set("paper", paperStyleFunc);
 	functionMap.set("input", userInputFunc);
+	functionMap.set("ambient", ambientFunc);
 	functionMap.set("fog", fogFunc);
+	functionMap.set("replace", replaceTileFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {

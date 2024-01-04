@@ -1349,10 +1349,17 @@ function DialogTool() {
 				name: localization.GetStringOrFallback("dialog_effect_paper", "paper"),
 				description: "dialog box appears as lined paper",
 			},
+			ambient: {
+				name: localization.GetStringOrFallback("dialog_effect_ambient", "ambient light"),
+				description: "change ambient light for entire game",
+				defaultArg: '"[0.7, 0.7, 0.7]"',
+				placeAtEnd: true,
+			},
 			fog: {
 				name: localization.GetStringOrFallback("dialog_effect_fog", "fog"),
 				description: "change fog start & end; specify room name or default to current room",
-				defaultArg: '0 16 "room name"'
+				defaultArg: '0 16 "room name"',
+				placeAtEnd: true,
 			},
 			input: {
 				name: localization.GetStringOrFallback("dialog_effect_input", "input"),
@@ -1360,6 +1367,12 @@ function DialogTool() {
 				defaultArg: `"a"`,
 				placeAtEnd: true,
 			},
+			replace: {
+				name: localization.GetStringOrFallback("dialog_effect_replace", "replace"),
+				description: "dynamically replace tile or sprite; (for tiles, please specify a room)",
+				defaultArg: `"old entity name" "new entity name" "room name"`,
+				placeAtEnd: true,
+			}
 		};
 
 		function CreateAddEffectHandler(tag) {
