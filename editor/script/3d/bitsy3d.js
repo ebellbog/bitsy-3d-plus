@@ -572,6 +572,9 @@ b3d.init = function () {
     b3d.engine = new BABYLON.Engine(b3d.sceneCanvas, false);
     b3d.scene = new BABYLON.Scene(b3d.engine);
     b3d.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
+
+    b3d.resetLights();
+
     b3d.scene.freezeActiveMeshes();
 
     // optimization: this gives noticeable boost in very large scenes
@@ -589,7 +592,7 @@ b3d.init = function () {
     // material
     b3d.baseMat = new BABYLON.StandardMaterial('base material', b3d.scene);
     b3d.baseMat.ambientColor = new BABYLON.Color3(1, 1, 1);
-    b3d.baseMat.maxSimultaneousLights = 0;
+    b3d.baseMat.maxSimultaneousLights = 4;
     b3d.baseMat.freeze();
 
     // create transform node that will copy avatar's position
@@ -681,6 +684,13 @@ b3d.parseDataFromDialog = function () {
 
 b3d.parseData = b3d.parseDataFromDialog;
 
+b3d.resetLights = function() {
+    if (b3d.lights) {
+        b3d.lights.forEach((light) => light.dispose());
+    }
+    b3d.lights = [];
+}
+
 b3d.reInit3dData = function () {
     // clear all caches to force all drawings to reset during the update
     b3d.clearCaches(Object.values(b3d.caches));
@@ -690,6 +700,8 @@ b3d.reInit3dData = function () {
     b3d.roomsInStack = {};
     b3d.stackPosOfRoom = {};
     b3d.meshConfig = {};
+
+    b3d.resetLights();
 
     // delete camera
     b3d.mainCamera.deactivate();
@@ -1772,6 +1784,16 @@ b3d.getBillboardMode = function () {
 
 b3d.meshExtraSetup = function (drawing, mesh, meshConfig) {
     b3d.addChildren(drawing, mesh);
+
+    let newLight;
+    if (drawing.name?.includes("light")) {
+        newLight = new BABYLON.PointLight("light", new BABYLON.Vector3(mesh.position.x, 0, mesh.position.z), b3d.scene);
+        newLight.diffuse = new BABYLON.Color3(1, 1, .8);
+        newLight.specular = new BABYLON.Color3(.05, .05, .05);
+        newLight.intensity = .6;
+        b3d.lights.push(newLight);
+    }
+
     if (meshConfig.transform) {
         mesh.setPreTransformMatrix(meshConfig.transform);
         if (drawing === bitsy.player()) {
