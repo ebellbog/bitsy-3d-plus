@@ -176,6 +176,13 @@ function PaintTool(canvas, roomTool) {
 		var x = Math.floor(off.x);
 		var y = Math.floor(off.y);
 
+		if (e.altKey) {
+			// color eyedropper tool
+			const clickedColor = curDrawingData()[y][x];
+			document.querySelector(`input[name="colorRadio"][value="${clickedColor}"]`).click();
+			return;
+		}
+
 		// non-responsive version
 		// var x = Math.floor(off.x / paint_scale);
 		// var y = Math.floor(off.y / paint_scale);
@@ -186,6 +193,8 @@ function PaintTool(canvas, roomTool) {
 		else {
 			curPaintBrush = 0;
 		}
+
+
 		curDrawingData()[y][x] = curPaintBrush;
 		self.updateCanvas();
 		isPainting = true;
