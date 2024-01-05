@@ -800,7 +800,7 @@ function ambientFunc(environment, parameters, onReturn) {
 			const colorDelta = newColor[i] - curColor[i];
 			if (Math.abs(colorDelta) > COLOR_INCREMENT) {
 				doneAnimating = false;
-				curColor[i] = curColor[i] + (colorDelta > 1 ? COLOR_INCREMENT : -COLOR_INCREMENT);
+				curColor[i] = curColor[i] + (colorDelta > 0 ? COLOR_INCREMENT : -COLOR_INCREMENT);
 			} else {
 				curColor[i] = newColor[i];
 			}
