@@ -1810,6 +1810,8 @@ b3d.meshExtraSetup = function (drawing, mesh, meshConfig) {
 
         b3d.lights.push(newLight);
 
+        mesh.material.emissiveColor = new BABYLON.Color3(.5, .5, .5);
+
         b3d.baseMat.unfreeze();
         b3d.baseMat.maxSimultaneousLights = Math.min(b3d.lights.length, 6);
         b3d.baseMat.freeze();
