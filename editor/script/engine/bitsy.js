@@ -1084,7 +1084,7 @@ function isSpriteOffstage(id) {
 	return sprite[id].room == null;
 }
 
-const isNumber = (val) => typeof val === 'number';
+const isNumber = (val) => typeof val === 'number' && !isNaN(val);
 
 function parseWorld(file) {
 	spriteStartLocations = {};
