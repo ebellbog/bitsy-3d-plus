@@ -1786,7 +1786,7 @@ b3d.meshExtraSetup = function (drawing, mesh, meshConfig) {
     b3d.addChildren(drawing, mesh);
 
     let newLight;
-    if (drawing.name?.includes("light")) {
+    if (drawing.name?.includes("light source")) {
         newLight = new BABYLON.PointLight("light", new BABYLON.Vector3(mesh.position.x, 0, mesh.position.z), b3d.scene);
         newLight.diffuse = new BABYLON.Color3(1, 1, .8);
         newLight.specular = new BABYLON.Color3(.05, .05, .05);
