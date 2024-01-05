@@ -692,6 +692,8 @@ b3d.resetLights = function() {
     b3d.baseMat.unfreeze();
     b3d.baseMat.maxSimultaneousLights = 0;
     b3d.baseMat.freeze();
+
+    b3d.resetTextureCache();
 }
 
 b3d.reInit3dData = function () {

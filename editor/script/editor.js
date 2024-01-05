@@ -1293,6 +1293,9 @@ function on_drawing_name_change() {
 				if( node.type != "function" || node.name != "item" )
 					return; // not the right type of node
 				
+				if (!node.arguments)
+					return;
+
 				if( node.arguments.length <= 0 || node.arguments[0].type != "literal" )
 					return; // no argument available
 
