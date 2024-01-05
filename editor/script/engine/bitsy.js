@@ -311,7 +311,7 @@ function stopGame() {
 
 	document.getElementById('music-player-1')?.pause();
 	document.getElementById('music-player-2')?.pause();
-	b3d.scene.ambientColor = new BABYLON.Color3(1, 1, 1); // TODO: find a better place to put this
+	b3d.resetAmbient(); // TODO: find a better place for this?
 
 	document.getElementById('textCanvas').style.backdropFilter = 'none';
 

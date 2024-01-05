@@ -571,7 +571,7 @@ b3d.init = function () {
 
     b3d.engine = new BABYLON.Engine(b3d.sceneCanvas, false);
     b3d.scene = new BABYLON.Scene(b3d.engine);
-    b3d.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
+    b3d.resetAmbient();
 
     b3d.scene.freezeActiveMeshes();
 
@@ -694,6 +694,10 @@ b3d.resetLights = function() {
     b3d.baseMat.freeze();
 
     b3d.resetTextureCache();
+}
+
+b3d.resetAmbient = function() {
+    b3d.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
 }
 
 b3d.reInit3dData = function () {
@@ -1473,6 +1477,9 @@ b3d.update = function () {
     var didChangeScene = b3d.curStack? b3d.curStack !== b3d.lastStack: bitsy.curRoom !== b3d.lastRoom;
     if (didChangeScene) {
         b3d.resetLights();
+        if (!isPlayMode) {
+            b3d.resetAmbient();
+        }
     }
 
     // sprite changes
@@ -1806,6 +1813,12 @@ b3d.meshExtraSetup = function (drawing, mesh, meshConfig) {
         b3d.baseMat.unfreeze();
         b3d.baseMat.maxSimultaneousLights = Math.min(b3d.lights.length, 6);
         b3d.baseMat.freeze();
+
+        // If ambient color is full white, lights won't show up, so we dim the scene a bit
+        // (this is a janky solution that could use some future improvements)
+        if (b3d.scene.ambientColor.asArray().every((val) => val === 1)) {
+            b3d.scene.ambientColor = new BABYLON.Color3(.5, .5, .5);
+        }
     }
 
     if (meshConfig.transform) {
