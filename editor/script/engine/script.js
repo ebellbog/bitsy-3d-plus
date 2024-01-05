@@ -818,7 +818,15 @@ function ambientFunc(environment, parameters, onReturn) {
 		}
 	}
 
-	animateColor();
+	const doAnimate = parameters[1];
+	if (doAnimate) {
+		animateColor();
+	} else {
+		b3d.scene.ambientColor.r = newColor[0];
+		b3d.scene.ambientColor.g = newColor[1];
+		b3d.scene.ambientColor.b = newColor[2];
+	}
+
 	onReturn(null);
 }
 

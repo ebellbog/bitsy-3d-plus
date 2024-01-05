@@ -573,8 +573,6 @@ b3d.init = function () {
     b3d.scene = new BABYLON.Scene(b3d.engine);
     b3d.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
 
-    b3d.resetLights();
-
     b3d.scene.freezeActiveMeshes();
 
     // optimization: this gives noticeable boost in very large scenes
@@ -592,8 +590,9 @@ b3d.init = function () {
     // material
     b3d.baseMat = new BABYLON.StandardMaterial('base material', b3d.scene);
     b3d.baseMat.ambientColor = new BABYLON.Color3(1, 1, 1);
-    b3d.baseMat.maxSimultaneousLights = 4;
     b3d.baseMat.freeze();
+
+    b3d.resetLights();
 
     // create transform node that will copy avatar's position
     // prevents crashes when used as a camera target when avatar mesh is a billboard
@@ -689,6 +688,10 @@ b3d.resetLights = function() {
         b3d.lights.forEach((light) => light.dispose());
     }
     b3d.lights = [];
+
+    b3d.baseMat.unfreeze();
+    b3d.baseMat.maxSimultaneousLights = 0;
+    b3d.baseMat.freeze();
 }
 
 b3d.reInit3dData = function () {
@@ -1463,8 +1466,12 @@ b3d.clearCachesMesh = function (drw) {
 b3d.update = function () {
     // console.debug("update called");
     b3d.curStack = b3d.stackPosOfRoom[bitsy.curRoom] && b3d.stackPosOfRoom[bitsy.curRoom].stack || null;
-    var didChangeScene = b3d.curStack? b3d.curStack !== b3d.lastStack: bitsy.curRoom !== b3d.lastRoom;
     var editorMode = bitsy.isPlayerEmbeddedInEditor && !bitsy.isPlayMode;
+
+    var didChangeScene = b3d.curStack? b3d.curStack !== b3d.lastStack: bitsy.curRoom !== b3d.lastRoom;
+    if (didChangeScene) {
+        b3d.resetLights();
+    }
 
     // sprite changes
     Object.entries(b3d.sprites).forEach(function (entry) {
@@ -1791,7 +1798,12 @@ b3d.meshExtraSetup = function (drawing, mesh, meshConfig) {
         newLight.diffuse = new BABYLON.Color3(1, 1, .8);
         newLight.specular = new BABYLON.Color3(.05, .05, .05);
         newLight.intensity = .6;
+
         b3d.lights.push(newLight);
+
+        b3d.baseMat.unfreeze();
+        b3d.baseMat.maxSimultaneousLights = Math.min(b3d.lights.length, 6);
+        b3d.baseMat.freeze();
     }
 
     if (meshConfig.transform) {
