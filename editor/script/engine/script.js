@@ -634,15 +634,20 @@ function musicFunc(environment, parameters, onReturn) {
 	const player1 = getMusicPlayer('music-player-1', true);
 	const player2 = getMusicPlayer('music-player-2', true);
 
-	const fadeAudio = () => {
+	const fadeOut = () => {
 		if (player1.volume > 0) {
 			player1.volume = Math.max(player1.volume - .01, 0);
-			setTimeout(fadeAudio, 20);
+			setTimeout(fadeOut, 25);
 		} else {
 			player1.pause();
 		}
 	}
-
+	const fadeIn = () => {
+		if (player1.volume < MAX_MUSIC_VOLUME) {
+			player1.volume = Math.min(player1.volume + .01, MAX_MUSIC_VOLUME);
+			setTimeout(fadeIn, 25);
+		}
+	}
 	const crossfadeAudio = () => {
 		if (player1.volume === 0) {
 			player1.pause();
@@ -652,7 +657,7 @@ function musicFunc(environment, parameters, onReturn) {
 		}
 		player1.volume = Math.max(player1.volume - .01, 0);
 		player2.volume = Math.min(player2.volume + .01, MAX_MUSIC_VOLUME);
-		setTimeout(crossfadeAudio, 20);
+		setTimeout(crossfadeAudio, 25);
 	}
 
 	const playMusic = () => {
@@ -661,9 +666,11 @@ function musicFunc(environment, parameters, onReturn) {
 		if (player1.paused || !player1.currentTime) {
 			player1.src = src;
 			player1.currentTime = 0;
-			player1.volume = MAX_MUSIC_VOLUME;
+			player1.volume = 0;
 			player1.play();
+
 			console.debug('PLAYING MUSIC:', src);
+			fadeIn();
 		} else {
 			player2.src = src;
 			player2.currentTime = 0;
@@ -681,7 +688,7 @@ function musicFunc(environment, parameters, onReturn) {
 	} else {
 		console.debug('STOPPING MUSIC');
 		player2.pause();
-		fadeAudio();
+		fadeOut();
 	}
 
 	onReturn(null);
