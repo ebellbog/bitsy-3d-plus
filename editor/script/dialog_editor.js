@@ -236,7 +236,6 @@ function DialogTool() {
 
 		function UpdateDialogIdSelectOptions() {
 			dialogIdSelect.innerHTML = "";
-			var dialogIdList = sortedDialogIdList();
 			if (allowNone) {
 				var dialogNoneOption = document.createElement("option");
 				dialogNoneOption.innerText = "none";
@@ -244,18 +243,21 @@ function DialogTool() {
 				dialogNoneOption.selected = dialogId === null;
 				dialogIdSelect.appendChild(dialogNoneOption);
 			}
-			for (var i = 0; i < dialogIdList.length; i++) {
-				var dialogIdOption = document.createElement("option");
-				if (dialog[dialogIdList[i]].name != null) {
-					dialogIdOption.innerText = dialog[dialogIdList[i]].name;
-				}
-				else {
-					dialogIdOption.innerText = localization.GetStringOrFallback("dialog_block_basic", "dialog") + " " + dialogIdList[i];
-				}
-				dialogIdOption.value = dialogIdList[i];
-				dialogIdOption.selected = dialogId === dialogIdList[i];
-				dialogIdSelect.appendChild(dialogIdOption);
-			}
+			Object.entries(dialog)
+				.sort((a, b) => (a[1].name || 'title') > (b[1].name || 'title') ? 1 : -1)
+				.forEach(([id, dlg]) => {
+					if (['DATA3D', 'DRAWINGSIZE'].includes(id)) return;
+					var dialogIdOption = document.createElement("option");
+					if (dlg.name != null) {
+						dialogIdOption.innerText = dlg.name;
+					}
+					else {
+						dialogIdOption.innerText = localization.GetStringOrFallback("dialog_block_basic", "dialog") + " " + id;
+					}
+					dialogIdOption.value = id;
+					dialogIdOption.selected = dialogId === id;
+					dialogIdSelect.appendChild(dialogIdOption);
+				});
 		}
 
 		UpdateDialogIdSelectOptions();
