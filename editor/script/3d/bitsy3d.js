@@ -1477,7 +1477,7 @@ b3d.update = function () {
     var didChangeScene = b3d.curStack? b3d.curStack !== b3d.lastStack: bitsy.curRoom !== b3d.lastRoom;
     if (didChangeScene) {
         b3d.resetLights();
-        if (!bitsy.isPlayMode) {
+        if (editorMode) {
             b3d.resetAmbient();
         }
     }
