@@ -629,7 +629,7 @@ function getMusicSrc(parameters) {
 function musicFunc(environment, parameters, onReturn) {
 	if (isPlayerEmbeddedInEditor && doMuteAudio) return onReturn(null);
 
-	const MAX_MUSIC_VOLUME = .45;
+	const MAX_MUSIC_VOLUME = .4;
 
 	const player1 = getMusicPlayer('music-player-1', true);
 	const player2 = getMusicPlayer('music-player-2', true);
