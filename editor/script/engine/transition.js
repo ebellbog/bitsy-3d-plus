@@ -101,8 +101,13 @@ var TransitionManager = function() {
 			b3d.transitionMatte.style.backgroundColor = (fadeColor === 'b') ? 'black' : 'white';
 			b3d.transitionMatte.style.opacity = 1;
 			return setTimeout(() => {
-				if (callback) callback();
-				b3d.transitionMatte.style.opacity = 0;
+				if (callback) {
+					callback();
+					// build in a little extra time for callback to complete
+					setTimeout(() => b3d.transitionMatte.style.opacity = 0, 100);
+				} else {
+					b3d.transitionMatte.style.opacity = 0;
+				}
 			}, 500);
 		}
 	}
