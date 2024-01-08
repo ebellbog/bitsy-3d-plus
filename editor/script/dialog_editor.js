@@ -373,7 +373,7 @@ function DialogTool() {
 				OnUpdate();
 			}
 			codeTextArea.onchange = OnTextChangeHandler;
-			codeTextArea.onkeyup = OnTextChangeHandler;
+			// codeTextArea.onkeyup = OnTextChangeHandler;
 			codeTextArea.onblur = OnTextChangeHandler;
 			dialogBoxContainer.appendChild(codeTextArea);
 		}
@@ -390,6 +390,7 @@ function DialogTool() {
 
 		function OnUpdate() {
 			var dialogStr = scriptRootNode.Serialize();
+			if (dialogStr) dialogStr = dialogStr.replace(/ +/g, ' '); // remove excess spaces
 
 			var didMakeNewDialog = false;
 			if (dialogStr.length > 0 && !DoesDialogExist()) {
@@ -490,6 +491,7 @@ function DialogTool() {
 			// scriptInterpreter.DebugVisualizeScriptTree(scriptRootNode);
 
 			var dialogStr = rootEditor.Serialize();
+			if (dialogStr) dialogStr = dialogStr.replace(/ +/g, ' '); // remove excess spaces
 
 			if (dialogStr.indexOf("\n") > -1) {
 				// hacky - expose the triple-quotes symbol somewhere?
@@ -1079,7 +1081,7 @@ function DialogTool() {
 			textArea.value = dialogText;
 
 			textArea.onchange = OnDialogTextChange;
-			textArea.onkeyup = OnDialogTextChange;
+			// textArea.onkeyup = OnDialogTextChange;
 			textArea.onblur = OnDialogTextChange;
 
 			textArea.rows = Math.max(2, dialogText.split("\n").length + 1);
