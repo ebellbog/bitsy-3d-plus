@@ -390,7 +390,7 @@ function DialogTool() {
 
 		function OnUpdate() {
 			var dialogStr = scriptRootNode.Serialize();
-			if (dialogStr) dialogStr = dialogStr.replace(/ +/g, ' '); // remove excess spaces
+			if (dialogStr) dialogStr = dialogStr.replace(/(\S) +/g, '$1 '); // remove excess spaces
 
 			var didMakeNewDialog = false;
 			if (dialogStr.length > 0 && !DoesDialogExist()) {
@@ -491,7 +491,7 @@ function DialogTool() {
 			// scriptInterpreter.DebugVisualizeScriptTree(scriptRootNode);
 
 			var dialogStr = rootEditor.Serialize();
-			if (dialogStr) dialogStr = dialogStr.replace(/ +/g, ' '); // remove excess spaces
+			if (dialogStr) dialogStr = dialogStr.replace(/(\S) +/g, '$1 '); // remove excess spaces
 
 			if (dialogStr.indexOf("\n") > -1) {
 				// hacky - expose the triple-quotes symbol somewhere?
