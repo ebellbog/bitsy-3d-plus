@@ -16,7 +16,12 @@ this.exportGame = function(gameData, title, pageColor, filename, isFixedSize, si
 	var html = Resources["exportTemplate.html"].substr(); //copy template
 	// console.debug(html);
 
-	html = replaceTemplateMarker( html, "@@T", title );
+	const displayTitle = (title || "")
+		.split("{pg}")[0]
+		.replace(/{.*?}/gs, "") // remove code tags and extra quotes
+		.split("\n")
+		.filter((line) => line.length)[0] || '';
+	html = replaceTemplateMarker( html, "@@T", displayTitle );
 
 	if( isFixedSize ) {
 		html = replaceTemplateMarker( html, "@@C", Resources["exportStyleFixed.css"] );
