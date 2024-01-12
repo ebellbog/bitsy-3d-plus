@@ -546,7 +546,71 @@ b3d.init = function () {
             background: none;
             pointer-events: none;
             transition: backdrop-filter .5s;
-        }`;
+        }
+        #keyboardOverlay {
+            z-index: 2;
+            position: absolute;
+            font-size: 5em;
+            font-family: 'Pixelify Sans', monospace;
+            display: flex;
+        }
+        #keyboardOverlay .numKey {
+            border-radius: 50%;
+            border: .1em solid black;
+            background-color: white;
+            color: black;
+            text-align: center;
+            line-height: 1.3em;
+            width: 1.3em;
+            margin: 0 .25em;
+        }
+        #keyboardOverlay .numKey:hover {
+            background-color: yellow;
+        }
+        #mobileHelper {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: inline-block;
+            white-space: nowrap;
+            color: white;
+            background-color: #555;
+            font-family: 'Pixelify Sans', monospace;
+            padding: 0 1em;
+            border-radius: 1em;
+            transition: opacity 2s;
+            letter-spacing: .05em;
+        }
+        @media (orientation: portrait) {
+            #keyboardOverlay {
+                bottom: 9%;
+                justify-content: center;
+                width: 100%;
+            }
+            #mobileHelper {
+                bottom: 7%;
+                font-size: 2.1em;
+                line-height: 1.2em;
+            }
+        }
+        @media (orientation: landscape) {
+            #keyboardOverlay {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 24%;
+                font-size: 2.5em;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            #keyboardOverlay .numKey {
+                margin: .3em .25em;
+            }
+            #mobileHelper {
+                font-size: 1.4em;
+                bottom: 5%;
+            }
+        }
+        `;
         var sheet = document.createElement('style');
         sheet.textContent = style;
         document.head.appendChild(sheet);
@@ -567,6 +631,19 @@ b3d.init = function () {
         b3d.transitionMatte = document.createElement('div');
         b3d.transitionMatte.id = 'transitionMatte';
         gameContainer.appendChild(b3d.transitionMatte);
+
+        if (bitsy.isMobileDevice()) {
+            const helperDiv = document.createElement('div');
+            helperDiv.id = 'mobileHelper';
+            helperDiv.innerHTML = `
+                <ul>
+                <li>Swipe up, down, left, or right to move</li>
+                <li>Tap to advance dialog</li>
+                </ul>`;
+
+            const body = document.querySelector('body');
+            body.appendChild(helperDiv);
+        }
     }
 
     b3d.engine = new BABYLON.Engine(b3d.sceneCanvas, false);

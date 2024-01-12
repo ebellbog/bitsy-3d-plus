@@ -252,7 +252,7 @@ function onready(startWithTitle) {
 
 	  	  // afaik css in js is necessary here to force a fullscreen element
 	  	  touchTrigger.setAttribute(
-	  	    "style","position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden;"
+	  	    "style","position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; z-index: 1;"
 	  	  );
 	  	  document.body.appendChild(touchTrigger);
 
@@ -721,6 +721,7 @@ var InputManager = function() {
 		ignored[event.keyCode] = false;
 	}
 
+	let tapsBeforeHide = 3;
 	this.ontouchstart = function(event) {
 		event.preventDefault();
 
@@ -731,6 +732,12 @@ var InputManager = function() {
 			touchState.startY = touchState.curY = event.changedTouches[0].clientY;
 
 			touchState.swipeDirection = Direction.None;
+		}
+        
+		const mobileHelper = document.getElementById('mobileHelper');
+		if (mobileHelper && tapsBeforeHide > 0) {
+			tapsBeforeHide--;
+			if (tapsBeforeHide == 0) mobileHelper.style.opacity = 0;
 		}
 	}
 
@@ -2466,3 +2473,13 @@ var scriptModule = new Script();
 var scriptInterpreter = scriptModule.CreateInterpreter();
 var scriptUtils = scriptModule.CreateUtils(); // TODO: move to editor.js?
 // scriptInterpreter.SetDialogBuffer( dialogBuffer );
+
+function isMobileDevice() {
+    return (navigator.userAgent.match(/Android/i)
+        || navigator.userAgent.match(/webOS/i)
+        || navigator.userAgent.match(/iPhone/i)
+        || navigator.userAgent.match(/iPod/i)
+        || navigator.userAgent.match(/BlackBerry/i)
+        || navigator.userAgent.match(/Windows Phone/i)
+    ) ? true : false
+}

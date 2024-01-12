@@ -726,10 +726,36 @@ function userInputFunc(environment, parameters, onReturn) {
 		return onReturn(null);
 	}
 
-	document.addEventListener("keydown", function(e) {
-		environment.SetVariable(variableName, parseInt(e.key));
-		console.debug(`Set ${variableName} to ${e.key}`);
-	}, {once: true});
+	if (isMobileDevice()) {
+		const keyboardOverlay = document.createElement('div');
+		keyboardOverlay.id = 'keyboardOverlay';
+
+		const minInput = parameters[1] || 1;
+		const maxInput = parameters[2] || 9;
+
+		for (let i = minInput; i < maxInput + 1; i++) {
+			const numberOption = document.createElement('div');
+			numberOption.innerHTML = i ;
+			numberOption.classList.add('numKey');
+			numberOption.setAttribute('data-num-key', i);
+			numberOption.onclick = function() {
+				const val = this.getAttribute('data-num-key');
+				environment.SetVariable(variableName, parseInt(val));
+				console.debug(`Set ${variableName} to ${val}`);
+
+				keyboardOverlay.remove();
+				dialogBuffer.Continue();
+			}
+			keyboardOverlay.appendChild(numberOption);
+		}
+
+		document.querySelector('body').appendChild(keyboardOverlay);
+	} else {
+		document.addEventListener("keydown", function(e) {
+			environment.SetVariable(variableName, parseInt(e.key));
+			console.debug(`Set ${variableName} to ${e.key}`);
+		}, {once: true});
+	}
 
 	onReturn(null);
 }
