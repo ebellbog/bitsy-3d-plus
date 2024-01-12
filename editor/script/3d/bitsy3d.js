@@ -553,6 +553,7 @@ b3d.init = function () {
             font-size: 5em;
             font-family: 'Pixelify Sans', monospace;
             display: flex;
+            justify-content: center;
         }
         #keyboardOverlay .numKey {
             border-radius: 50%;
@@ -584,7 +585,6 @@ b3d.init = function () {
         @media (orientation: portrait) {
             #keyboardOverlay {
                 bottom: 9%;
-                justify-content: center;
                 width: 100%;
             }
             #mobileHelper {
@@ -596,7 +596,6 @@ b3d.init = function () {
         @media (orientation: landscape) {
             #keyboardOverlay {
                 flex-wrap: wrap;
-                justify-content: center;
                 width: 24%;
                 font-size: 2.5em;
                 top: 50%;
