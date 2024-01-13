@@ -733,11 +733,14 @@ var InputManager = function() {
 
 			touchState.swipeDirection = Direction.None;
 		}
-        
+
 		const mobileHelper = document.getElementById('mobileHelper');
 		if (mobileHelper && tapsBeforeHide > 0) {
 			tapsBeforeHide--;
-			if (tapsBeforeHide == 0) mobileHelper.style.opacity = 0;
+			if (tapsBeforeHide == 0) {
+				mobileHelper.style.opacity = 0;
+				setTimeout(() => mobileHelper.remove(), 2000);
+			}
 		}
 	}
 

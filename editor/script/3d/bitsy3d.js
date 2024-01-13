@@ -640,7 +640,10 @@ b3d.init = function () {
                 <li>Swipe up, down, left, or right to move</li>
                 <li>Tap to advance dialog</li>
                 </ul>`;
-            helperDiv.onclick = () => helperDiv.style.opacity = 0;
+            helperDiv.onclick = () => {
+                helperDiv.style.opacity = 0;
+                setTimeout(() => helperDiv.remove(), 2000);
+            };
 
             const body = document.querySelector('body');
             body.appendChild(helperDiv);
