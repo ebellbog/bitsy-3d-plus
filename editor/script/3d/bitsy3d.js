@@ -569,13 +569,14 @@ b3d.init = function () {
             background-color: yellow;
         }
         #mobileHelper {
+            z-index: 2;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
             display: inline-block;
             white-space: nowrap;
             color: white;
-            background-color: #555;
+            background-color: rgba(100, 100, 100, .7);
             font-family: 'Pixelify Sans', monospace;
             padding: 0 1em;
             border-radius: 1em;
@@ -605,7 +606,7 @@ b3d.init = function () {
                 margin: .3em .25em;
             }
             #mobileHelper {
-                font-size: 1.4em;
+                font-size: 1.1em;
                 bottom: 5%;
             }
         }
@@ -639,6 +640,7 @@ b3d.init = function () {
                 <li>Swipe up, down, left, or right to move</li>
                 <li>Tap to advance dialog</li>
                 </ul>`;
+            helperDiv.onclick = () => helperDiv.style.opacity = 0;
 
             const body = document.querySelector('body');
             body.appendChild(helperDiv);
