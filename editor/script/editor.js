@@ -2490,7 +2490,7 @@ function toggleWallUI(checked) {
 }
 
 function filenameFromGameTitle() {
-	var filename = getTitle().replace(/[^a-zA-Z]/g, "_"); // replace non alphabet characters
+	var filename = getTrimmedTitle().replace(/[^a-zA-Z]/g, "_"); // replace non alphabet characters
 	filename = filename.toLowerCase();
 	filename = filename.substring(0,32); // keep it from getting too long
 	return filename;
@@ -2509,7 +2509,7 @@ function exportGame() {
 	//download as html file
 	exporter.exportGame(
 		gameData,
-		getTitle(),
+		getTrimmedTitle(),
 		export_settings.page_color,
 		filenameFromGameTitle() + ".html",
 		isFixedSize,

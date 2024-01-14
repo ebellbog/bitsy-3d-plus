@@ -550,7 +550,6 @@ b3d.init = function () {
         #keyboardOverlay {
             z-index: 2;
             position: absolute;
-            font-size: 5em;
             font-family: 'Pixelify Sans', monospace;
             display: flex;
             justify-content: center;
@@ -561,9 +560,8 @@ b3d.init = function () {
             background-color: white;
             color: black;
             text-align: center;
-            line-height: 1.3em;
-            width: 1.3em;
-            margin: 0 .25em;
+            line-height: 40px;
+            width: 40px;
         }
         #keyboardOverlay .numKey:hover {
             background-color: yellow;
@@ -578,7 +576,7 @@ b3d.init = function () {
             color: white;
             background-color: rgba(100, 100, 100, .7);
             font-family: 'Pixelify Sans', monospace;
-            padding: 0 1em;
+            padding-right: 20px;
             border-radius: 1em;
             transition: opacity 2s;
             letter-spacing: .05em;
@@ -587,27 +585,32 @@ b3d.init = function () {
             #keyboardOverlay {
                 bottom: 9%;
                 width: 100%;
+                font-size: 26px;
+            }
+            #keyboardOverlay .numKey {
+                margin: 0 8px;
             }
             #mobileHelper {
                 bottom: 7%;
-                font-size: 2.1em;
-                line-height: 1.2em;
+                font-size: 13px;
+                line-height: 18px;
             }
         }
         @media (orientation: landscape) {
             #keyboardOverlay {
                 flex-wrap: wrap;
-                width: 24%;
-                font-size: 2.5em;
+                width: 150px;
+                font-size: 30px;
                 top: 50%;
+                left: 3%;
                 transform: translateY(-50%);
             }
             #keyboardOverlay .numKey {
-                margin: .3em .25em;
+                margin: 10px;
             }
             #mobileHelper {
-                font-size: 1.1em;
-                bottom: 5%;
+                font-size: 12px;
+                bottom: 8%;
             }
         }
         `;

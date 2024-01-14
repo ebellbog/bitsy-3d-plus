@@ -21,6 +21,14 @@ var titleDialogId = "title";
 function getTitle() {
 	return dialog[titleDialogId].src;
 }
+function getTrimmedTitle() {
+	return (getTitle() || "")
+		.split("{pg}")[0]
+		.replace(/{.*?}|"""/gs, "") // remove code tags and extra quotes
+		.split("\n")
+		.filter((line) => line.length)
+		.join(' ');
+}
 function getTitleSettings() {
 	const titleDlg = dialog[titleDialogId];
 	return {

@@ -14,14 +14,7 @@ function replaceTemplateMarker(template, marker, text) {
 
 this.exportGame = function(gameData, title, pageColor, filename, isFixedSize, size) {
 	var html = Resources["exportTemplate.html"].substr(); //copy template
-	// console.debug(html);
-
-	const displayTitle = (title || "")
-		.split("{pg}")[0]
-		.replace(/{.*?}/gs, "") // remove code tags and extra quotes
-		.split("\n")
-		.filter((line) => line.length)[0] || '';
-	html = replaceTemplateMarker( html, "@@T", displayTitle );
+	html = replaceTemplateMarker( html, "@@T", title);
 
 	if( isFixedSize ) {
 		html = replaceTemplateMarker( html, "@@C", Resources["exportStyleFixed.css"] );
