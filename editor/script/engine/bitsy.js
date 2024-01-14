@@ -976,8 +976,11 @@ function initRoom(roomId) {
 		// this code runs, so we wrap it in setTimeout to defer its execution
 		setTimeout(() => {
 			const canvas3d = document.getElementById('sceneCanvas');
+			const canvas2d = document.getElementById('game');
+
 			if (canvas3d) {
 				canvas3d.style.opacity = (renderMode === '3D') ? 1 : 0;
+				canvas2d.style.opacity = (renderMode === '2D') ? 1 : 0;
 			}
 		}, 0);
 	}
