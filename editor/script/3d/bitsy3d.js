@@ -523,9 +523,11 @@ b3d.init = function () {
         canvas:focus {
             outline: none;
         }
+        #game {
+            display: inline-grid; /*to prevent it from growing a few pixels taller than sceneCanvas*/
+        }
         #game, #gameContainer {
             position: absolute;
-            display: inline-grid; /*to prevent it from growing a few pixels taller than sceneCanvas*/
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -537,6 +539,7 @@ b3d.init = function () {
             max-height: 100vh;
         }
         #textCanvas {
+            z-index: 2;
             position: absolute;
             object-fit: contain;
             top: 0;
