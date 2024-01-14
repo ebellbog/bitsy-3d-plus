@@ -556,6 +556,10 @@ function endFunc(environment,parameters,onReturn) {
 	isEnding = true;
 	isNarrating = true;
 	dialogRenderer.SetCentered(true);
+
+	b3d.transitionMatte.style.backgroundColor = 'black';
+	b3d.transitionMatte.style.opacity = 1;
+
 	onReturn(null);
 }
 
@@ -662,6 +666,9 @@ function musicFunc(environment, parameters, onReturn) {
 
 	const playMusic = () => {
 		player2.pause();
+		if (isMobileDevice()) {
+			player1.pause(); // TODO: better fix for mobile audio issues
+		}
 
 		if (player1.paused || !player1.currentTime) {
 			player1.src = src;
