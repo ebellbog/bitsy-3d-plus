@@ -275,6 +275,16 @@ function onready(startWithTitle) {
 	update_interval = setInterval(update,16);
 
 	if(startWithTitle && !doSkipTitle) { // used by editor
+		isStarting = true;
+
+		setTimeout(() => {
+			const transitionMatte = document.getElementById('transitionMatte');
+			if (transitionMatte) {
+				transitionMatte.style.backgroundColor = 'black';
+				transitionMatte.style.opacity = 1;
+			}
+		}, 0);
+
 		startNarrating(getTitle(), null, getTitleSettings());
 	}
 }

@@ -576,9 +576,14 @@ var DialogBuffer = function() {
 		}
 		else {
 			console.debug("END DIALOG!");
+
+			if (isStarting) {
+				isStarting = false;
+				b3d.transitionMatte.style.opacity = 0;
+			}
+
 			dialogRenderer.SetDialogStyle();
-			//end dialog mode
-			this.EndDialog();
+			this.EndDialog(); //end dialog mode
 			return false; /* hasMoreDialog */
 		}
 	};
