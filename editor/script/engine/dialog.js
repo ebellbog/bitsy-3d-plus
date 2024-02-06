@@ -179,8 +179,10 @@ var DialogRenderer = function() {
 			this.SetCentered(true, true);
 			this.SetPaddingRows(1);
 			context.canvas.style.backdropFilter = 'blur(8px)';
+			context.canvas.style.webkitBackdropFilter = 'blur(8px)';
 		} else {
 			context.canvas.style.backdropFilter = 'none';
+			context.canvas.style.webkitBackdropFilter = 'none';
 		}
 		dlgStyle = style;
 	}

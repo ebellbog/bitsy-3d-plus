@@ -544,11 +544,11 @@ b3d.init = function () {
             object-fit: contain;
             top: 0;
             left: 0;
-            width: 100%;
+            min-width: 100%;
             height: 100%;
             background: none;
             pointer-events: none;
-            transition: backdrop-filter .5s;
+            transition: backdrop-filter .5s, -webkit-backdrop-filter .5s;
         }
         #keyboardOverlay {
             z-index: 2;
