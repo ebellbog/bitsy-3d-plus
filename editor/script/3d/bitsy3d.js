@@ -174,8 +174,9 @@ b3d.cameraDataModel = {
                 wheelPrecision: 3,
                 upperBetaLimit: Math.PI/2,
                 lowerBetaLimit: 0,
-                rotationTweenTime: 250,
                 rotationTweenFunction: 'linear',
+                rotationTweenTime: 250,
+                rotationTweenTimeWithDiagonals: 175,
             },
             vector3: { target: {x: 7.5, z: 7.5, y: 0} },
             trait: {
@@ -285,9 +286,16 @@ b3d.cameraDataModel = {
                 b3d.patch(thisCamera.ref, 'update', null, function () {
                     var rotationState = thisCamera.rotationState;
                     var tweenFunction = b3d.tweenFunctions[thisCamera.rotationTweenFunction] || b3d.tweenFunctions['linear'];
-                    var tweenPercent = Math.min(tweenFunction(((bitsy.prevTime - rotationState.tweenStartingTime) / thisCamera.rotationTweenTime)), 1);
                     if (rotationState.isTweening) {
-                        var tweenPercent = Math.min(tweenFunction(((bitsy.prevTime - rotationState.tweenStartingTime) / thisCamera.rotationTweenTime)), 1);
+                        let {rotationTweenTime,
+                            rotationTweenTimeWithDiagonals,
+                            useLeftAndRightToRotateByAngle: rotationAmount,
+                        } = thisCamera;
+                        if (rotationTweenTimeWithDiagonals && rotationAmount <= Math.PI / 4) {
+                            rotationTweenTime = rotationTweenTimeWithDiagonals;
+                        }
+
+                        var tweenPercent = Math.min(tweenFunction(((bitsy.prevTime - rotationState.tweenStartingTime) / rotationTweenTime)), 1);
                         thisCamera.ref.alpha = rotationState.tweenStartingRotation + (rotationState.tweenRotationAmount * tweenPercent);
                         if (tweenPercent === 1) rotationState.isTweening = false;
                     }
@@ -445,19 +453,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if (curRoomRenderMode() === '2D') return;
 
             var rotationTable = {};
-            rotationTable[bitsy.Direction.Up] = bitsy.Direction.Left;
-            rotationTable[bitsy.Direction.Left] = bitsy.Direction.Down;
-            rotationTable[bitsy.Direction.Down] = bitsy.Direction.Right;
-            rotationTable[bitsy.Direction.Right] = bitsy.Direction.Up;
+            rotationTable[bitsy.Direction.Up] = bitsy.Direction.Northwest;
+            rotationTable[bitsy.Direction.Northwest] = bitsy.Direction.Left;
+            rotationTable[bitsy.Direction.Left] = bitsy.Direction.Southwest;
+            rotationTable[bitsy.Direction.Southwest] = bitsy.Direction.Down;
+            rotationTable[bitsy.Direction.Down] = bitsy.Direction.Southeast;
+            rotationTable[bitsy.Direction.Southeast] = bitsy.Direction.Right;
+            rotationTable[bitsy.Direction.Right] = bitsy.Direction.Northeast;
+            rotationTable[bitsy.Direction.Northeast] = bitsy.Direction.Up;
             rotationTable[bitsy.Direction.None] = bitsy.Direction.None;
 
             var rotatedDirection = bitsy.curPlayerDirection;
             var ray = b3d.curActiveCamera.ref.getForwardRay().direction;
             var ray2 = new BABYLON.Vector2(ray.x, ray.z);
             ray2.normalize();
-            var a = (Math.atan2(ray2.y, ray2.x) / Math.PI + 1) * 2 + 0.5;
+            var a = Math.round(Math.atan2(ray2.y, ray2.x) / (Math.PI / 4) - 2);
             if (a < 0) {
-                a += 4;
+                a += 8;
             }
             for (var i = 0; i < a; ++i) {
                 rotatedDirection = rotationTable[rotatedDirection];
@@ -465,6 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
             bitsy.curPlayerDirection = rotatedDirection;
         },
         function () {
+            bitsy.lastPlayerDirection = bitsy.curPlayerDirection;
             bitsy.curPlayerDirection = b3d.rawDirection;
     });
 
@@ -1587,14 +1600,23 @@ b3d.update = function () {
             b3d.spriteLastPos[id] = b3d.spriteLastPos[id] || new BABYLON.Vector3(targetX, targetY, targetZ);
             var lastPos = b3d.spriteLastPos[id];
 
+            const isDiagonalMovement = [
+                bitsy.Direction.Northwest,
+                bitsy.Direction.Northeast,
+                bitsy.Direction.Southwest,
+                bitsy.Direction.Southeast
+            ].includes(bitsy.lastPlayerDirection);
+            const effectiveTweenThreshold = b3d.settings.tweenDistance * (isDiagonalMovement ? Math.sqrt(2) : 1);
+
             if (!editorMode &&
                 !lastPos.equalsToFloats(targetX, targetY, targetZ) && 
-                lastPos.subtractFromFloats(targetX, targetY, targetZ).length() <= b3d.settings.tweenDistance) {
+                lastPos.subtractFromFloats(targetX, targetY, targetZ).length() <= b3d.settings.tweenDistance * effectiveTweenThreshold) {
                 // add a tween from current position
                 b3d.tweens[id] = {
                     from: mesh.position.clone(),
                     to: new BABYLON.Vector3(targetX, targetY, targetZ),
                     start: bitsy.prevTime,
+                    diagonal: isDiagonalMovement
                 };
             } else {
                 // otherwise move the sprite immediately
@@ -1628,9 +1650,10 @@ b3d.update = function () {
     // apply tweens
     if (!editorMode) {
         Object.entries(b3d.tweens).forEach(function (entry) {
-            var id = entry[0];
-            var tween = entry[1];
-            var t = (bitsy.prevTime - tween.start) / b3d.settings.tweenDuration;
+            const id = entry[0];
+            const tween = entry[1];
+            const effectiveDuration = b3d.settings.tweenDuration * (tween.diagonal ? Math.sqrt(2) : 1);
+            const t = (bitsy.prevTime - tween.start) / effectiveDuration;
             if (t < 1) {
                 BABYLON.Vector3.LerpToRef(
                     tween.from,

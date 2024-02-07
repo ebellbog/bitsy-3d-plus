@@ -175,6 +175,7 @@ var onInventoryChanged = null;
 var onVariableChanged = null;
 var onGameReset = null;
 
+var isStarting = false;
 var isPlayerEmbeddedInEditor = false;
 
 var renderer = new Renderer(tilesize, scale);
@@ -636,7 +637,11 @@ var Direction = {
 	Up : 0,
 	Down : 1,
 	Left : 2,
-	Right : 3
+	Right : 3,
+	Northwest: 4,
+	Northeast: 5,
+	Southwest: 6,
+	Southeast: 7,
 };
 
 var curPlayerDirection = Direction.None;
@@ -855,17 +860,53 @@ function movePlayer(direction) {
 
 	var spr = null;
 
-	if ( curPlayerDirection == Direction.Left && !(spr = getSpriteLeft()) && !isWallLeft()) {
+	let didMove = true;
+	if ( curPlayerDirection == Direction.Left && !(spr = getSpriteLeft()) && !isWallLeft() ) {
 		player().x -= 1;
 	}
-	else if ( curPlayerDirection == Direction.Right && !(spr = getSpriteRight()) && !isWallRight()) {
+	else if ( curPlayerDirection == Direction.Right && !(spr = getSpriteRight()) && !isWallRight() ) {
 		player().x += 1;
 	}
-	else if ( curPlayerDirection == Direction.Up && !(spr = getSpriteUp()) && !isWallUp()) {
+	else if ( curPlayerDirection == Direction.Up && !(spr = getSpriteUp()) && !isWallUp() ) {
 		player().y -= 1;
 	}
-	else if ( curPlayerDirection == Direction.Down && !(spr = getSpriteDown()) && !isWallDown()) {
+	else if ( curPlayerDirection == Direction.Down && !(spr = getSpriteDown()) && !isWallDown() ) {
 		player().y += 1;
+	}
+	else if ( curPlayerDirection == Direction.Northwest && !(
+		(spr = getSpriteNW()) || isWallNW() ||
+		getSpriteUp() || isWallUp() ||
+		getSpriteLeft() || isWallLeft()
+	)) {
+		player().x -= 1;
+		player().y -= 1;
+	}
+	else if ( curPlayerDirection == Direction.Northeast && !(
+		(spr = getSpriteNE()) || isWallNE() ||
+		getSpriteUp() || isWallUp() ||
+		getSpriteRight() || isWallRight()
+	)) {
+		player().x += 1;
+		player().y -= 1;
+	}
+	else if ( curPlayerDirection == Direction.Southwest && !(
+		(spr = getSpriteSW()) || isWallSW() ||
+		getSpriteDown() || isWallDown() ||
+		getSpriteLeft() || isWallLeft()
+	)) {
+		player().x -= 1;
+		player().y += 1;
+	}
+	else if ( curPlayerDirection == Direction.Southeast && !(
+		(spr = getSpriteSE()) || isWallSE() ||
+		getSpriteDown() || isWallDown() ||
+		getSpriteRight() || isWallRight()
+	)) {
+		player().x += 1;
+		player().y += 1;
+	}
+	else {
+		didMove = false;
 	}
 	
 	var ext = getExit( player().room, player().x, player().y );
@@ -899,7 +940,7 @@ function movePlayer(direction) {
 	if (end) {
 		startEndingDialog(end);
 	}
-	else if (ext) {
+	else if (ext && didMove) {
 		movePlayerThroughExit(ext);
 	}
 	else if (spr) {
@@ -1015,33 +1056,51 @@ function getItemIndex( roomId, x, y ) {
 function getSpriteLeft() { //repetitive?
 	return getSpriteAt( player().x - 1, player().y );
 }
-
 function getSpriteRight() {
 	return getSpriteAt( player().x + 1, player().y );
 }
-
 function getSpriteUp() {
 	return getSpriteAt( player().x, player().y - 1 );
 }
-
 function getSpriteDown() {
 	return getSpriteAt( player().x, player().y + 1 );
+}
+function getSpriteNW() {
+	return getSpriteAt( player().x - 1, player().y - 1 );
+}
+function getSpriteNE() {
+	return getSpriteAt( player().x + 1, player().y - 1 );
+}
+function getSpriteSW() {
+	return getSpriteAt( player().x - 1, player().y + 1 );
+}
+function getSpriteSE() {
+	return getSpriteAt( player().x + 1, player().y + 1 );
 }
 
 function isWallLeft() {
 	return (player().x - 1 < 0) || isWall( player().x - 1, player().y );
 }
-
 function isWallRight() {
 	return (player().x + 1 >= 16) || isWall( player().x + 1, player().y );
 }
-
 function isWallUp() {
 	return (player().y - 1 < 0) || isWall( player().x, player().y - 1 );
 }
-
 function isWallDown() {
 	return (player().y + 1 >= 16) || isWall( player().x, player().y + 1 );
+}
+function isWallNW() {
+	return (player().x - 1 < 0) || (player().y - 1 < 0) || isWall( player().x - 1, player().y - 1 );
+}
+function isWallNE() {
+	return (player().x + 1 >= 16) || (player().y - 1 < 0) || isWall( player().x + 1, player().y - 1 );
+}
+function isWallSW() {
+	return (player().x - 1 < 0) || (player().y + 1 >= 16) || isWall( player().x - 1, player().y + 1 );
+}
+function isWallSE() {
+	return (player().x + 1 >= 16) || (player().y + 1 >= 16) || isWall( player().x + 1, player().y + 1 );
 }
 
 function isWall(x,y,roomId) {

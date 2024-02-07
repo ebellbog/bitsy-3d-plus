@@ -28,7 +28,7 @@ var editor3d = {
     chaosMode: false,
 
     // lists of game settings and camera properties that require special treatment when generating ui elements
-    propertyListIgnore: ['engineSize', 'canvasSize', 'clearColor', 'fogColor', 'tweenFunction', 'mode', 'rotationTweenTime', 'rotationTweenFunction'],
+    propertyListIgnore: ['engineSize', 'canvasSize', 'clearColor', 'fogColor', 'tweenFunction', 'mode', 'rotationTweenTime', 'rotationTweenTimeWithDiagonals', 'rotationTweenFunction'],
     propertyListRadiansToDegrees: ['alpha', 'beta', 'upperBetaLimit', 'lowerBetaLimit', 'useLeftAndRightToRotateByAngle'],
 };
 
