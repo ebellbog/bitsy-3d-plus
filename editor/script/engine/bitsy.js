@@ -858,7 +858,17 @@ function movePlayer(direction) {
 		return; // player room is missing or invalid.. can't move them!
 	}
 
-	var spr = null;
+	let spr = null, obstacleCount = 0;
+
+	function getDiagonalObstacles (xDir, yDir) {
+		const yObstacles = (yDir === 'up') ?
+			getSpriteUp() || isWallUp() :
+			getSpriteDown() || isWallDown();
+		const xObstacles = (xDir === 'left') ?
+			getSpriteLeft() || isWallLeft() :
+			getSpriteRight() || isWallRight();
+		return Boolean(yObstacles) + Boolean(xObstacles);
+	}
 
 	let didMove = true;
 	if ( curPlayerDirection == Direction.Left && !(spr = getSpriteLeft()) && !isWallLeft() ) {
@@ -873,37 +883,41 @@ function movePlayer(direction) {
 	else if ( curPlayerDirection == Direction.Down && !(spr = getSpriteDown()) && !isWallDown() ) {
 		player().y += 1;
 	}
-	else if ( curPlayerDirection == Direction.Northwest && !(
-		(spr = getSpriteNW()) || isWallNW() ||
-		getSpriteUp() || isWallUp() ||
-		getSpriteLeft() || isWallLeft()
-	)) {
-		player().x -= 1;
-		player().y -= 1;
+	else if ( curPlayerDirection == Direction.Northwest ) {
+		obstacleCount = getDiagonalObstacles('left', 'up');
+		if (!(
+			(spr = getSpriteNW()) || isWallNW() || obstacleCount
+		)) {
+			player().x -= 1;
+			player().y -= 1;
+		}
 	}
-	else if ( curPlayerDirection == Direction.Northeast && !(
-		(spr = getSpriteNE()) || isWallNE() ||
-		getSpriteUp() || isWallUp() ||
-		getSpriteRight() || isWallRight()
-	)) {
-		player().x += 1;
-		player().y -= 1;
+	else if ( curPlayerDirection == Direction.Northeast ) {
+		obstacleCount = getDiagonalObstacles('right', 'up')
+		if (!(
+			(spr = getSpriteNE()) || isWallNE() || obstacleCount
+		)) {
+			player().x += 1;
+			player().y -= 1;
+		}
 	}
-	else if ( curPlayerDirection == Direction.Southwest && !(
-		(spr = getSpriteSW()) || isWallSW() ||
-		getSpriteDown() || isWallDown() ||
-		getSpriteLeft() || isWallLeft()
-	)) {
-		player().x -= 1;
-		player().y += 1;
+	else if ( curPlayerDirection == Direction.Southwest ) {
+		obstacleCount = getDiagonalObstacles('left', 'down')
+		if (!(
+			(spr = getSpriteSW()) || isWallSW() || obstacleCount
+		)) {
+			player().x -= 1;
+			player().y += 1;
+		}
 	}
-	else if ( curPlayerDirection == Direction.Southeast && !(
-		(spr = getSpriteSE()) || isWallSE() ||
-		getSpriteDown() || isWallDown() ||
-		getSpriteRight() || isWallRight()
-	)) {
-		player().x += 1;
-		player().y += 1;
+	else if ( curPlayerDirection == Direction.Southeast ) {
+		obstacleCount = getDiagonalObstacles('right', 'down')
+		if (!(
+			(spr = getSpriteSE()) || isWallSE() || obstacleCount
+		)) {
+			player().x += 1;
+			player().y += 1;
+		}
 	}
 	else {
 		didMove = false;
@@ -944,8 +958,9 @@ function movePlayer(direction) {
 		movePlayerThroughExit(ext);
 	}
 	else if (spr &&
-		(curRoomRenderMode() === '2D' || b3d.rawDirection === 0) // only support interaction when moving forwards
-	) { // TODO: only if not entirely blocked in
+		(curRoomRenderMode() === '2D' || b3d.rawDirection === 0) && // only support interaction when moving forwards
+		obstacleCount < 2 // only if not entirely blocked in
+	) {
 		startSpriteDialog(spr /*spriteId*/);
 	}
 }
