@@ -1377,39 +1377,32 @@ function selectRoom(roomId) {
 	document.getElementById('room-quick-select').value = null;
 }
 
+function sortedRoomIdsByName() {
+	return Object.entries(room)
+		.sort((a, b) => a[1].name > b[1].name ? 1 : -1)
+		.map(([id, roomData]) => id);
+}
+
 function nextRoom() {
-	var ids = sortedRoomIdList();
-	roomIndex = (roomIndex + 1) % ids.length;
-	curRoom = ids[roomIndex];
-	markerTool.SetRoom(curRoom);
-	roomTool.drawEditMap();
-	paintTool.updateCanvas();
-	updateRoomSettings();
-	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
+	const ids = sortedRoomIdList();
+	const roomId = ids[roomIndex];
 
-	if (drawing.type === TileType.Tile) {
-		updateWallCheckboxOnCurrentTile();
-	}
+	const sortedIds = sortedRoomIdsByName();
+	const sortedIdx = sortedIds.indexOf(roomId);
+	const newSortedIdx = (sortedIdx + 1) % sortedIds.length;
 
-	updateRoomName();
+	selectRoom(sortedIds[newSortedIdx]);
 }
 
 function prevRoom() {
-	var ids = sortedRoomIdList();
-	roomIndex--;
-	if (roomIndex < 0) roomIndex = (ids.length-1);
-	curRoom = ids[roomIndex];
-	markerTool.SetRoom(curRoom);
-	roomTool.drawEditMap();
-	paintTool.updateCanvas();
-	updateRoomSettings();
-	paintExplorer.Refresh( paintTool.drawing.type, true /*doKeepOldThumbnails*/ );
+	const ids = sortedRoomIdList();
+	const roomId = ids[roomIndex];
 
-	if (drawing.type === TileType.Tile) {
-		updateWallCheckboxOnCurrentTile();
-	}
+	const sortedIds = sortedRoomIdsByName();
+	const sortedIdx = sortedIds.indexOf(roomId);
+	const newSortedIdx = (sortedIdx - 1 + sortedIds.length) % sortedIds.length;
 
-	updateRoomName();
+	selectRoom(sortedIds[newSortedIdx]);
 }
 
 function duplicateRoom() {
