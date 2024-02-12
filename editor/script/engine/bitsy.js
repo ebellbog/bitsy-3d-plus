@@ -954,14 +954,16 @@ function movePlayer(direction) {
 	if (end) {
 		startEndingDialog(end);
 	}
-	else if (ext && didMove) {
-		movePlayerThroughExit(ext);
-	}
-	else if (spr &&
-		(curRoomRenderMode() === '2D' || b3d.rawDirection === 0) && // only support interaction when moving forwards
-		obstacleCount < 2 // only if not entirely blocked in
-	) {
-		startSpriteDialog(spr /*spriteId*/);
+	else {
+		if (ext && didMove) {
+			movePlayerThroughExit(ext);
+		}
+		if (spr &&
+			(curRoomRenderMode() === '2D' || b3d.rawDirection === 0) && // only support interaction when moving forwards
+			obstacleCount < 2 // only if not entirely blocked in
+		) {
+			startSpriteDialog(spr /*spriteId*/);
+		}
 	}
 }
 
