@@ -861,12 +861,15 @@ function movePlayer(direction) {
 	let spr = null, obstacleCount = 0;
 
 	function getDiagonalObstacles (xDir, yDir) {
+		// TODO: implement less janky solution for allowing diagonal movement past specific sprites
+		const allowDiag = (spriteId) => (spriteId) ? !sprite[spriteId].name?.includes('allow diag') : false;
+
 		const yObstacles = (yDir === 'up') ?
-			getSpriteUp() || isWallUp() :
-			getSpriteDown() || isWallDown();
+			allowDiag(getSpriteUp()) || isWallUp() :
+			allowDiag(getSpriteDown()) || isWallDown();
 		const xObstacles = (xDir === 'left') ?
-			getSpriteLeft() || isWallLeft() :
-			getSpriteRight() || isWallRight();
+			allowDiag(getSpriteLeft()) || isWallLeft() :
+			allowDiag(getSpriteRight()) || isWallRight();
 		return Boolean(yObstacles) + Boolean(xObstacles);
 	}
 
