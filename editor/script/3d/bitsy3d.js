@@ -176,7 +176,7 @@ b3d.cameraDataModel = {
                 lowerBetaLimit: 0,
                 rotationTweenFunction: 'linear',
                 rotationTweenTime: 250,
-                rotationTweenTimeWithDiagonals: 175,
+                rotationTweenTimeWithDiagonals: 200,
             },
             vector3: { target: {x: 7.5, z: 7.5, y: 0} },
             trait: {

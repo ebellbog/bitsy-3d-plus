@@ -563,6 +563,7 @@ function endFunc(environment,parameters,onReturn) {
 	onReturn(null);
 }
 
+let prevLocation;
 function exitFunc(environment,parameters,onReturn) {
 	var destRoom = parameters[0];
 
@@ -575,9 +576,12 @@ function exitFunc(environment,parameters,onReturn) {
 	var destY = parseInt(parameters[2]);
 
 	const updatePosition = () => {
+		prevLocation = [curRoom, player().x, player().y];
+
 		player().room = destRoom;
 		player().x = destX;
 		player().y = destY;
+
 		curRoom = destRoom;
 		initRoom(curRoom);
 	}
@@ -600,6 +604,16 @@ function exitFunc(environment,parameters,onReturn) {
 	}
 
 	onReturn(null);
+}
+
+function returnFunc(environment,parameters,onReturn) {
+	if (!prevLocation) return;
+
+	const transitionEffect = parameters[0];
+	if (transitionEffect) prevLocation.push(transitionEffect);
+
+	exitFunc(environment, prevLocation, onReturn);
+	prevLocation = null;
 }
 
 function getMusicPlayer(playerId, doLoop) {
@@ -1028,6 +1042,7 @@ var Environment = function() {
 	functionMap.set("debugOnlyPrintFont", printFontFunc); // DEBUG ONLY
 	functionMap.set("end", endFunc);
 	functionMap.set("exit", exitFunc);
+	functionMap.set("return", returnFunc); // TODO: expose in UI
 	functionMap.set("pg", pagebreakFunc);
 	functionMap.set("property", propertyFunc);
 	functionMap.set("music", musicFunc);
