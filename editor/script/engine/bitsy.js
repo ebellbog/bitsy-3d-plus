@@ -330,6 +330,7 @@ function stopGame() {
 
 	document.getElementById('music-player-1')?.pause();
 	document.getElementById('music-player-2')?.pause();
+	document.getElementById('sfx-player')?.pause();
 
 	 // TODO: find a better place for this?
 	 // (and ideally prevent the need for setTimeout)

@@ -723,6 +723,7 @@ function sfxFunc(environment, parameters, onReturn) {
 		const src = getMusicSrc(parameters);
 		sfxPlayer.currentTime = 0;
 		sfxPlayer.src = src;
+		sfxPlayer.volume = parameters[1] || 1;
 		sfxPlayer.play();
 	}
 
