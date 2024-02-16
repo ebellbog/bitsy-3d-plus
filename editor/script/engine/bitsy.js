@@ -160,6 +160,8 @@ var key = {
 	a : 65,
 	s : 83,
 	d : 68,
+	q : 81,
+	e : 69,
 	r : 82,
 	shift : 16,
 	ctrl : 17,
@@ -538,10 +540,10 @@ function updateInput() {
 		/* WALK */
 		var prevPlayerDirection = curPlayerDirection;
 
-		if ( input.isKeyDown( key.left ) || input.isKeyDown( key.a ) || input.swipeLeft() ) {
+		if ( input.isKeyDown( key.left ) || input.isKeyDown( key.a ) || input.isKeyDown( key.q ) || input.swipeLeft() ) {
 			curPlayerDirection = Direction.Left;
 		}
-		else if ( input.isKeyDown( key.right ) || input.isKeyDown( key.d ) || input.swipeRight() ) {
+		else if ( input.isKeyDown( key.right ) || input.isKeyDown( key.d ) || input.isKeyDown( key.e ) || input.swipeRight() ) {
 			curPlayerDirection = Direction.Right;
 		}
 		else if ( input.isKeyDown( key.up ) || input.isKeyDown( key.w ) || input.swipeUp() ) {
@@ -695,7 +697,7 @@ var InputManager = function() {
 	}
 
 	function isModifierKeyDown() {
-		return ( self.isKeyDown(key.shift) || self.isKeyDown(key.ctrl) || self.isKeyDown(key.alt) || self.isKeyDown(key.cmd) );
+		return ( self.isKeyDown(key.ctrl) || self.isKeyDown(key.alt) || self.isKeyDown(key.cmd) );
 	}
 
 	this.ignoreHeldKeys = function() {

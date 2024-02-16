@@ -269,6 +269,8 @@ b3d.cameraDataModel = {
                 var thisCamera = this;
                 b3d.patch(bitsy, 'movePlayer', function () {
                     if (curRoomRenderMode() === '2D') return;
+                    if (input.isKeyDown( key.q ) || input.isKeyDown( key.e ) || input.isKeyDown( key.shift )) return; // support strafing
+
                     if (thisCamera.rotationState.isTweening) {
                         // prevent any movement by resetting bitsy direction when camera is rotating
                         bitsy.curPlayerDirection = bitsy.Direction.None;
