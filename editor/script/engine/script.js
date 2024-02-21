@@ -885,48 +885,66 @@ function ambientFunc(environment, parameters, onReturn) {
 	onReturn(null);
 }
 
-function replaceTileFunc(environment, parameters, onReturn) {
-	const oldTileName = parameters[0];
-	const newTileName = parameters[1];
+function replaceElementFunc(environment, parameters, onReturn) {
+	const oldEntityName = parameters[0];
+	const newEntityName = parameters[1];
 	const roomName = parameters[2];
 
-	let isSprite = false;
-	const findTileOrSprite = (entityName) => {
+	let entityType;
+	const findEntity = (entityName) => {
 		let entityId;
 		if (names.tile.has(entityName)) {
 			entityId = names.tile.get(entityName);
+			entityType = 'tile';
 		} else if (names.sprite.has(entityName)) {
 			entityId = names.sprite.get(entityName);
-			isSprite = true;
+			entityType = 'sprite';
+		} else if (names.item.has(entityName)) {
+			entityId = names.item.get(entityName);
+			entityType = 'item';
 		}
 		return entityId;
 	}
 
-	const oldTileId = findTileOrSprite(oldTileName);
-	const newTileId = findTileOrSprite(newTileName);
+	const oldEntityId = findEntity(oldEntityName);
+	const newEntityId = findEntity(newEntityName);
 
-	let roomData;
-	if (!isSprite && names.room.has(roomName)) {
-		const roomId = names.room.get(roomName);
-		roomData = room[roomId];
+	if (!(oldEntityId && newEntityId)) {
+		console.error('Error (replace command): One or more of the specified game elements could not be found');
+		return;
 	}
 
-	if (isSprite && oldTileId && newTileId) {
-		const oldSpriteData = sprite[oldTileId];
-		const newSpriteData = sprite[newTileId];
+	let roomData;
+	if (entityType !== 'sprite') {
+		const roomId = names.room.get(roomName);
+		roomData = room[roomId];
+
+		if (!roomData) {
+			console.error('Error (replace command): Please specify a valid room');
+			return;
+		}
+	}
+
+	if (entityType === 'sprite') {
+		const oldSpriteData = sprite[oldEntityId];
+		const newSpriteData = sprite[newEntityId];
 
 		['room', 'x', 'y'].forEach((prop) => {
 			newSpriteData[prop] = oldSpriteData[prop];
 			oldSpriteData[prop] = null;
 		});
-	} else if (roomData && oldTileId && newTileId) {
+	} else if (entityType === 'item') {
+		roomData.items.forEach((item) => {
+			if (item.id === oldEntityId) item.id = newEntityId;
+		});
+	} else if (entityType === 'tile') {
 		roomData.tilemap.forEach((row) => {
 			row.forEach((col, idx) => {
-				if (row[idx] === oldTileId) row[idx] = newTileId;
+				if (row[idx] === oldEntityId) row[idx] = newEntityId;
 			});
 		});
 	} else {
-		console.error(`Unable to replace tile ${oldTileName} with tile ${newTileName} for room ${roomName}`);
+		console.error(`Error (replace command): Unable to replace element ${oldEntityName} with element ${newEntityName} for room ${roomName}`);
 	}
 
 	onReturn(null);
@@ -1053,7 +1071,7 @@ var Environment = function() {
 	functionMap.set("input", userInputFunc);
 	functionMap.set("ambient", ambientFunc);
 	functionMap.set("fog", fogFunc);
-	functionMap.set("replace", replaceTileFunc);
+	functionMap.set("replace", replaceElementFunc);
 
 	this.HasFunction = function(name) { return functionMap.has(name); };
 	this.EvalFunction = function(name,parameters,onReturn,env) {

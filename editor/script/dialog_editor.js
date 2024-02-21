@@ -1373,7 +1373,7 @@ function DialogTool() {
 			},
 			replace: {
 				name: localization.GetStringOrFallback("dialog_effect_replace", "replace"),
-				description: "dynamically replace tile or sprite; (for tiles, please specify a room)",
+				description: "dynamically replace a tile, item, or sprite; (for tiles and items, please specify a room)",
 				defaultArg: `"old entity name" "new entity name" "room name"`,
 				placeAtEnd: true,
 			}
