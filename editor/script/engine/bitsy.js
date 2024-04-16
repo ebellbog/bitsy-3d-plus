@@ -660,6 +660,8 @@ var InputManager = function() {
 	var newKeyPress;
 	var touchState;
 
+	let hotkeyMap;
+
 	function resetAll() {
 		pressed = {};
 		ignored = {};
@@ -687,8 +689,21 @@ var InputManager = function() {
 		/* RESTART GAME */
 		if ( e.keyCode === key.r && ( e.getModifierState("Control") || e.getModifierState("Meta") ) ) {
 			if ( confirm("Restart the game?") ) {
-				reset_cur_game();
+				reset_cur_game(); // ELANA TODO: investigate why this breaks the lighting
 			}
+		}
+	}
+
+	function tryDialogHotkey(e) {
+		if (!self.hotkeyMap) {
+			self.hotkeyMap = {};
+			Object.entries(dialog).forEach(([id, dlg]) => {
+				if (dlg.hotkey) self.hotkeyMap[dlg.hotkey] = id;
+			});
+		}
+		const dlgForKey = self.hotkeyMap[e.key];
+		if (dlgForKey) {
+			startDialogFromId(dlgForKey);
 		}
 	}
 
@@ -713,6 +728,7 @@ var InputManager = function() {
 		// console.debug("KEYDOWN -- " + event.keyCode);
 
 		tryRestartGame(event);
+		tryDialogHotkey(event);
 
 		// Special keys being held down can interfere with keyup events and lock movement
 		// so just don't collect input when they're held
@@ -1595,6 +1611,9 @@ function serializeWorld(skipFonts) {
 			if (isNumber(dialog[id].maxLines) && dialog[id].maxLines !== 2) {
 				worldStr += `MAX_LINES ${dialog[id].maxLines}\n`;
 			}
+			if (dialog[id].hotkey?.length) {
+				worldStr += `HOTKEY ${dialog[id].hotkey}\n`;
+			}
 			worldStr += "\n";
 		}
 	}
@@ -2190,6 +2209,13 @@ function parseMaxLines(lines, i) {
 	}
 }
 
+function parseHotkey(lines, i) {
+	if (lines[i]?.length && getType(lines[i]) === "HOTKEY") {
+		const hotkey = getId(lines[i]);
+		return hotkey;
+	}
+}
+
 function parseDialog(lines, i, compatibilityFlags) {
 	// hacky but I need to store this so I can set the name below
 	var id = getId(lines[i]);
@@ -2211,6 +2237,12 @@ function parseDialog(lines, i, compatibilityFlags) {
 	const maxLines = parseMaxLines(lines, i);
 	if (isNumber(maxLines)) {
 		dialog[id].maxLines = maxLines;
+		i++;
+	}
+
+	const hotkey = parseHotkey(lines, i);
+	if (hotkey) {
+		dialog[id].hotkey = hotkey;
 		i++;
 	}
 
@@ -2503,6 +2535,10 @@ function startSpriteDialog(spriteId) {
 	var spr = sprite[spriteId];
 	var dialogId = spr.dlg;
 	// console.debug("START SPRITE DIALOG " + dialogId);
+	startDialogFromId(dialogId);
+}
+
+function startDialogFromId(dialogId) {
 	if (dialog[dialogId]){
 		const {src: dialogStr, bgColor, maxLines} = dialog[dialogId];
 		startDialog(dialogStr, dialogId, null, {bgColor, maxLines});

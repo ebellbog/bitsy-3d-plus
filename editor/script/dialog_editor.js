@@ -499,6 +499,7 @@ function DialogTool() {
 			}
 
 			dialog[dialogId].src = dialogStr;
+			dialog[dialogId].hotkey = document.querySelector('.dlg-hotkey').value;
 			dialog[dialogId].bgColor = getRgbArrayFromHex(
 				document.querySelector('.dlg-color').value
 			);
@@ -1215,7 +1216,7 @@ function DialogTool() {
 
 		// add title to dialog settings
 		const dlgSettingsTitleDiv = document.createElement("div");
-		dlgSettingsTitleDiv.style.marginBottom = "5px";
+		dlgSettingsTitleDiv.style.marginBottom = "7px";
 		dlgSettingsTitleDiv.innerHTML = iconUtils.CreateIcon("dialog").outerHTML + " " + localization.GetStringOrFallback("dialog_settings", "dialog settings");
 		dlgSettingsDiv.appendChild(dlgSettingsTitleDiv);
 
@@ -1223,35 +1224,6 @@ function DialogTool() {
 		const dlgSettingsControlsDiv = document.createElement("div");
 		dlgSettingsControlsDiv.style.marginBottom = "5px";
 		dlgSettingsDiv.appendChild(dlgSettingsControlsDiv);
-
-		// add color picker
-		const {bgColor} = dialog[curDialogEditorId];
-		const bgString = bgColor && getHexFromRgb(bgColor) || 'black';
-
-		const dlgColorPicker = document.createElement("input");
-		Object.assign(dlgColorPicker, {
-			type: "color",
-			className: "dlg-color",
-			value: bgString,
-			onchange: (e) => {
-				const newColor = e.target.value;
-				document.querySelectorAll('.dlg-color').forEach((el) => el.value = newColor);
-				parentEditor.NotifyUpdate();
-				UpdateDialogColor();
-			},
-		});
-
-		const dlgColorDiv = document.createElement("button");
-		dlgColorDiv.appendChild(dlgColorPicker);
-
-		const dlgColorLabel = document.createElement("label");
-		Object.assign(dlgColorLabel, {
-			for: "dlg-color",
-			innerHTML: "background color",
-		});
-		dlgColorDiv.appendChild(dlgColorLabel);
-
-		dlgSettingsControlsDiv.appendChild(dlgColorDiv);
 
 		// add max lines
 
@@ -1283,6 +1255,65 @@ function DialogTool() {
 
 		dlgSettingsControlsDiv.appendChild(maxLinesLabel);
 		dlgSettingsControlsDiv.appendChild(maxLinesInput);
+
+		// add hotkey
+
+		const hotkeyInput = document.createElement("input");
+		Object.assign(hotkeyInput, {
+			size: 4,
+			className: "dlg-hotkey",
+			title: "hotkey to trigger dialog",
+			placeholder: 'none',
+			onchange: (e) => {
+				let newHotkey = e.target.value || null;
+				document.querySelectorAll(".dlg-hotkey").forEach((el) => el.value = newHotkey);
+				parentEditor.NotifyUpdate();
+			},
+		});
+
+		const {hotkey} = dialog[curDialogEditorId];
+		if (hotkey) hotkeyInput.value = hotkey;
+
+		const hotkeyLabel = document.createElement("label");
+		hotkeyLabel.innerHTML = "keyboard trigger:";
+		hotkeyLabel.for = "dlg-hotkey";
+		hotkeyLabel.style.paddingLeft = '6px';
+		hotkeyLabel.style.paddingRight = '2px';
+
+		dlgSettingsControlsDiv.appendChild(hotkeyLabel);
+		dlgSettingsControlsDiv.appendChild(hotkeyInput);
+
+		// add color picker
+
+		const {bgColor} = dialog[curDialogEditorId];
+		const bgString = bgColor && getHexFromRgb(bgColor) || 'black';
+
+		const dlgColorPicker = document.createElement("input");
+		Object.assign(dlgColorPicker, {
+			type: "color",
+			className: "dlg-color",
+			value: bgString,
+			onchange: (e) => {
+				const newColor = e.target.value;
+				document.querySelectorAll('.dlg-color').forEach((el) => el.value = newColor);
+				parentEditor.NotifyUpdate();
+				UpdateDialogColor();
+			},
+		});
+
+		const dlgColorDiv = document.createElement("button");
+		dlgColorDiv.style.display = 'block';
+		dlgColorDiv.style.marginTop = '4px';
+		dlgColorDiv.appendChild(dlgColorPicker);
+
+		const dlgColorLabel = document.createElement("label");
+		Object.assign(dlgColorLabel, {
+			for: "dlg-color",
+			innerHTML: "background color",
+		});
+		dlgColorDiv.appendChild(dlgColorLabel);
+
+		dlgSettingsControlsDiv.appendChild(dlgColorDiv);
 
 		// show & hide both text effects & dialog settings
 		function toggleTextEffects(doDisplay) {
